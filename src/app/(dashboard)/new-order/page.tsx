@@ -7,7 +7,7 @@ import { useCartStore } from '@/lib/store/cart-store';
 
 export default function NewOrderPage() {
   const { supabase } = useSupabase();
-  const [templates, setTemplates] = useState([]);
+  const [templates, setTemplates] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCuisine, setSelectedCuisine] = useState('all');
   const cartItems = useCartStore((state) => state.items);
