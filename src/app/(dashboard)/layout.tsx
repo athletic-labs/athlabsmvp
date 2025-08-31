@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <Image 
-              src="/athletic-labs-logo.png" 
+              src={resolvedTheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
               alt="Athletic Labs" 
               width={150} 
               height={40}
@@ -87,7 +87,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Menu className="w-6 h-6" />
             </button>
             <Image 
-              src="/athletic-labs-logo.png" 
+              src={resolvedTheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
               alt="Athletic Labs" 
               width={150} 
               height={40}
