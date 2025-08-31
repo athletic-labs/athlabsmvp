@@ -1,0 +1,489 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { X, Plus, Minus, Search, Filter, ShoppingCart, Utensils, Clock, Users, ChefHat } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useCartStore } from '@/lib/store/enhanced-cart-store';
+
+interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  unitPrice: number;
+  servingSize: number;
+  dietaryTags: string[];
+  nutritionInfo: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  image?: string;
+}
+
+interface SelectedItem extends MenuItem {
+  quantity: number;
+  panSize: 'half' | 'full';
+}
+
+interface CreateTemplateModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function CreateTemplateModal({ open, onClose }: CreateTemplateModalProps) {
+  const { addItem } = useCartStore();
+  const [step, setStep] = useState(1); // 1: Select items, 2: Configure portions, 3: Review
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [templateName, setTemplateName] = useState('');
+  const [templateDescription, setTemplateDescription] = useState('');
+  const [estimatedServings, setEstimatedServings] = useState(24);
+
+  // Mock menu data
+  const [menuItems] = useState<MenuItem[]>([
+    {
+      id: 'menu_001',
+      name: 'Grilled Chicken Breast',
+      description: 'Herb-seasoned lean protein with Mediterranean spices',
+      category: 'proteins',
+      unitPrice: 85,
+      servingSize: 6, // oz
+      dietaryTags: ['gluten-free', 'high-protein'],
+      nutritionInfo: { calories: 165, protein: 31, carbs: 0, fat: 3.6 }
+    },
+    {
+      id: 'menu_002',
+      name: 'Quinoa Power Bowl Base',
+      description: 'Fluffy quinoa with roasted vegetables',
+      category: 'grains',
+      unitPrice: 45,
+      servingSize: 8, // oz
+      dietaryTags: ['vegan', 'gluten-free', 'high-fiber'],
+      nutritionInfo: { calories: 222, protein: 8, carbs: 39, fat: 3.6 }
+    },
+    {
+      id: 'menu_003',
+      name: 'Fresh Garden Salad Mix',
+      description: 'Mixed greens, cherry tomatoes, cucumber, carrots',
+      category: 'vegetables',
+      unitPrice: 35,
+      servingSize: 4, // oz
+      dietaryTags: ['vegan', 'gluten-free', 'low-calorie'],
+      nutritionInfo: { calories: 20, protein: 1.5, carbs: 4, fat: 0.2 }
+    },
+    {
+      id: 'menu_004',
+      name: 'Recovery Smoothie Base',
+      description: 'Banana, berries, protein powder blend',
+      category: 'beverages',
+      unitPrice: 65,
+      servingSize: 16, // oz
+      dietaryTags: ['gluten-free', 'high-protein'],
+      nutritionInfo: { calories: 280, protein: 25, carbs: 35, fat: 8 }
+    },
+    {
+      id: 'menu_005',
+      name: 'Sweet Potato Wedges',
+      description: 'Roasted with olive oil and herbs',
+      category: 'sides',
+      unitPrice: 40,
+      servingSize: 6, // oz
+      dietaryTags: ['vegan', 'gluten-free'],
+      nutritionInfo: { calories: 180, protein: 2, carbs: 41, fat: 0.3 }
+    },
+    {
+      id: 'menu_006',
+      name: 'Homemade Hummus',
+      description: 'Creamy chickpea spread with tahini',
+      category: 'sides',
+      unitPrice: 25,
+      servingSize: 3, // oz
+      dietaryTags: ['vegan', 'gluten-free', 'high-protein'],
+      nutritionInfo: { calories: 166, protein: 8, carbs: 14.3, fat: 9.6 }
+    }
+  ]);
+
+  const categories = [
+    { value: 'all', label: 'All Items', icon: Utensils },
+    { value: 'proteins', label: 'Proteins', icon: ChefHat },
+    { value: 'grains', label: 'Grains & Starches', icon: Utensils },
+    { value: 'vegetables', label: 'Vegetables', icon: Utensils },
+    { value: 'sides', label: 'Sides', icon: Utensils },
+    { value: 'beverages', label: 'Beverages', icon: Utensils }
+  ];
+
+  const filteredItems = menuItems.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const addMenuItem = (item: MenuItem) => {
+    const existing = selectedItems.find(selected => selected.id === item.id);
+    if (existing) {
+      setSelectedItems(prev => prev.map(selected =>
+        selected.id === item.id
+          ? { ...selected, quantity: selected.quantity + 1 }
+          : selected
+      ));
+    } else {
+      setSelectedItems(prev => [...prev, { ...item, quantity: 1, panSize: 'full' }]);
+    }
+  };
+
+  const updateItemQuantity = (id: string, quantity: number) => {
+    if (quantity <= 0) {
+      setSelectedItems(prev => prev.filter(item => item.id !== id));
+    } else {
+      setSelectedItems(prev => prev.map(item =>
+        item.id === id ? { ...item, quantity } : item
+      ));
+    }
+  };
+
+  const updatePanSize = (id: string, panSize: 'half' | 'full') => {
+    setSelectedItems(prev => prev.map(item =>
+      item.id === id ? { ...item, panSize } : item
+    ));
+  };
+
+  const calculateTotalPrice = () => {
+    return selectedItems.reduce((total, item) => {
+      const multiplier = item.panSize === 'full' ? 1 : 0.5;
+      return total + (item.unitPrice * item.quantity * multiplier);
+    }, 0);
+  };
+
+  const handleAddToCart = () => {
+    if (selectedItems.length === 0) return;
+
+    const templateItem = {
+      type: 'template' as const,
+      name: templateName || 'Custom Template',
+      unitPrice: calculateTotalPrice(),
+      quantity: 1,
+      servings: estimatedServings,
+      includedItems: selectedItems.map(item => ({
+        name: item.name,
+        quantity: `${item.quantity} ${item.panSize} pan${item.quantity > 1 ? 's' : ''}`
+      })),
+      notes: templateDescription
+    };
+
+    addItem(templateItem);
+    onClose();
+    
+    // Reset state
+    setSelectedItems([]);
+    setStep(1);
+    setTemplateName('');
+    setTemplateDescription('');
+    setSearchQuery('');
+    setSelectedCategory('all');
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/50 z-40"
+          />
+          
+          {/* Modal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed inset-4 md:inset-8 lg:inset-16 bg-white dark:bg-gray-900 rounded-xl shadow-2xl z-50 flex flex-col max-h-screen"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div>
+                <h2 className="text-2xl font-bold">Create Your Own Template</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Step {step} of 3 - {
+                    step === 1 ? 'Select Menu Items' :
+                    step === 2 ? 'Configure Portions' : 'Review Template'
+                  }
+                </p>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto">
+              {step === 1 && (
+                <div className="p-6 space-y-6">
+                  {/* Search and Filter */}
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search menu items..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
+                      />
+                    </div>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 min-w-48"
+                    >
+                      {categories.map(category => (
+                        <option key={category.value} value={category.value}>
+                          {category.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Selected Items Summary */}
+                  {selectedItems.length > 0 && (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <h3 className="font-medium mb-2">Selected Items ({selectedItems.length})</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedItems.map(item => (
+                          <span key={item.id} className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                            {item.name} ({item.quantity})
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Menu Items Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredItems.map(item => (
+                      <div key={item.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 transition-colors">
+                        <div className="space-y-3">
+                          <div>
+                            <h3 className="font-medium">{item.name}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-1">
+                            {item.dietaryTags.map(tag => (
+                              <span key={tag} className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs rounded-full">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-bold text-lg">${item.unitPrice}</p>
+                              <p className="text-xs text-gray-500">per full pan</p>
+                            </div>
+                            <button
+                              onClick={() => addMenuItem(item)}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="p-6 space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Configure Portions & Details</h3>
+                    <div className="space-y-4">
+                      {selectedItems.map(item => (
+                        <div key={item.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <h4 className="font-medium">{item.name}</h4>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
+                            </div>
+                            <button
+                              onClick={() => updateItemQuantity(item.id, 0)}
+                              className="text-red-500 hover:text-red-700 p-1"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Quantity</label>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => updateItemQuantity(item.id, Math.max(1, item.quantity - 1))}
+                                  className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                                >
+                                  <Minus className="w-4 h-4" />
+                                </button>
+                                <span className="w-12 text-center font-medium">{item.quantity}</span>
+                                <button
+                                  onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                                  className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Pan Size</label>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => updatePanSize(item.id, 'half')}
+                                  className={`px-3 py-2 rounded text-sm ${
+                                    item.panSize === 'half'
+                                      ? 'bg-blue-600 text-white'
+                                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                  }`}
+                                >
+                                  Half (12 servings)
+                                </button>
+                                <button
+                                  onClick={() => updatePanSize(item.id, 'full')}
+                                  className={`px-3 py-2 rounded text-sm ${
+                                    item.panSize === 'full'
+                                      ? 'bg-blue-600 text-white'
+                                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                  }`}
+                                >
+                                  Full (24 servings)
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="p-6 space-y-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Template Name *</label>
+                      <input
+                        type="text"
+                        value={templateName}
+                        onChange={(e) => setTemplateName(e.target.value)}
+                        placeholder="e.g., Post-Workout Recovery Meal"
+                        className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Description (Optional)</label>
+                      <textarea
+                        value={templateDescription}
+                        onChange={(e) => setTemplateDescription(e.target.value)}
+                        placeholder="Describe when this template should be used..."
+                        rows={3}
+                        className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Summary */}
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <h3 className="font-semibold mb-3">Template Summary</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span>Total Items:</span>
+                        <span>{selectedItems.length}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Estimated Servings:</span>
+                        <span>{estimatedServings} people</span>
+                      </div>
+                      <div className="flex justify-between font-semibold text-lg pt-2 border-t">
+                        <span>Total Price:</span>
+                        <span>${calculateTotalPrice().toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Items List */}
+                  <div>
+                    <h4 className="font-medium mb-2">Included Items:</h4>
+                    <div className="space-y-2">
+                      {selectedItems.map(item => (
+                        <div key={item.id} className="flex justify-between text-sm">
+                          <span>{item.name}</span>
+                          <span>{item.quantity} {item.panSize} pan{item.quantity > 1 ? 's' : ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-2">
+                  {step > 1 && (
+                    <button
+                      onClick={() => setStep(step - 1)}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      Back
+                    </button>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  {step < 3 && selectedItems.length > 0 && (
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {selectedItems.length} item{selectedItems.length !== 1 ? 's' : ''} selected
+                    </span>
+                  )}
+                  
+                  {step < 3 ? (
+                    <button
+                      onClick={() => setStep(step + 1)}
+                      disabled={selectedItems.length === 0}
+                      className="md-filled-button disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {step === 1 ? 'Configure Portions' : 'Review Template'}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={!templateName || selectedItems.length === 0}
+                      className="md-filled-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      Add to Cart
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}

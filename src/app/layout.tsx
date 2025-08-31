@@ -1,5 +1,6 @@
 import './globals.css';
 import { ThemeProvider } from '@/lib/theme/theme-provider';
+import { ErrorBoundary } from '@/lib/error/error-boundary';
 
 export const metadata = {
   title: 'Athletic Labs',
@@ -14,9 +15,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

@@ -6,7 +6,9 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, ShoppingCart, Save, Calendar, History, Settings, LogOut, Menu, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/lib/theme/theme-provider';
-import { AuthService } from '@/lib/auth/auth-service';
+import { SimpleAuthService } from '@/lib/auth/simple-auth';
+import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import CartDrawer from '@/components/cart/CartDrawer';
 
 const NAVIGATION_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: Home },
@@ -17,14 +19,33 @@ const NAVIGATION_ITEMS = [
   { href: '/settings', label: 'Settings', icon: Settings }
 ];
 
+function CartButton() {
+  const { itemCount, openCart } = useCartStore();
+
+  return (
+    <button
+      onClick={openCart}
+      className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+    >
+      <ShoppingCart className="w-6 h-6" />
+      {itemCount > 0 && (
+        <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+          {itemCount > 99 ? '99+' : itemCount}
+        </span>
+      )}
+    </button>
+  );
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { resolvedTheme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isOpen: cartOpen, closeCart, openCart, itemCount } = useCartStore();
 
   const handleLogout = async () => {
-    await AuthService.signOut();
+    await SimpleAuthService.signOut();
     router.push('/login');
   };
 
@@ -65,6 +86,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
 
           <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+            <button onClick={openCart}
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-colors relative">
+              <ShoppingCart className="w-5 h-5" />
+              <span>Cart</span>
+              {itemCount > 0 && (
+                <span className="ml-auto bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 font-medium">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+            
             <button onClick={toggleTheme}
               className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-colors">
               {resolvedTheme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
@@ -82,8 +114,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       <div className="flex-1 flex flex-col">
         <header className="lg:hidden bg-white dark:bg-gray-900 shadow-md p-4">
-          <div className="flex items-center justify-center relative">
-            <button onClick={() => setSidebarOpen(true)} className="absolute left-0 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+          <div className="flex items-center justify-between">
+            <button onClick={() => setSidebarOpen(true)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
               <Menu className="w-6 h-6" />
             </button>
             <Image 
@@ -93,6 +125,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               height={40}
               className="h-8 w-auto"
             />
+            <CartButton />
           </div>
         </header>
 
@@ -100,6 +133,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="p-6">{children}</div>
         </main>
       </div>
+      
+      {/* Cart Drawer */}
+      <CartDrawer open={cartOpen} onClose={closeCart} />
     </div>
   );
 }

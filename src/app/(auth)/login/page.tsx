@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { AuthService } from '@/lib/auth/auth-service';
+import { SimpleAuthService } from '@/lib/auth/simple-auth';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -30,12 +30,22 @@ export default function LoginPage() {
       setLoading(true);
       setError(null);
       
-      const result = await AuthService.signIn(data.email, data.password);
+      const result = await SimpleAuthService.signIn(data.email, data.password);
       
-      if (result.needsOnboarding) {
-        router.push('/onboarding');
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      if (result.user) {
+        // Check if user needs onboarding
+        if (!result.user.onboarding_completed) {
+          router.push('/onboarding');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
-        router.push('/dashboard');
+        setError('Login failed. Please try again.');
       }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');

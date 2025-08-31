@@ -3,15 +3,19 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, Grid, List, ShoppingCart, Plus } from 'lucide-react';
 import { useSupabase } from '@/lib/supabase/client';
-import { useCartStore } from '@/lib/store/cart-store';
+import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import CreateTemplateModal from '@/components/templates/CreateTemplateModal';
+import CustomizeTemplateModal from '@/components/templates/CustomizeTemplateModal';
 
 export default function NewOrderPage() {
   const { supabase } = useSupabase();
   const [templates, setTemplates] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCuisine, setSelectedCuisine] = useState('all');
-  const cartItems = useCartStore((state) => state.items);
-  const addToCart = useCartStore((state) => state.addItem);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [customizeModalOpen, setCustomizeModalOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const { items: cartItems, addItem: addToCart, toggleCart, itemCount } = useCartStore();
 
   const CUISINES = [
     { value: 'all', label: 'All Cuisines' },
@@ -43,6 +47,11 @@ export default function NewOrderPage() {
     return matchesSearch && matchesCuisine;
   });
 
+  const handleCustomizeTemplate = (template: any) => {
+    setSelectedTemplate(template);
+    setCustomizeModalOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -53,11 +62,14 @@ export default function NewOrderPage() {
           </p>
         </div>
         
-        <button className="md-filled-button relative">
+        <button 
+          onClick={toggleCart}
+          className="md-filled-button relative"
+        >
           <ShoppingCart className="w-6 h-6" />
-          {cartItems.length > 0 && (
+          {itemCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">
-              {cartItems.length}
+              {itemCount > 99 ? '99+' : itemCount}
             </span>
           )}
         </button>
@@ -94,7 +106,10 @@ export default function NewOrderPage() {
         <h2 className="text-xl font-semibold mb-4">Meal Templates</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="md-card border-2 border-dashed border-electric-blue/50 hover:border-electric-blue cursor-pointer transition-colors">
+          <div 
+            onClick={() => setCreateModalOpen(true)}
+            className="md-card border-2 border-dashed border-electric-blue/50 hover:border-electric-blue cursor-pointer transition-colors"
+          >
             <div className="flex flex-col items-center justify-center py-8">
               <div className="w-16 h-16 bg-electric-blue/10 rounded-full flex items-center justify-center mb-4">
                 <Plus className="w-8 h-8 text-electric-blue" />
@@ -116,6 +131,9 @@ export default function NewOrderPage() {
                     </span>
                   </div>
                   <h3 className="text-lg font-semibold">{template.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Complete meal package with proteins, sides, and beverages
+                  </p>
                 </div>
                 
                 <div className="flex items-center justify-between">
@@ -129,24 +147,63 @@ export default function NewOrderPage() {
                   </div>
                 </div>
                 
-                <button
-                  onClick={() => addToCart({
-                    type: 'template',
-                    templateId: template.id,
-                    name: template.name,
-                    quantity: 1,
-                    unitPrice: template.bundle_price,
-                    servings: template.serves_count
-                  })}
-                  className="md-filled-button w-full text-sm"
-                >
-                  Add to Cart
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => addToCart({
+                      type: 'template',
+                      templateId: template.id,
+                      name: template.name,
+                      quantity: 1,
+                      unitPrice: template.bundle_price,
+                      servings: template.serves_count,
+                      includedItems: [
+                        { name: 'Grilled Chicken Breast', quantity: '2 full pans' },
+                        { name: 'Quinoa Power Bowl Base', quantity: '1 full pan' },
+                        { name: 'Fresh Garden Salad Mix', quantity: '2 full pans' },
+                        { name: 'Recovery Smoothie Base', quantity: '60 servings' }
+                      ]
+                    })}
+                    className="md-filled-button flex-1 text-sm"
+                  >
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={() => handleCustomizeTemplate({
+                      id: template.id,
+                      name: template.name,
+                      price: template.bundle_price,
+                      servings: template.serves_count,
+                      items: [
+                        { id: 'item_001', name: 'Grilled Chicken Breast', category: 'Protein', quantity: '2', panSize: 'full', canSubstitute: true },
+                        { id: 'item_002', name: 'Quinoa Power Bowl Base', category: 'Grain', quantity: '1', panSize: 'full', canSubstitute: true },
+                        { id: 'item_003', name: 'Fresh Garden Salad Mix', category: 'Vegetable', quantity: '2', panSize: 'full', canSubstitute: true },
+                        { id: 'item_004', name: 'Recovery Smoothie Base', category: 'Beverage', quantity: '60', panSize: 'full', canSubstitute: true }
+                      ]
+                    })}
+                    className="md-outlined-button text-sm px-3"
+                    title="Customize this template"
+                  >
+                    Customize
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Create Template Modal */}
+      <CreateTemplateModal 
+        open={createModalOpen} 
+        onClose={() => setCreateModalOpen(false)} 
+      />
+
+      {/* Customize Template Modal */}
+      <CustomizeTemplateModal 
+        open={customizeModalOpen} 
+        onClose={() => setCustomizeModalOpen(false)}
+        template={selectedTemplate}
+      />
     </div>
   );
 }
