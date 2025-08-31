@@ -100,8 +100,8 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
 
   const calculateTotalPrice = () => {
     return selectedItems.reduce((total, item) => {
-      const multiplier = item.panSize === 'full' ? 1 : 0.5;
-      return total + (item.unitPrice * item.quantity * multiplier);
+      const price = item.panSize === 'full' ? item.priceFull : item.priceHalf;
+      return total + (price * item.quantity);
     }, 0);
   };
 
