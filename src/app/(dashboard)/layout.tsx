@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-center">
             <Image 
               src={resolvedTheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
               alt="Athletic Labs" 
@@ -81,9 +81,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       <div className="flex-1 flex flex-col">
-        <header className="lg:hidden bg-white dark:bg-navy shadow-md p-4">
-          <div className="flex items-center justify-between">
-            <button onClick={() => setSidebarOpen(true)} className="p-2 hover:bg-smoke/20 rounded-lg">
+        <header className="lg:hidden bg-white dark:bg-gray-900 shadow-md p-4">
+          <div className="flex items-center justify-center relative">
+            <button onClick={() => setSidebarOpen(true)} className="absolute left-0 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
               <Menu className="w-6 h-6" />
             </button>
             <Image 
@@ -93,7 +93,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               height={40}
               className="h-8 w-auto"
             />
-            <div className="w-10" />
           </div>
         </header>
 
