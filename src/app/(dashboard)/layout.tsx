@@ -33,11 +33,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-800 dark:bg-gray-900 text-white
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-700
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-white/10">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <h1 className="text-xl font-bold">Athletic Labs</h1>
           </div>
 
@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               return (
                 <Link key={item.href} href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
-                    ${isActive ? 'bg-electric-blue text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+                    ${isActive ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white'}`}>
                   <Icon className="w-5 h-5" />
                   <span className="font-medium">{item.label}</span>
                 </Link>
@@ -57,15 +57,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}
           </nav>
 
-          <div className="p-4 border-t border-white/10 space-y-2">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
             <button onClick={toggleTheme}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition-colors">
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-colors">
               {resolvedTheme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
               <span>{resolvedTheme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
             </button>
             
             <button onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition-colors">
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-colors">
               <LogOut className="w-5 h-5" />
               <span>Logout</span>
             </button>
