@@ -28,12 +28,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <div className="flex h-screen bg-white dark:bg-navy">
+    <div className="flex h-screen bg-white dark:bg-gray-900">
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-navy dark:bg-navy-dark text-white
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-800 dark:bg-gray-900 text-white
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="flex flex-col h-full">
@@ -84,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto bg-smoke/10 dark:bg-navy/50">
+        <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900">
           <div className="p-6">{children}</div>
         </main>
       </div>
