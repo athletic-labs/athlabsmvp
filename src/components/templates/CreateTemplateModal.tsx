@@ -3,8 +3,10 @@
 import { useState, useMemo } from 'react';
 import { X, Plus, Minus, Save, Search, ChevronRight, ShoppingCart, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
 import { MENU_ITEMS, MenuItem, getCategoryColor } from '@/lib/data/menu-items';
+import { TemplateService } from '@/lib/services/template-service';
 
 interface SelectedItem extends MenuItem {
   panSize: 'half' | 'full';
@@ -25,6 +27,8 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [step, setStep] = useState(1);
   const [templateDescription, setTemplateDescription] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   
   const CATEGORIES = [
     { id: 'all', label: 'All Items', color: 'gray', count: MENU_ITEMS.length },
@@ -99,6 +103,34 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
       const multiplier = item.panSize === 'full' ? 1 : 0.5;
       return total + (item.unitPrice * item.quantity * multiplier);
     }, 0);
+  };
+
+  const handleSaveTemplate = async () => {
+    if (!templateName || selectedItems.length === 0) {
+      setSaveError('Please provide a name and select at least one item');
+      return;
+    }
+    
+    setSaving(true);
+    setSaveError(null);
+    
+    try {
+      await TemplateService.saveTemplate(templateName, selectedItems);
+      
+      setShowSaveConfirm(true);
+      toast.success('Template saved successfully!');
+      
+      setTimeout(() => {
+        setShowSaveConfirm(false);
+      }, 2000);
+      
+    } catch (error: any) {
+      console.error('Failed to save template:', error);
+      setSaveError(error.message || 'Failed to save template');
+      toast.error('Failed to save template');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleAddToCart = () => {
@@ -378,6 +410,24 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                       ))}
                     </div>
                   </div>
+
+                  {/* Error message */}
+                  {saveError && (
+                    <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm text-red-700 dark:text-red-400">
+                      {saveError}
+                    </div>
+                  )}
+                  
+                  {/* Success message */}
+                  {showSaveConfirm && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg text-sm text-green-700 dark:text-green-400"
+                    >
+                      ✓ Template saved successfully!
+                    </motion.div>
+                  )}
                 </div>
               )}
             </div>
@@ -412,14 +462,33 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                       {step === 1 ? 'Configure Portions' : 'Review Template'}
                     </button>
                   ) : (
-                    <button
-                      onClick={handleAddToCart}
-                      disabled={!templateName || selectedItems.length === 0}
-                      className="md-filled-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      Add to Cart
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleSaveTemplate}
+                        disabled={selectedItems.length === 0 || !templateName || saving}
+                        className="md-outlined-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        {saving ? (
+                          <>
+                            <span className="w-4 h-4 border-2 border-electric-blue border-t-transparent rounded-full animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4" />
+                            Save Template
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={handleAddToCart}
+                        disabled={!templateName || selectedItems.length === 0}
+                        className="md-filled-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        Add to Cart
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
