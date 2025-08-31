@@ -17,14 +17,14 @@ export default function DashboardPage() {
     totalTeamMembers: 0,
     averageOrderValue: 0,
     customerSatisfaction: 0,
-    upcomingDeliveries: [],
-    recentOrders: [],
-    upcomingGames: [],
+    upcomingDeliveries: [] as any[],
+    recentOrders: [] as any[],
+    upcomingGames: [] as any[],
     teamNutrition: { protein: 0, carbs: 0, fats: 0 },
-    popularItems: [],
-    weeklyOrders: [],
-    alerts: [],
-    achievements: []
+    popularItems: [] as any[],
+    weeklyOrders: [] as any[],
+    alerts: [] as any[],
+    achievements: [] as any[]
   });
 
   useEffect(() => {

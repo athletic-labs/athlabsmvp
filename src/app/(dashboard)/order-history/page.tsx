@@ -386,7 +386,10 @@ export default function OrderHistoryPage() {
                     <h3 className="font-semibold mb-3">Order Status</h3>
                     <div className="flex items-center gap-2">
                       <span className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${statusConfig[selectedOrder.status].color}`}>
-                        <statusConfig[selectedOrder.status].icon className="w-4 h-4" />
+                        {(() => {
+                          const StatusIcon = statusConfig[selectedOrder.status].icon;
+                          return <StatusIcon className="w-4 h-4" />;
+                        })()}
                         {statusConfig[selectedOrder.status].label}
                       </span>
                     </div>
