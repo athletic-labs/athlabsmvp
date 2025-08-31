@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, ShoppingCart, Save, Calendar, History, Settings, LogOut, Menu, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/lib/theme/theme-provider';
@@ -38,7 +39,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h1 className="text-xl font-bold">Athletic Labs</h1>
+            <Image 
+              src="/athletic-labs-logo.png" 
+              alt="Athletic Labs" 
+              width={150} 
+              height={40}
+              className="h-8 w-auto"
+            />
           </div>
 
           <nav className="flex-1 px-4 py-6 space-y-1">
@@ -79,7 +86,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <button onClick={() => setSidebarOpen(true)} className="p-2 hover:bg-smoke/20 rounded-lg">
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-xl font-bold">Athletic Labs</h1>
+            <Image 
+              src="/athletic-labs-logo.png" 
+              alt="Athletic Labs" 
+              width={150} 
+              height={40}
+              className="h-8 w-auto"
+            />
             <div className="w-10" />
           </div>
         </header>
