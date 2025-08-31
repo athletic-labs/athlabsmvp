@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { SimpleAuthService } from '@/lib/auth/simple-auth';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -59,7 +60,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="md-card">
           <div className="flex justify-center mb-8">
-            <h1 className="text-3xl font-bold">Athletic Labs</h1>
+            <Image
+              src="/athletic-labs-logo.png"
+              alt="Athletic Labs"
+              width={200}
+              height={60}
+              className="h-12 w-auto"
+              priority
+            />
           </div>
 
           <h2 className="text-2xl font-medium text-center mb-2">Welcome Back</h2>
