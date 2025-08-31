@@ -1,30 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Plus, Minus, Search, Filter, ShoppingCart, Utensils, Clock, Users, ChefHat } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { X, Plus, Minus, Save, Search, ChevronRight, ShoppingCart, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
-
-interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  unitPrice: number;
-  servingSize: number;
-  dietaryTags: string[];
-  nutritionInfo: {
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-  };
-  image?: string;
-}
+import { MENU_ITEMS, MenuItem, getCategoryColor } from '@/lib/data/menu-items';
 
 interface SelectedItem extends MenuItem {
-  quantity: number;
   panSize: 'half' | 'full';
+  quantity: number;
 }
 
 interface CreateTemplateModalProps {
@@ -34,93 +18,52 @@ interface CreateTemplateModalProps {
 
 export default function CreateTemplateModal({ open, onClose }: CreateTemplateModalProps) {
   const { addItem } = useCartStore();
-  const [step, setStep] = useState(1); // 1: Select items, 2: Configure portions, 3: Review
+  const [templateName, setTemplateName] = useState('');
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [templateName, setTemplateName] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [step, setStep] = useState(1);
   const [templateDescription, setTemplateDescription] = useState('');
-  const [estimatedServings, setEstimatedServings] = useState(24);
-
-  // Mock menu data
-  const [menuItems] = useState<MenuItem[]>([
-    {
-      id: 'menu_001',
-      name: 'Grilled Chicken Breast',
-      description: 'Herb-seasoned lean protein with Mediterranean spices',
-      category: 'proteins',
-      unitPrice: 85,
-      servingSize: 6, // oz
-      dietaryTags: ['gluten-free', 'high-protein'],
-      nutritionInfo: { calories: 165, protein: 31, carbs: 0, fat: 3.6 }
-    },
-    {
-      id: 'menu_002',
-      name: 'Quinoa Power Bowl Base',
-      description: 'Fluffy quinoa with roasted vegetables',
-      category: 'grains',
-      unitPrice: 45,
-      servingSize: 8, // oz
-      dietaryTags: ['vegan', 'gluten-free', 'high-fiber'],
-      nutritionInfo: { calories: 222, protein: 8, carbs: 39, fat: 3.6 }
-    },
-    {
-      id: 'menu_003',
-      name: 'Fresh Garden Salad Mix',
-      description: 'Mixed greens, cherry tomatoes, cucumber, carrots',
-      category: 'vegetables',
-      unitPrice: 35,
-      servingSize: 4, // oz
-      dietaryTags: ['vegan', 'gluten-free', 'low-calorie'],
-      nutritionInfo: { calories: 20, protein: 1.5, carbs: 4, fat: 0.2 }
-    },
-    {
-      id: 'menu_004',
-      name: 'Recovery Smoothie Base',
-      description: 'Banana, berries, protein powder blend',
-      category: 'beverages',
-      unitPrice: 65,
-      servingSize: 16, // oz
-      dietaryTags: ['gluten-free', 'high-protein'],
-      nutritionInfo: { calories: 280, protein: 25, carbs: 35, fat: 8 }
-    },
-    {
-      id: 'menu_005',
-      name: 'Sweet Potato Wedges',
-      description: 'Roasted with olive oil and herbs',
-      category: 'sides',
-      unitPrice: 40,
-      servingSize: 6, // oz
-      dietaryTags: ['vegan', 'gluten-free'],
-      nutritionInfo: { calories: 180, protein: 2, carbs: 41, fat: 0.3 }
-    },
-    {
-      id: 'menu_006',
-      name: 'Homemade Hummus',
-      description: 'Creamy chickpea spread with tahini',
-      category: 'sides',
-      unitPrice: 25,
-      servingSize: 3, // oz
-      dietaryTags: ['vegan', 'gluten-free', 'high-protein'],
-      nutritionInfo: { calories: 166, protein: 8, carbs: 14.3, fat: 9.6 }
-    }
-  ]);
-
-  const categories = [
-    { value: 'all', label: 'All Items', icon: Utensils },
-    { value: 'proteins', label: 'Proteins', icon: ChefHat },
-    { value: 'grains', label: 'Grains & Starches', icon: Utensils },
-    { value: 'vegetables', label: 'Vegetables', icon: Utensils },
-    { value: 'sides', label: 'Sides', icon: Utensils },
-    { value: 'beverages', label: 'Beverages', icon: Utensils }
+  
+  const CATEGORIES = [
+    { id: 'all', label: 'All Items', color: 'gray', count: MENU_ITEMS.length },
+    { id: 'protein', label: 'Proteins', color: 'red', count: MENU_ITEMS.filter(i => i.category === 'protein').length },
+    { id: 'starch', label: 'Starches', color: 'yellow', count: MENU_ITEMS.filter(i => i.category === 'starch').length },
+    { id: 'vegetables', label: 'Vegetables', color: 'green', count: MENU_ITEMS.filter(i => i.category === 'vegetables').length },
+    { id: 'breakfast', label: 'Breakfast', color: 'blue', count: MENU_ITEMS.filter(i => i.category === 'breakfast').length },
+    { id: 'also-available', label: 'Also Available', color: 'purple', count: MENU_ITEMS.filter(i => i.category === 'also-available').length },
+    { id: 'add-ons', label: 'Add-Ons', color: 'indigo', count: MENU_ITEMS.filter(i => i.category === 'add-ons').length }
   ];
-
-  const filteredItems = menuItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  
+  // Filter items based on search and category
+  const filteredItems = useMemo(() => {
+    return MENU_ITEMS.filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, activeCategory]);
+  
+  // Group items by category for better display
+  const groupedItems = useMemo(() => {
+    const groups: Record<string, MenuItem[]> = {};
+    filteredItems.forEach(item => {
+      if (!groups[item.category]) {
+        groups[item.category] = [];
+      }
+      groups[item.category].push(item);
+    });
+    return groups;
+  }, [filteredItems]);
+  
+  // Calculate estimated servings
+  const estimatedServings = useMemo(() => {
+    return selectedItems.reduce((total, item) => {
+      const servings = item.panSize === 'full' ? item.servingsFull : item.servingsHalf;
+      return total + (servings * item.quantity);
+    }, 0);
+  }, [selectedItems]);
 
   const addMenuItem = (item: MenuItem) => {
     const existing = selectedItems.find(selected => selected.id === item.id);
@@ -183,7 +126,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
     setTemplateName('');
     setTemplateDescription('');
     setSearchQuery('');
-    setSelectedCategory('all');
+    setActiveCategory('all');
   };
 
   return (
@@ -242,13 +185,13 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                       />
                     </div>
                     <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      value={activeCategory}
+                      onChange={(e) => setActiveCategory(e.target.value)}
                       className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 min-w-48"
                     >
-                      {categories.map(category => (
-                        <option key={category.value} value={category.value}>
-                          {category.label}
+                      {CATEGORIES.map(category => (
+                        <option key={category.id} value={category.id}>
+                          {category.label} ({category.count})
                         </option>
                       ))}
                     </select>
