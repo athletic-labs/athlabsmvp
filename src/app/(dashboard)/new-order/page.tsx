@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Plus, Search, Info, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { TEMPLATES_WITH_FULL_DATA } from '@/lib/data/templates-with-items';
+import { ACTUAL_MENU_TEMPLATES } from '@/lib/data/actual-menu-templates';
 import OptimalTemplateCard from '@/components/orders/OptimalTemplateCard';
 import CreateTemplateModal from '@/components/templates/CreateTemplateModal';
 import CartDrawer from '@/components/cart/CartDrawer';
@@ -48,12 +48,12 @@ export default function NewOrderPage() {
   
   const { itemCount, subtotal } = useCartStore();
   
-  const cuisineTypes = ['all', ...Array.from(new Set(TEMPLATES_WITH_FULL_DATA.map(t => t.cuisine_type)))];
+  const cuisineTypes = ['all', ...Array.from(new Set(ACTUAL_MENU_TEMPLATES.map(t => t.cuisineType)))];
   
-  const filteredTemplates = TEMPLATES_WITH_FULL_DATA.filter(template => {
+  const filteredTemplates = ACTUAL_MENU_TEMPLATES.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           template.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCuisine = selectedCuisine === 'all' || template.cuisine_type === selectedCuisine;
+    const matchesCuisine = selectedCuisine === 'all' || template.cuisineType === selectedCuisine;
     return matchesSearch && matchesCuisine;
   });
 

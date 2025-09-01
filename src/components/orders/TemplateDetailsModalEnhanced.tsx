@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { X, Check, Plus, Minus, Info, DollarSign, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
-import { MealTemplateComplete } from '@/lib/data/meal-templates-complete';
+import { MealTemplate } from '@/lib/data/actual-menu-templates';
 
 interface TemplateDetailsModalEnhancedProps {
-  template: MealTemplateComplete;
+  template: MealTemplate;
   open: boolean;
   onClose: () => void;
 }
@@ -57,6 +57,10 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
   
   const calculateTotal = () => {
     return (template.bundlePrice * quantity) + calculateAddOnsTotal();
+  };
+  
+  const formatPrice = (cents: number) => {
+    return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   };
   
   const handleAddToCart = () => {
@@ -112,7 +116,7 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
                 <h2 className="text-2xl font-semibold text-navy dark:text-white">{template.name}</h2>
                 <div className="flex items-center gap-4 mt-1">
                   <span className="text-sm text-navy/60 dark:text-white/60">
-                    Base Price: ${template.bundlePrice.toLocaleString()}
+                    Base Price: {formatPrice(template.bundlePrice)}
                   </span>
                   <span className="text-sm text-navy/60 dark:text-white/60">•</span>
                   <span className="text-sm text-navy/60 dark:text-white/60">
@@ -195,7 +199,7 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
                               {item.name}
                             </p>
                             <p className="text-xs text-electric-blue font-medium mt-0.5">
-                              +${item.priceIfAddOn?.toLocaleString() || 0}
+                              +{formatPrice(item.priceIfAddOn || 0)}
                             </p>
                           </div>
                           {selectedAddOns.has(item.name) && (
@@ -253,19 +257,19 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
                   <div className="space-y-1 mb-3">
                     <div className="flex items-center justify-end gap-4 text-sm">
                       <span className="text-navy/60 dark:text-white/60">Bundle ({quantity}x):</span>
-                      <span>${(template.bundlePrice * quantity).toLocaleString()}</span>
+                      <span>{formatPrice(template.bundlePrice * quantity)}</span>
                     </div>
                     {selectedAddOns.size > 0 && (
                       <div className="flex items-center justify-end gap-4 text-sm">
                         <span className="text-navy/60 dark:text-white/60">Add-ons:</span>
-                        <span className="text-electric-blue">+${calculateAddOnsTotal().toLocaleString()}</span>
+                        <span className="text-electric-blue">+{formatPrice(calculateAddOnsTotal())}</span>
                       </div>
                     )}
                   </div>
                   <div className="flex items-center justify-end gap-4 pt-3 border-t border-smoke dark:border-smoke/30">
                     <span className="text-sm font-medium">Total:</span>
                     <span className="text-2xl font-bold text-electric-blue">
-                      ${calculateTotal().toLocaleString()}
+                      {formatPrice(calculateTotal())}
                     </span>
                   </div>
                   <p className="text-xs text-navy/50 dark:text-white/50 mt-1">

@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { Clock, Users, ChevronRight, Check } from 'lucide-react';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
-import { MealTemplateComplete } from '@/lib/data/templates-with-items';
-import TemplateDetailsModal from './TemplateDetailsModal';
+import { MealTemplate } from '@/lib/data/actual-menu-templates';
+import TemplateDetailsModalEnhanced from './TemplateDetailsModalEnhanced';
 
 interface OptimalTemplateCardProps {
-  template: MealTemplateComplete;
+  template: MealTemplate;
 }
 
 export default function OptimalTemplateCard({ template }: OptimalTemplateCardProps) {
@@ -24,13 +24,13 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
     addItem({
       type: 'template',
       name: template.name,
-      unitPrice: template.bundle_price,
+      unitPrice: template.bundlePrice,
       quantity: 1,
-      servings: template.serves_count,
+      servings: template.servesCount,
       templateId: template.id,
-      includedItems: template.items?.map(item => ({
+      includedItems: template.items?.filter(item => item.includedInBundle).map(item => ({
         name: item.name,
-        quantity: '1'
+        quantity: item.notes || '1'
       })) || [],
       notes: template.description
     });
@@ -43,6 +43,10 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
       button.classList.remove('hidden');
       setTimeout(() => button.classList.add('hidden'), 2000);
     }
+  };
+
+  const formatPrice = (cents: number) => {
+    return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   };
 
   const getCuisineColor = (cuisine: string) => {
@@ -69,13 +73,13 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
               {template.name}
             </h3>
             <span className="text-lg font-bold text-electric-blue whitespace-nowrap">
-              ${template.bundle_price.toLocaleString()}
+              {formatPrice(template.bundlePrice)}
             </span>
           </div>
           
           {/* Cuisine Badge */}
-          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getCuisineColor(template.cuisine_type)}`}>
-            {template.cuisine_type}
+          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getCuisineColor(template.cuisineType)}`}>
+            {template.cuisineType}
           </span>
         </div>
 
@@ -90,11 +94,11 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
           <div className="flex items-center gap-3 text-xs text-navy/50 dark:text-white/50">
             <span className="flex items-center gap-1">
               <Users className="w-3 h-3" />
-              {template.serves_count}
+              {template.servesCount}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {template.min_order_hours}h notice
+              {template.minOrderHours}h notice
             </span>
           </div>
         </div>
@@ -129,7 +133,7 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
 
       {/* Details Modal */}
       {showDetails && (
-        <TemplateDetailsModal
+        <TemplateDetailsModalEnhanced
           template={template}
           open={showDetails}
           onClose={() => setShowDetails(false)}
