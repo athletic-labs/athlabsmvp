@@ -115,7 +115,7 @@ export default function NewOrderPage() {
               {/* Create Your Own - Always First */}
               <button
                 onClick={() => setShowCreateTemplate(true)}
-                className="h-[280px] w-full max-w-[280px] bg-white dark:bg-navy border-2 border-dashed border-electric-blue/50 hover:border-electric-blue rounded-xl hover:shadow-lg transition-all group"
+                className="h-[240px] w-full max-w-[280px] bg-white dark:bg-navy border-2 border-dashed border-electric-blue/50 hover:border-electric-blue rounded-xl hover:shadow-lg transition-all group"
               >
                 <div className="h-full flex flex-col items-center justify-center p-4">
                   <div className="w-14 h-14 bg-electric-blue/10 rounded-full flex items-center justify-center mb-3 group-hover:bg-electric-blue/20 transition-colors">
