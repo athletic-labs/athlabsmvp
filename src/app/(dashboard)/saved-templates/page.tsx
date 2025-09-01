@@ -18,6 +18,18 @@ export default function SavedTemplatesPage() {
     loadTemplates();
   }, []);
   
+  // Reload templates when page becomes visible (handles navigation back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadTemplates();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+  
   const loadTemplates = async () => {
     try {
       const data = await TemplateService.getTemplates();

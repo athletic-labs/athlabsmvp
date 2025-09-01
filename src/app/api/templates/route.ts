@@ -108,7 +108,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Failed to fetch templates' }, { status: 500 });
     }
     
-    return NextResponse.json({ templates });
+    const response = NextResponse.json({ templates });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
     
   } catch (error) {
     console.error('API error:', error);
