@@ -1,144 +1,123 @@
 'use client';
 
 import { useState } from 'react';
-import { Clock, Users, ChevronRight, Check } from 'lucide-react';
+import { Clock, Users } from 'lucide-react';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
-import { MealTemplate } from '@/lib/data/actual-menu-templates';
 import TemplateDetailsModalEnhanced from './TemplateDetailsModalEnhanced';
+import { MealTemplate } from '@/lib/data/actual-menu-templates';
 
-interface OptimalTemplateCardProps {
+interface TemplateCardProps {
   template: MealTemplate;
 }
 
-export default function OptimalTemplateCard({ template }: OptimalTemplateCardProps) {
+export default function OptimalTemplateCard({ template }: TemplateCardProps) {
   const [showDetails, setShowDetails] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isQuickAdding, setIsQuickAdding] = useState(false);
   const { addItem } = useCartStore();
-
+  
+  const formatPrice = (cents: number) => {
+    return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  };
+  
   const handleQuickAdd = async () => {
-    setIsAdding(true);
+    setIsQuickAdding(true);
+    const baseItems = template.items?.filter(item => item.section === 'Base' && item.includedInBundle) || [];
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 600));
     
     addItem({
       type: 'template',
       name: template.name,
-      unitPrice: template.bundlePrice,
       quantity: 1,
+      unitPrice: template.bundlePrice,
       servings: template.servesCount,
       templateId: template.id,
-      includedItems: template.items?.filter(item => item.includedInBundle).map(item => ({
+      includedItems: baseItems.map(item => ({
         name: item.name,
-        quantity: item.notes || '1'
-      })) || [],
+        quantity: item.notes
+      })),
       notes: template.description
     });
     
-    setIsAdding(false);
-    
-    // Show success feedback
-    const button = document.getElementById(`added-${template.id}`);
-    if (button) {
-      button.classList.remove('hidden');
-      setTimeout(() => button.classList.add('hidden'), 2000);
-    }
+    setIsQuickAdding(false);
   };
-
-  const formatPrice = (cents: number) => {
-    return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-  };
-
-  const getCuisineColor = (cuisine: string) => {
+  
+  const getCuisineColor = (type: string) => {
     const colors: Record<string, string> = {
-      'Mediterranean': 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400',
-      'Mexican': 'bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400',
-      'Asian': 'bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400',
-      'Italian': 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400',
-      'Latin': 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400',
-      'American': 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400',
-      'Premium': 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400',
-      'Breakfast': 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+      'Mediterranean': 'text-blue-600 bg-blue-50',
+      'Mexican': 'text-orange-600 bg-orange-50',
+      'Asian': 'text-purple-600 bg-purple-50',
+      'Italian': 'text-green-600 bg-green-50',
+      'Latin': 'text-red-600 bg-red-50',
+      'American': 'text-red-700 bg-red-50',
+      'Premium': 'text-purple-700 bg-purple-50',
+      'Breakfast': 'text-amber-600 bg-amber-50'
     };
-    return colors[cuisine] || 'bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400';
+    return colors[type] || 'text-gray-600 bg-gray-50';
   };
 
   return (
     <>
-      <div className="h-[240px] w-full bg-white dark:bg-navy border border-smoke/20 dark:border-smoke/30 rounded-xl hover:shadow-lg transition-all flex flex-col">
-        {/* Card Header with Price */}
-        <div className="p-4 pb-2">
-          <div className="flex items-start justify-between mb-2">
-            <h3 className="font-semibold text-sm leading-tight text-navy dark:text-white flex-1 mr-2">
-              {template.name}
-            </h3>
-            <span className="text-lg font-bold text-electric-blue whitespace-nowrap">
-              {formatPrice(template.bundlePrice)}
-            </span>
-          </div>
-          
-          {/* Cuisine Badge */}
-          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getCuisineColor(template.cuisineType)}`}>
-            {template.cuisineType}
-          </span>
-        </div>
-
-        {/* Card Body */}
-        <div className="px-4 flex-1 flex flex-col">
-          {/* Description */}
-          <p className="text-xs text-navy/70 dark:text-white/70 mb-3 line-clamp-2">
-            {template.description}
-          </p>
-
-          {/* Quick Info */}
-          <div className="flex items-center gap-3 text-xs text-navy/50 dark:text-white/50">
-            <span className="flex items-center gap-1">
-              <Users className="w-3 h-3" />
-              {template.servesCount}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {template.minOrderHours}h notice
-            </span>
-          </div>
-        </div>
-
-        {/* Card Actions - Always at bottom */}
-        <div className="p-4">
-          <div className="flex gap-2 relative">
-            <button
-              onClick={() => setShowDetails(true)}
-              className="flex-1 px-3 py-2 border border-electric-blue text-electric-blue rounded-lg text-xs font-medium hover:bg-electric-blue/5 transition-colors"
-            >
-              View Details
-            </button>
-            <button
-              onClick={handleQuickAdd}
-              disabled={isAdding}
-              className="flex-1 px-3 py-2 bg-electric-blue text-white rounded-lg text-xs font-medium hover:bg-electric-blue/90 transition-colors disabled:opacity-50"
-            >
-              {isAdding ? 'Adding...' : 'Quick Add'}
-            </button>
+      <div className="group relative bg-white dark:bg-navy-light rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+        <div className="relative w-full" style={{ paddingBottom: '125%' }}>
+          <div className="absolute inset-0 flex flex-col p-6">
+            <div className="flex-shrink-0">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="text-lg font-semibold text-navy dark:text-white leading-tight">
+                  {template.name}
+                </h3>
+                <span className="text-2xl font-bold text-electric-blue whitespace-nowrap ml-2">
+                  {formatPrice(template.bundlePrice)}
+                </span>
+              </div>
+              <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getCuisineColor(template.cuisineType)}`}>
+                {template.cuisineType}
+              </span>
+            </div>
             
-            {/* Success indicator */}
-            <div
-              id={`added-${template.id}`}
-              className="hidden absolute inset-0 bg-green-500 rounded-lg flex items-center justify-center"
-            >
-              <span className="text-white text-xs font-medium">Added!</span>
+            <div className="flex-1 mt-4 mb-4 overflow-hidden">
+              <p className="text-sm text-navy/70 dark:text-white/70 line-clamp-3">
+                {template.description}
+              </p>
+            </div>
+            
+            <div className="flex-shrink-0 mb-4">
+              <div className="flex items-center gap-4 text-xs text-navy/60 dark:text-white/60">
+                <div className="flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5" />
+                  <span>{template.servesCount}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>{template.minOrderHours}h notice</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex-shrink-0 flex gap-2">
+              <button
+                onClick={() => setShowDetails(true)}
+                className="flex-1 px-4 py-2.5 border-2 border-electric-blue text-electric-blue rounded-lg font-medium hover:bg-electric-blue/10 transition-colors"
+              >
+                View Details
+              </button>
+              <button
+                onClick={handleQuickAdd}
+                disabled={isQuickAdding}
+                className="flex-1 px-4 py-2.5 bg-electric-blue text-white rounded-lg font-medium hover:bg-electric-blue/90 transition-colors disabled:opacity-70"
+              >
+                {isQuickAdding ? 'Adding...' : 'Quick Add'}
+              </button>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Details Modal */}
-      {showDetails && (
-        <TemplateDetailsModalEnhanced
-          template={template}
-          open={showDetails}
-          onClose={() => setShowDetails(false)}
-        />
-      )}
+      
+      <TemplateDetailsModalEnhanced
+        template={template}
+        open={showDetails}
+        onClose={() => setShowDetails(false)}
+      />
     </>
   );
 }
