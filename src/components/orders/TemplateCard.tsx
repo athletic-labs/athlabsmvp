@@ -47,9 +47,9 @@ export default function TemplateCard({ template }: TemplateCardProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-navy rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-smoke/20">
+    <div className="bg-white dark:bg-navy rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-smoke/20 h-full flex flex-col">
       {/* Header */}
-      <div className="p-6">
+      <div className="p-6 flex-1">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">

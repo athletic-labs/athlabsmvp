@@ -24,16 +24,8 @@ export default function NewOrderPage() {
     return matchesSearch && matchesCuisine;
   });
   
-  // Group templates by category for better display
-  const mainMealTemplates = filteredTemplates.filter(t => 
-    !['Breakfast', 'Premium'].includes(t.cuisine_type)
-  );
-  const breakfastTemplates = filteredTemplates.filter(t => 
-    t.cuisine_type === 'Breakfast'
-  );
-  const premiumTemplates = filteredTemplates.filter(t => 
-    t.cuisine_type === 'Premium'
-  );
+  // Sort filtered templates by display order for unified grid
+  const sortedTemplates = filteredTemplates.sort((a, b) => a.display_order - b.display_order);
 
   return (
     <div className="p-6">
@@ -83,15 +75,18 @@ export default function NewOrderPage() {
         </select>
       </div>
       
-      {/* Create Your Own Template Card */}
+      {/* All Templates - Unified Grid Layout */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Custom Template</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <h2 className="text-lg font-semibold mb-4">
+          Templates ({filteredTemplates.length + 1})
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {/* Create Your Own Card - Always First */}
           <button
             onClick={() => setShowCreateTemplate(true)}
-            className="bg-white dark:bg-navy rounded-lg shadow-lg p-6 hover:shadow-xl transition-all border-2 border-dashed border-electric-blue"
+            className="bg-white dark:bg-navy rounded-lg shadow-lg p-6 hover:shadow-xl transition-all border-2 border-dashed border-electric-blue h-full"
           >
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center h-full justify-center">
               <div className="w-16 h-16 bg-electric-blue/10 rounded-full flex items-center justify-center mb-3">
                 <Plus className="w-8 h-8 text-electric-blue" />
               </div>
@@ -101,50 +96,13 @@ export default function NewOrderPage() {
               </p>
             </div>
           </button>
+          
+          {/* All Meal Templates */}
+          {sortedTemplates.map((template) => (
+            <TemplateCard key={template.id} template={template} />
+          ))}
         </div>
       </div>
-      
-      {/* Main Meal Templates (Templates 1-7) */}
-      {mainMealTemplates.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">
-            Main Meal Templates ({mainMealTemplates.length})
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {mainMealTemplates.map((template) => (
-              <TemplateCard key={template.id} template={template} />
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* Premium Template (Template 8) */}
-      {premiumTemplates.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">
-            Premium Experience
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {premiumTemplates.map((template) => (
-              <TemplateCard key={template.id} template={template} />
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* Breakfast Templates (Templates 9-11) */}
-      {breakfastTemplates.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">
-            Breakfast Templates ({breakfastTemplates.length})
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {breakfastTemplates.map((template) => (
-              <TemplateCard key={template.id} template={template} />
-            ))}
-          </div>
-        </div>
-      )}
       
       {/* Show message if no templates found */}
       {filteredTemplates.length === 0 && (
@@ -154,11 +112,6 @@ export default function NewOrderPage() {
           </p>
         </div>
       )}
-      
-      {/* Total count */}
-      <div className="mt-6 text-sm text-navy/60 dark:text-white/60 text-center">
-        Showing {filteredTemplates.length} of {MEAL_TEMPLATES.length} templates
-      </div>
       
       {/* Create Template Modal */}
       <CreateTemplateModal 
