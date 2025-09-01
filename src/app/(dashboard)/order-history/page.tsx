@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Filter, Package, ChevronDown, Eye, Repeat, Download, Calendar, Clock, CheckCircle, XCircle, Truck, MapPin, Plus } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import Link from 'next/link';
@@ -33,6 +33,21 @@ export default function OrderHistoryPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Check for success redirect from checkout
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('status') === 'success') {
+        setShowSuccess(true);
+        // Remove the query parameter
+        window.history.replaceState({}, '', '/order-history');
+        // Hide success message after 5 seconds
+        setTimeout(() => setShowSuccess(false), 5000);
+      }
+    }
+  }, []);
 
   // Mock order data
   const orders: Order[] = [
@@ -145,6 +160,24 @@ export default function OrderHistoryPage() {
           Place New Order
         </Link>
       </div>
+
+      {/* Success Message */}
+      {showSuccess && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6"
+        >
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-5 h-5 text-green-600" />
+            <div>
+              <h3 className="font-medium text-green-900">Order Placed Successfully!</h3>
+              <p className="text-sm text-green-700">Your order has been submitted and will appear in your history below.</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Search and Filters */}
       <div className="md-card">

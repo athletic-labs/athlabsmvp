@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { X, Minus, Plus, ChevronDown, ChevronUp, Trash2, ShoppingCart, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useCartStore } from '@/lib/store/cart-store';
@@ -9,6 +10,7 @@ interface CartSidePanelProps {
 }
 
 export default function CartSidePanel({ onClose }: CartSidePanelProps) {
+  const router = useRouter();
   const { items, removeItem, updateQuantity, clearCart } = useCartStore();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   
@@ -40,6 +42,30 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
       newExpanded.add(itemId);
     }
     setExpandedItems(newExpanded);
+  };
+
+  const handleCheckout = () => {
+    // Check minimum order requirement
+    if (subtotal < minimumOrder) {
+      alert(`Please add $${formatPrice(amountNeeded)} more to meet the minimum order requirement.`);
+      return;
+    }
+
+    // Save cart data to localStorage for checkout page
+    const checkoutData = {
+      items,
+      subtotal,
+      tax,
+      total,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('checkout-data', JSON.stringify(checkoutData));
+
+    // Navigate to checkout page
+    router.push('/checkout');
+    
+    // Optionally close the cart panel
+    onClose();
   };
 
   return (
@@ -169,6 +195,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
         
         {/* Action Buttons */}
         <button
+          onClick={handleCheckout}
           disabled={belowMinimum || items.length === 0}
           className="w-full py-3 bg-electric-blue text-white rounded-lg font-medium hover:bg-electric-blue/90 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
