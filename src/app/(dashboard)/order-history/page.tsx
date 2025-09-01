@@ -218,48 +218,47 @@ export default function OrderHistoryPage() {
         </button>
       </div>
 
-        {/* Additional Filters */}
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Date Range</label>
-                  <select className="md-text-field">
-                    <option>Last 30 days</option>
-                    <option>Last 90 days</option>
-                    <option>This year</option>
-                    <option>All time</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Order Value</label>
-                  <select className="md-text-field">
-                    <option>Any amount</option>
-                    <option>Under $1,000</option>
-                    <option>$1,000 - $5,000</option>
-                    <option>Over $5,000</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Delivery Location</label>
-                  <select className="md-text-field">
-                    <option>All locations</option>
-                    <option>Athletic Training Center</option>
-                    <option>Team Dining Hall</option>
-                    <option>Stadium Complex</option>
-                  </select>
-                </div>
+      {/* Additional Filters */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Date Range</label>
+                <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-electric-blue bg-white">
+                  <option>Last 30 days</option>
+                  <option>Last 90 days</option>
+                  <option>This year</option>
+                  <option>All time</option>
+                </select>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Order Value</label>
+                <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-electric-blue bg-white">
+                  <option>Any amount</option>
+                  <option>Under $1,000</option>
+                  <option>$1,000 - $5,000</option>
+                  <option>Over $5,000</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Delivery Location</label>
+                <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-electric-blue bg-white">
+                  <option>All locations</option>
+                  <option>Athletic Training Center</option>
+                  <option>Team Dining Hall</option>
+                  <option>Stadium Complex</option>
+                </select>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Orders List */}
       {filteredOrders.length === 0 ? (
