@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { X, Check, Plus, Minus, Info, DollarSign, AlertCircle, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 import { MealTemplate } from '@/lib/data/actual-menu-templates';
 
 interface TemplateDetailsModalEnhancedProps {
@@ -13,7 +13,7 @@ interface TemplateDetailsModalEnhancedProps {
 }
 
 export default function TemplateDetailsModalEnhanced({ template, open, onClose }: TemplateDetailsModalEnhancedProps) {
-  const { addItem } = useCartStore();
+  const addItem = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
   const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set());
   const [addOnQuantities, setAddOnQuantities] = useState<Record<string, number>>({});
@@ -93,14 +93,10 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
       unitPrice: template.bundlePrice,
       quantity: quantity,
       servings: template.servesCount * quantity,
-      templateId: template.id,
       includedItems: activeBaseItems.map(item => ({
         name: item.name,
         quantity: item.notes || '1'
       })),
-      addOns: selectedAddOnDetails,
-      addOnsTotal: calculateAddOnsTotal(),
-      removedItems: Array.from(removedBaseItems),
       notes: template.description
     });
     
@@ -123,8 +119,9 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-x-4 top-[5%] bottom-[5%] max-w-5xl mx-auto bg-white dark:bg-navy rounded-xl shadow-xl z-50 flex flex-col overflow-hidden"
+            className="fixed inset-0 flex items-center justify-center p-4 z-50"
           >
+            <div className="bg-white dark:bg-navy rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-smoke dark:border-smoke/30">
               <div>
@@ -329,6 +326,7 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
                   </button>
                 </div>
               </div>
+            </div>
             </div>
           </motion.div>
         </>
