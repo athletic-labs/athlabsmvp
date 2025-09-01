@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Upload, Plane, Clock } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday } from 'date-fns';
+import { ChevronLeft, ChevronRight, Plus, Upload, Calendar } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isPast } from 'date-fns';
 import MealScheduleModal from './MealScheduleModal';
+import DayScheduleModal from './DayScheduleModal';
 import ImportScheduleModal from './ImportScheduleModal';
 
 // Specific meal timing types for sports teams
@@ -16,7 +17,6 @@ interface GameEvent {
   time: string;
   location: string;
   isHome: boolean;
-  meals: MealSchedule[];
 }
 
 interface MealSchedule {
@@ -29,55 +29,29 @@ interface MealSchedule {
   status: 'pending' | 'ordered' | 'delivered';
 }
 
-const MEAL_TIMING_CONFIG = {
-  arrival: {
-    label: 'Arrival',
-    color: 'bg-purple-500',
-    icon: '✈️',
-    defaultOffset: -24, // 24 hours before game
-  },
-  'pre-game': {
-    label: 'Pre-Game',
-    color: 'bg-orange-500',
-    icon: '🍽️',
-    defaultOffset: -3, // 3 hours before game
-  },
-  'post-game': {
-    label: 'Post-Game',
-    color: 'bg-green-500',
-    icon: '🥤',
-    defaultOffset: 1, // 1 hour after game
-  },
-  'flight-out': {
-    label: 'Flight Out',
-    color: 'bg-blue-500',
-    icon: '✈️',
-    defaultOffset: 4, // 4 hours after game
-  },
-  intermission: {
-    label: 'Intermission',
-    color: 'bg-yellow-500',
-    icon: '⏸️',
-    defaultOffset: 0, // During game
-  },
-};
-
 export default function TeamCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [games, setGames] = useState<GameEvent[]>([]);
+  const [meals, setMeals] = useState<Map<string, MealSchedule[]>>(new Map());
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [selectedGame, setSelectedGame] = useState<GameEvent | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
 
   useEffect(() => {
+    // Load saved games and meals
     const savedGames = localStorage.getItem('team-games');
-    if (savedGames) {
-      setGames(JSON.parse(savedGames));
+    const savedMeals = localStorage.getItem('team-meals');
+    
+    if (savedGames) setGames(JSON.parse(savedGames));
+    if (savedMeals) {
+      const mealsData = JSON.parse(savedMeals);
+      setMeals(new Map(mealsData));
     }
   }, []);
 
-  const saveGames = (updatedGames: GameEvent[]) => {
-    setGames(updatedGames);
-    localStorage.setItem('team-games', JSON.stringify(updatedGames));
+  const saveMeals = (updatedMeals: Map<string, MealSchedule[]>) => {
+    setMeals(updatedMeals);
+    localStorage.setItem('team-meals', JSON.stringify(Array.from(updatedMeals.entries())));
   };
 
   const getDaysInMonth = () => {
@@ -91,24 +65,45 @@ export default function TeamCalendar() {
     return games.filter(game => game.date === dateStr);
   };
 
-  const getMealStatusForDay = (date: Date) => {
-    const dayGames = getGamesForDay(date);
-    if (dayGames.length === 0) return null;
-
-    const allMeals = dayGames.flatMap(game => game.meals || []);
-    const orderedCount = allMeals.filter(m => m.status === 'ordered').length;
-    const totalNeeded = dayGames.length * 2; // Minimum pre-game and post-game
-
-    if (orderedCount === 0) return 'none';
-    if (orderedCount < totalNeeded) return 'partial';
-    return 'complete';
+  const getMealsForDay = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return meals.get(dateStr) || [];
   };
 
-  const handleUpdateGameMeals = (gameId: string, meals: MealSchedule[]) => {
-    const updatedGames = games.map(game => 
-      game.id === gameId ? { ...game, meals } : game
-    );
-    saveGames(updatedGames);
+  const getMealStatusForDay = (date: Date) => {
+    const dayMeals = getMealsForDay(date);
+    const dayGames = getGamesForDay(date);
+    
+    if (dayMeals.length === 0) return 'none';
+    
+    // Check if essential meals are covered
+    const hasPreGame = dayMeals.some(m => m.timing === 'pre-game');
+    const hasPostGame = dayMeals.some(m => m.timing === 'post-game');
+    
+    if (dayGames.length > 0 && (!hasPreGame || !hasPostGame)) {
+      return 'partial';
+    }
+    
+    return dayMeals.length > 0 ? 'scheduled' : 'none';
+  };
+
+  const handleDayClick = (date: Date) => {
+    const dayGames = getGamesForDay(date);
+    
+    if (dayGames.length > 0) {
+      // If there's a game, open game-specific meal modal
+      setSelectedGame(dayGames[0]);
+    } else {
+      // No game - open general day schedule modal
+      setSelectedDay(date);
+    }
+  };
+
+  const handleSaveDayMeals = (date: Date, dayMeals: MealSchedule[]) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const updatedMeals = new Map(meals);
+    updatedMeals.set(dateStr, dayMeals);
+    saveMeals(updatedMeals);
   };
 
   return (
@@ -134,14 +129,26 @@ export default function TeamCalendar() {
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
         <p className="text-sm font-medium mb-3">Meal Timing Options:</p>
         <div className="flex flex-wrap gap-3">
-          {Object.entries(MEAL_TIMING_CONFIG).map(([key, config]) => (
-            <div key={key} className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${config.color}`} />
-              <span className="text-sm">
-                {config.icon} {config.label}
-              </span>
-            </div>
-          ))}
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-purple-500" />
+            <span className="text-sm">✈️ Arrival</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-orange-500" />
+            <span className="text-sm">🍽️ Pre-Game</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-green-500" />
+            <span className="text-sm">🥤 Post-Game</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-blue-500" />
+            <span className="text-sm">✈️ Flight Out</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-yellow-500" />
+            <span className="text-sm">⏸️ Intermission</span>
+          </div>
         </div>
       </div>
 
@@ -185,14 +192,20 @@ export default function TeamCalendar() {
         <div className="grid grid-cols-7">
           {getDaysInMonth().map((day, idx) => {
             const dayGames = getGamesForDay(day);
+            const dayMeals = getMealsForDay(day);
             const mealStatus = getMealStatusForDay(day);
+            const isCurrentMonth = isSameMonth(day, currentDate);
+            const isPastDay = isPast(day) && !isToday(day);
             
             return (
               <div
                 key={idx}
-                className={`min-h-[120px] p-2 border-r border-b ${
-                  !isSameMonth(day, currentDate) ? 'bg-gray-50' : ''
-                } ${isToday(day) ? 'bg-blue-50' : ''}`}
+                onClick={() => !isPastDay && handleDayClick(day)}
+                className={`min-h-[120px] p-2 border-r border-b transition-colors ${
+                  !isCurrentMonth ? 'bg-gray-50' : ''
+                } ${isToday(day) ? 'bg-blue-50' : ''} ${
+                  isPastDay ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'
+                }`}
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className={`text-sm font-medium ${
@@ -200,44 +213,60 @@ export default function TeamCalendar() {
                   }`}>
                     {format(day, 'd')}
                   </span>
-                  {mealStatus && (
+                  {!isPastDay && mealStatus !== 'none' && (
                     <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                      mealStatus === 'none' ? 'bg-red-100 text-red-700' :
                       mealStatus === 'partial' ? 'bg-yellow-100 text-yellow-700' :
                       'bg-green-100 text-green-700'
                     }`}>
-                      {mealStatus === 'none' ? 'No meals' :
-                       mealStatus === 'partial' ? 'Partial' : 
-                       'Complete'}
+                      {mealStatus === 'partial' ? 'Partial' : `${dayMeals.length} meals`}
                     </span>
                   )}
                 </div>
                 
                 {/* Games for this day */}
-                <div className="space-y-1">
-                  {dayGames.map((game, i) => (
-                    <div
-                      key={i}
-                      onClick={() => setSelectedGame(game)}
-                      className="text-xs p-1 bg-navy/10 rounded cursor-pointer hover:bg-navy/20"
-                    >
-                      <div className="font-medium truncate">
-                        {game.isHome ? 'vs' : '@'} {game.opponent}
-                      </div>
-                      <div className="text-gray-600">{game.time}</div>
-                      {/* Meal indicators */}
-                      <div className="flex gap-0.5 mt-1">
-                        {game.meals?.map((meal, idx) => (
-                          <span
-                            key={idx}
-                            className={`w-2 h-2 rounded-full ${MEAL_TIMING_CONFIG[meal.timing].color}`}
-                            title={MEAL_TIMING_CONFIG[meal.timing].label}
-                          />
-                        ))}
-                      </div>
+                {dayGames.map((game, i) => (
+                  <div
+                    key={i}
+                    className="text-xs p-1 bg-navy/10 rounded mb-1"
+                  >
+                    <div className="font-medium truncate">
+                      {game.isHome ? 'vs' : '@'} {game.opponent}
                     </div>
-                  ))}
-                </div>
+                    <div className="text-gray-600">{game.time}</div>
+                  </div>
+                ))}
+                
+                {/* Meal indicators */}
+                {dayMeals.length > 0 && (
+                  <div className="flex flex-wrap gap-0.5 mt-1">
+                    {dayMeals.map((meal, idx) => (
+                      <span
+                        key={idx}
+                        className={`w-2 h-2 rounded-full ${
+                          meal.timing === 'arrival' ? 'bg-purple-500' :
+                          meal.timing === 'pre-game' ? 'bg-orange-500' :
+                          meal.timing === 'post-game' ? 'bg-green-500' :
+                          meal.timing === 'flight-out' ? 'bg-blue-500' :
+                          'bg-yellow-500'
+                        }`}
+                        title={meal.timing}
+                      />
+                    ))}
+                  </div>
+                )}
+                
+                {/* Quick add meal for empty days */}
+                {!isPastDay && dayGames.length === 0 && dayMeals.length === 0 && (
+                  <button 
+                    className="mt-2 text-xs text-electric-blue hover:underline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDayClick(day);
+                    }}
+                  >
+                    + Schedule
+                  </button>
+                )}
               </div>
             );
           })}
@@ -245,11 +274,21 @@ export default function TeamCalendar() {
       </div>
 
       {/* Modals */}
+      {selectedDay && (
+        <DayScheduleModal
+          date={selectedDay}
+          meals={getMealsForDay(selectedDay)}
+          onClose={() => setSelectedDay(null)}
+          onSave={(meals) => handleSaveDayMeals(selectedDay, meals)}
+        />
+      )}
+
       {selectedGame && (
         <MealScheduleModal
           game={selectedGame}
+          meals={getMealsForDay(new Date(selectedGame.date))}
           onClose={() => setSelectedGame(null)}
-          onSave={(meals) => handleUpdateGameMeals(selectedGame.id, meals)}
+          onSave={(meals) => handleSaveDayMeals(new Date(selectedGame.date), meals)}
         />
       )}
 
@@ -257,7 +296,8 @@ export default function TeamCalendar() {
         <ImportScheduleModal
           onClose={() => setShowImportModal(false)}
           onImport={(importedGames) => {
-            saveGames([...games, ...importedGames]);
+            setGames([...games, ...importedGames]);
+            localStorage.setItem('team-games', JSON.stringify([...games, ...importedGames]));
           }}
         />
       )}

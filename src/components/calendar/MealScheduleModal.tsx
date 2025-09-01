@@ -23,18 +23,18 @@ interface GameEvent {
   time: string;
   location: string;
   isHome: boolean;
-  meals: MealSchedule[];
 }
 
 interface MealScheduleModalProps {
   game: GameEvent;
+  meals: MealSchedule[];
   onClose: () => void;
   onSave: (meals: MealSchedule[]) => void;
 }
 
-export default function MealScheduleModal({ game, onClose, onSave }: MealScheduleModalProps) {
+export default function MealScheduleModal({ game, meals: initialMeals, onClose, onSave }: MealScheduleModalProps) {
   const router = useRouter();
-  const [meals, setMeals] = useState(game.meals || []);
+  const [meals, setMeals] = useState<MealSchedule[]>(initialMeals || []);
   
   const MEAL_TIMINGS = [
     { id: 'arrival', label: 'Arrival', icon: '✈️', description: 'Team arrival meal (typically day before)' },
@@ -73,7 +73,7 @@ export default function MealScheduleModal({ game, onClose, onSave }: MealSchedul
 
   const handleOrderMeal = (mealTiming: string) => {
     // Navigate to order page with pre-filled game/timing info
-    router.push(`/orders/new?gameId=${game.id}&timing=${mealTiming}&date=${game.date}`);
+    router.push(`/new-order?gameId=${game.id}&timing=${mealTiming}&date=${game.date}`);
   };
 
   const handleSave = () => {
