@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Check, Plus, Minus, Info, DollarSign, AlertCircle } from 'lucide-react';
+import { X, Check, Plus, Minus, Info, DollarSign, AlertCircle, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
 import { MealTemplate } from '@/lib/data/actual-menu-templates';
@@ -17,10 +17,22 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
   const [quantity, setQuantity] = useState(1);
   const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set());
   const [addOnQuantities, setAddOnQuantities] = useState<Record<string, number>>({});
+  const [removedBaseItems, setRemovedBaseItems] = useState<Set<string>>(new Set());
   
   // Get base items and add-ons
   const baseItems = template.items?.filter(item => item.section === 'Base' && item.includedInBundle) || [];
   const addOnItems = template.items?.filter(item => item.section === 'Add-Ons / Alternatives' && !item.includedInBundle) || [];
+  
+  // Toggle base item removal
+  const toggleBaseItem = (itemName: string) => {
+    const newRemoved = new Set(removedBaseItems);
+    if (newRemoved.has(itemName)) {
+      newRemoved.delete(itemName);
+    } else {
+      newRemoved.add(itemName);
+    }
+    setRemovedBaseItems(newRemoved);
+  };
   
   const toggleAddOn = (itemName: string) => {
     const newSelected = new Set(selectedAddOns);
@@ -73,6 +85,8 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
       };
     });
     
+    const activeBaseItems = baseItems.filter(item => !removedBaseItems.has(item.name));
+    
     addItem({
       type: 'template',
       name: template.name,
@@ -80,12 +94,13 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
       quantity: quantity,
       servings: template.servesCount * quantity,
       templateId: template.id,
-      includedItems: baseItems.map(item => ({
+      includedItems: activeBaseItems.map(item => ({
         name: item.name,
-        quantity: item.notes
+        quantity: item.notes || '1'
       })),
       addOns: selectedAddOnDetails,
       addOnsTotal: calculateAddOnsTotal(),
+      removedItems: Array.from(removedBaseItems),
       notes: template.description
     });
     
@@ -108,7 +123,7 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-x-4 top-[5%] bottom-[5%] max-w-4xl mx-auto bg-white dark:bg-navy rounded-xl shadow-xl z-50 flex flex-col overflow-hidden"
+            className="fixed inset-x-4 top-[5%] bottom-[5%] max-w-5xl mx-auto bg-white dark:bg-navy rounded-xl shadow-xl z-50 flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-smoke dark:border-smoke/30">
@@ -129,21 +144,48 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
               </button>
             </div>
             
+            {/* Exchange Info Banner */}
+            <div className="px-6 py-3 bg-electric-blue/10 border-b border-electric-blue/20">
+              <div className="flex items-center gap-2 text-sm">
+                <ArrowRight className="w-4 h-4 text-electric-blue" />
+                <span className="text-navy dark:text-white">
+                  You can remove items from the left and add alternatives from the right
+                </span>
+              </div>
+            </div>
+            
             {/* Content - Two Column Layout */}
             <div className="flex-1 flex overflow-hidden">
               {/* Left Column - What's Included */}
               <div className="flex-1 p-6 overflow-y-auto border-r border-smoke dark:border-smoke/30">
-                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
                   <Check className="w-5 h-5 text-green-500" />
                   What's Included
                 </h3>
+                <p className="text-xs text-navy/60 dark:text-white/60 mb-4">
+                  Click to remove items you don't want
+                </p>
                 
                 <div className="space-y-2">
                   {baseItems.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-3 bg-green-50/50 dark:bg-green-900/10 rounded-lg">
-                      <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div 
+                      key={idx} 
+                      onClick={() => toggleBaseItem(item.name)}
+                      className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+                        removedBaseItems.has(item.name)
+                          ? 'bg-red-50/50 dark:bg-red-900/10 opacity-60 line-through'
+                          : 'bg-green-50/50 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20'
+                      }`}
+                    >
+                      <div className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
+                        removedBaseItems.has(item.name) ? 'text-red-600' : 'text-green-600'
+                      }`}>
+                        {removedBaseItems.has(item.name) ? <X className="w-4 h-4" /> : <Check className="w-4 h-4" />}
+                      </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-navy dark:text-white">
+                        <p className={`text-sm font-medium text-navy dark:text-white ${
+                          removedBaseItems.has(item.name) ? 'opacity-60' : ''
+                        }`}>
                           {item.name}
                         </p>
                         {item.notes && (
@@ -161,10 +203,10 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
               <div className="flex-1 p-6 overflow-y-auto bg-smoke/5 dark:bg-smoke/10">
                 <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
                   <Plus className="w-5 h-5 text-electric-blue" />
-                  Available Add-Ons
+                  Available Add-Ons / Alternatives
                 </h3>
                 <p className="text-xs text-navy/60 dark:text-white/60 mb-4">
-                  Enhance your order with these optional items
+                  Add items or use as replacements
                 </p>
                 
                 {addOnItems.length === 0 ? (
@@ -252,8 +294,9 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
                   </div>
                 </div>
                 
-                {/* Price Breakdown */}
-                <div className="text-right">
+                {/* Price Breakdown and Add to Cart */}
+                <div className="flex items-end gap-6">
+                  <div className="text-right">
                   <div className="space-y-1 mb-3">
                     <div className="flex items-center justify-end gap-4 text-sm">
                       <span className="text-navy/60 dark:text-white/60">Bundle ({quantity}x):</span>
@@ -275,15 +318,16 @@ export default function TemplateDetailsModalEnhanced({ template, open, onClose }
                   <p className="text-xs text-navy/50 dark:text-white/50 mt-1">
                     Serves {template.servesCount * quantity} people
                   </p>
+                  </div>
+                  
+                  {/* Add to Cart Button */}
+                  <button
+                    onClick={handleAddToCart}
+                    className="px-8 py-3 bg-electric-blue text-white rounded-lg font-medium hover:bg-electric-blue/90 transition-colors"
+                  >
+                    Add to Cart
+                  </button>
                 </div>
-                
-                {/* Add to Cart Button */}
-                <button
-                  onClick={handleAddToCart}
-                  className="ml-6 px-8 py-3 bg-electric-blue text-white rounded-lg font-medium hover:bg-electric-blue/90 transition-colors"
-                >
-                  Add to Cart
-                </button>
               </div>
             </div>
           </motion.div>

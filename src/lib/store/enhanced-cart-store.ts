@@ -25,6 +25,7 @@ export interface CartItem {
     price: number;
   }>;
   addOnsTotal?: number;
+  removedItems?: string[];
   notes?: string;
   image?: string;
   category?: string;

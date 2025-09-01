@@ -111,7 +111,7 @@ export default function NewOrderPage() {
         <div className="flex gap-6">
           {/* Main Templates Area */}
           <div className="flex-1">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-[1200px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {/* Create Your Own - Always First */}
               <button
                 onClick={() => setShowCreateTemplate(true)}
