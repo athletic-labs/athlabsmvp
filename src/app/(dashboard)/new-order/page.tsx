@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Plus, Search, Info, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { COMPLETE_TEMPLATES } from '@/lib/data/meal-templates-complete';
+import { MEAL_TEMPLATES } from '@/lib/data/meal-templates';
 import OptimalTemplateCard from '@/components/orders/OptimalTemplateCard';
 import CreateTemplateModal from '@/components/templates/CreateTemplateModal';
 import CartDrawer from '@/components/cart/CartDrawer';
@@ -48,9 +48,9 @@ export default function NewOrderPage() {
   
   const { itemCount, subtotal } = useCartStore();
   
-  const cuisineTypes = ['all', ...Array.from(new Set(COMPLETE_TEMPLATES.map(t => t.cuisine_type)))];
+  const cuisineTypes = ['all', ...Array.from(new Set(MEAL_TEMPLATES.map(t => t.cuisine_type)))];
   
-  const filteredTemplates = COMPLETE_TEMPLATES.filter(template => {
+  const filteredTemplates = MEAL_TEMPLATES.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           template.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCuisine = selectedCuisine === 'all' || template.cuisine_type === selectedCuisine;
@@ -107,24 +107,24 @@ export default function NewOrderPage() {
           </select>
         </div>
 
-        {/* Templates Grid with Cart Summary Side Panel */}
+        {/* Templates Grid - Fixed sizing, no stretching */}
         <div className="flex gap-6">
-          {/* Main Templates Grid */}
+          {/* Main Templates Area */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-[1200px]">
               {/* Create Your Own - Always First */}
               <button
                 onClick={() => setShowCreateTemplate(true)}
-                className="aspect-[4/5] bg-white dark:bg-navy border-2 border-dashed border-electric-blue/50 hover:border-electric-blue rounded-xl hover:shadow-lg transition-all group"
+                className="h-[280px] w-full max-w-[280px] bg-white dark:bg-navy border-2 border-dashed border-electric-blue/50 hover:border-electric-blue rounded-xl hover:shadow-lg transition-all group"
               >
-                <div className="h-full flex flex-col items-center justify-center p-6">
-                  <div className="w-16 h-16 bg-electric-blue/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-electric-blue/20 transition-colors">
-                    <Plus className="w-8 h-8 text-electric-blue" />
+                <div className="h-full flex flex-col items-center justify-center p-4">
+                  <div className="w-14 h-14 bg-electric-blue/10 rounded-full flex items-center justify-center mb-3 group-hover:bg-electric-blue/20 transition-colors">
+                    <Plus className="w-7 h-7 text-electric-blue" />
                   </div>
-                  <h3 className="font-semibold text-lg text-navy dark:text-white mb-2">
+                  <h3 className="font-semibold text-base text-navy dark:text-white mb-1">
                     Create Your Own
                   </h3>
-                  <p className="text-sm text-navy/60 dark:text-white/60 text-center">
+                  <p className="text-xs text-navy/60 dark:text-white/60 text-center">
                     Build a custom template from individual items
                   </p>
                 </div>
@@ -132,13 +132,15 @@ export default function NewOrderPage() {
 
               {/* Template Cards */}
               {filteredTemplates.map((template) => (
-                <OptimalTemplateCard key={template.id} template={template} />
+                <div key={template.id} className="w-full max-w-[280px]">
+                  <OptimalTemplateCard template={template} />
+                </div>
               ))}
             </div>
           </div>
 
           {/* Persistent Cart Summary Panel - Desktop Only */}
-          <div className="hidden xl:block w-80 sticky top-24 h-fit">
+          <div className="hidden xl:block w-80 sticky top-24 h-fit flex-shrink-0">
             <CartSummaryPanel onViewCart={() => setShowCart(true)} />
           </div>
         </div>
