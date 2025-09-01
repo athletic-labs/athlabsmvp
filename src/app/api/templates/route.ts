@@ -115,3 +115,55 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const supabase = createRouteHandlerClient({ cookies });
+    
+    // Check authentication
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    // Get user's team
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('team_id')
+      .eq('id', session.user.id)
+      .single();
+    
+    if (!profile?.team_id) {
+      return NextResponse.json({ error: 'No team associated' }, { status: 400 });
+    }
+    
+    // Parse request body to get template ID
+    const body = await request.json();
+    const { templateId } = body;
+    
+    if (!templateId) {
+      return NextResponse.json({ error: 'Template ID is required' }, { status: 400 });
+    }
+    
+    // Delete template (only if it belongs to the user's team)
+    const { error } = await supabase
+      .from('saved_templates')
+      .delete()
+      .eq('id', templateId)
+      .eq('team_id', profile.team_id);
+    
+    if (error) {
+      console.error('Error deleting template:', error);
+      return NextResponse.json({ error: 'Failed to delete template' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Template deleted successfully' 
+    });
+    
+  } catch (error) {
+    console.error('API error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

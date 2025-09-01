@@ -53,13 +53,17 @@ export class TemplateService {
    * Delete a template
    */
   static async deleteTemplate(templateId: string): Promise<void> {
-    const { error } = await this.supabase
-      .from('saved_templates')
-      .delete()
-      .eq('id', templateId);
+    const response = await fetch('/api/templates', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ templateId }),
+    });
     
-    if (error) {
-      throw new Error('Failed to delete template');
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete template');
     }
   }
   
