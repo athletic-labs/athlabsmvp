@@ -53,6 +53,8 @@ export class TemplateService {
    * Delete a template
    */
   static async deleteTemplate(templateId: string): Promise<void> {
+    console.log('Deleting template:', templateId);
+    
     const response = await fetch('/api/templates', {
       method: 'DELETE',
       headers: {
@@ -61,10 +63,16 @@ export class TemplateService {
       body: JSON.stringify({ templateId }),
     });
     
+    console.log('Delete response status:', response.status);
+    
     if (!response.ok) {
       const error = await response.json();
+      console.error('Delete failed:', error);
       throw new Error(error.error || 'Failed to delete template');
     }
+    
+    const result = await response.json();
+    console.log('Delete successful:', result);
   }
   
   /**

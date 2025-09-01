@@ -121,10 +121,12 @@ export async function GET(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
+    console.log('DELETE /api/templates called');
     
     // Check authentication
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
+      console.log('No session found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
@@ -136,12 +138,14 @@ export async function DELETE(request: Request) {
       .single();
     
     if (!profile?.team_id) {
+      console.log('No team found for user');
       return NextResponse.json({ error: 'No team associated' }, { status: 400 });
     }
     
     // Parse request body to get template ID
     const body = await request.json();
     const { templateId } = body;
+    console.log('Attempting to delete template:', templateId, 'for team:', profile.team_id);
     
     if (!templateId) {
       return NextResponse.json({ error: 'Template ID is required' }, { status: 400 });
@@ -159,6 +163,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Failed to delete template' }, { status: 500 });
     }
     
+    console.log('Template deleted successfully:', templateId);
     return NextResponse.json({ 
       success: true, 
       message: 'Template deleted successfully' 
