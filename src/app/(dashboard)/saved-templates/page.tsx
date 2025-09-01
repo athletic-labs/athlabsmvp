@@ -46,10 +46,18 @@ export default function SavedTemplatesPage() {
     if (!confirm('Are you sure you want to delete this template?')) return;
     
     try {
+      console.log('Starting delete for template:', templateId);
+      console.log('Current templates count:', templates.length);
+      
       await TemplateService.deleteTemplate(templateId);
-      setTemplates(templates.filter(t => t.id !== templateId));
-      toast.success('Template deleted');
+      
+      const newTemplates = templates.filter(t => t.id !== templateId);
+      console.log('New templates count after filter:', newTemplates.length);
+      
+      setTemplates(newTemplates);
+      toast.success(`Template deleted - ${newTemplates.length} remaining`);
     } catch (error) {
+      console.error('Delete error:', error);
       toast.error('Failed to delete template');
     }
   };

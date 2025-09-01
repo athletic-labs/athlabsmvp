@@ -39,13 +39,21 @@ export class TemplateService {
    * Get all saved templates for the team
    */
   static async getTemplates(): Promise<SavedTemplate[]> {
-    const response = await fetch('/api/templates');
+    console.log('Fetching templates from API...');
+    
+    const response = await fetch('/api/templates', {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
+    });
     
     if (!response.ok) {
       throw new Error('Failed to fetch templates');
     }
     
     const data = await response.json();
+    console.log('Retrieved templates:', data.templates?.length || 0, 'templates');
     return data.templates;
   }
   
