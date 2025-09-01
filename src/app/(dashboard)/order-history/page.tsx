@@ -154,7 +154,7 @@ export default function OrderHistoryPage() {
         </div>
         <Link 
           href="/new-order" 
-          className="md-filled-button flex items-center gap-2 mt-4 sm:mt-0"
+          className="flex items-center gap-2 px-4 py-2 text-sm bg-electric-blue text-white rounded-lg hover:bg-electric-blue/90 mt-4 sm:mt-0"
         >
           <Plus className="w-4 h-4" />
           Place New Order
@@ -316,26 +316,23 @@ export default function OrderHistoryPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-3 sm:mt-0">
+                    <div className="flex gap-2 mt-3 sm:mt-0">
                       <button
                         onClick={() => setSelectedOrder(order)}
-                        className="md-outlined-button text-sm"
+                        className="px-3 py-1.5 text-sm border border-electric-blue text-electric-blue rounded-lg hover:bg-electric-blue/10"
                       >
-                        <Eye className="w-4 h-4 mr-1" />
                         View Details
                       </button>
                       <button
                         onClick={() => reorderOrder(order)}
-                        className="md-outlined-button text-sm"
+                        className="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                       >
-                        <Repeat className="w-4 h-4 mr-1" />
                         Reorder
                       </button>
                       <button
                         onClick={() => downloadInvoice(order)}
-                        className="md-outlined-button text-sm"
+                        className="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                       >
-                        <Download className="w-4 h-4 mr-1" />
                         Invoice
                       </button>
                     </div>
