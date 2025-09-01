@@ -1,15 +1,52 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Search, Info } from 'lucide-react';
+import { Plus, Search, Info, ShoppingCart } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { MEAL_TEMPLATES } from '@/lib/data/meal-templates';
 import OptimalTemplateCard from '@/components/orders/OptimalTemplateCard';
 import CreateTemplateModal from '@/components/templates/CreateTemplateModal';
+import CartDrawer from '@/components/cart/CartDrawer';
+import CartSummaryPanel from '@/components/cart/CartSummaryPanel';
+import { useCartStore } from '@/lib/store/enhanced-cart-store';
+
+// Cart Button Component
+function CartButton() {
+  const [showCart, setShowCart] = useState(false);
+  const { itemCount, subtotal } = useCartStore();
+
+  return (
+    <>
+      <button
+        onClick={() => setShowCart(true)}
+        className="relative p-2.5 bg-white dark:bg-navy border border-smoke dark:border-smoke/30 rounded-lg hover:shadow-md transition-all group"
+      >
+        <ShoppingCart className="w-5 h-5 text-navy dark:text-white group-hover:text-electric-blue transition-colors" />
+        {itemCount > 0 && (
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-electric-blue text-white text-xs font-medium rounded-full flex items-center justify-center">
+            {itemCount}
+          </span>
+        )}
+        {subtotal > 0 && (
+          <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-navy/60 dark:text-white/60 whitespace-nowrap">
+            ${subtotal.toLocaleString()}
+          </span>
+        )}
+      </button>
+      
+      {/* Cart Drawer */}
+      <CartDrawer open={showCart} onClose={() => setShowCart(false)} />
+    </>
+  );
+}
 
 export default function NewOrderPage() {
   const [showCreateTemplate, setShowCreateTemplate] = useState(false);
+  const [showCart, setShowCart] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCuisine, setSelectedCuisine] = useState('all');
+  
+  const { itemCount, subtotal } = useCartStore();
   
   const cuisineTypes = ['all', ...Array.from(new Set(MEAL_TEMPLATES.map(t => t.cuisine_type)))];
   
@@ -32,9 +69,12 @@ export default function NewOrderPage() {
                 {filteredTemplates.length + 1} templates available • Minimum order $500
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Info className="w-4 h-4 text-navy/50" />
-              <span className="text-navy/60 dark:text-white/60">All templates serve 60 people</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm">
+                <Info className="w-4 h-4 text-navy/50" />
+                <span className="text-navy/60 dark:text-white/60 hidden md:inline">All templates serve 60 people</span>
+              </div>
+              <CartButton />
             </div>
           </div>
         </div>
@@ -67,30 +107,40 @@ export default function NewOrderPage() {
           </select>
         </div>
 
-        {/* Templates Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {/* Create Your Own - Always First */}
-          <button
-            onClick={() => setShowCreateTemplate(true)}
-            className="aspect-[4/5] bg-white dark:bg-navy border-2 border-dashed border-electric-blue/50 hover:border-electric-blue rounded-xl hover:shadow-lg transition-all group"
-          >
-            <div className="h-full flex flex-col items-center justify-center p-6">
-              <div className="w-16 h-16 bg-electric-blue/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-electric-blue/20 transition-colors">
-                <Plus className="w-8 h-8 text-electric-blue" />
-              </div>
-              <h3 className="font-semibold text-lg text-navy dark:text-white mb-2">
-                Create Your Own
-              </h3>
-              <p className="text-sm text-navy/60 dark:text-white/60 text-center">
-                Build a custom template from individual items
-              </p>
-            </div>
-          </button>
+        {/* Templates Grid with Cart Summary Side Panel */}
+        <div className="flex gap-6">
+          {/* Main Templates Grid */}
+          <div className="flex-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {/* Create Your Own - Always First */}
+              <button
+                onClick={() => setShowCreateTemplate(true)}
+                className="aspect-[4/5] bg-white dark:bg-navy border-2 border-dashed border-electric-blue/50 hover:border-electric-blue rounded-xl hover:shadow-lg transition-all group"
+              >
+                <div className="h-full flex flex-col items-center justify-center p-6">
+                  <div className="w-16 h-16 bg-electric-blue/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-electric-blue/20 transition-colors">
+                    <Plus className="w-8 h-8 text-electric-blue" />
+                  </div>
+                  <h3 className="font-semibold text-lg text-navy dark:text-white mb-2">
+                    Create Your Own
+                  </h3>
+                  <p className="text-sm text-navy/60 dark:text-white/60 text-center">
+                    Build a custom template from individual items
+                  </p>
+                </div>
+              </button>
 
-          {/* Template Cards */}
-          {filteredTemplates.map((template) => (
-            <OptimalTemplateCard key={template.id} template={template} />
-          ))}
+              {/* Template Cards */}
+              {filteredTemplates.map((template) => (
+                <OptimalTemplateCard key={template.id} template={template} />
+              ))}
+            </div>
+          </div>
+
+          {/* Persistent Cart Summary Panel - Desktop Only */}
+          <div className="hidden xl:block w-80 sticky top-24 h-fit">
+            <CartSummaryPanel onViewCart={() => setShowCart(true)} />
+          </div>
         </div>
 
         {/* Empty State */}
@@ -108,6 +158,33 @@ export default function NewOrderPage() {
           </div>
         )}
       </div>
+
+      {/* Floating Cart Summary (shows when items in cart) */}
+      {itemCount > 0 && !showCart && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="fixed bottom-6 right-6 bg-white dark:bg-navy shadow-xl rounded-lg p-4 z-20 border border-smoke dark:border-smoke/30 xl:hidden"
+        >
+          <div className="flex items-center gap-4">
+            <div>
+              <p className="text-sm font-medium text-navy dark:text-white">
+                {itemCount} {itemCount === 1 ? 'item' : 'items'} in cart
+              </p>
+              <p className="text-lg font-bold text-electric-blue">
+                ${subtotal.toLocaleString()}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowCart(true)}
+              className="px-4 py-2 bg-electric-blue text-white rounded-lg text-sm font-medium hover:bg-electric-blue/90 transition-colors flex items-center gap-2"
+            >
+              View Cart
+              <ShoppingCart className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Create Template Modal */}
       {showCreateTemplate && (
