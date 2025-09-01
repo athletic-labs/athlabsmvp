@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { X, Check, Clock, Users, Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
-import { MealTemplate } from '@/lib/data/meal-templates';
+import { MealTemplateComplete } from '@/lib/data/templates-with-items';
 
 interface TemplateDetailsModalProps {
-  template: MealTemplate;
+  template: MealTemplateComplete;
   open: boolean;
   onClose: () => void;
 }
@@ -25,9 +25,9 @@ export default function TemplateDetailsModal({ template, open, onClose }: Templa
       quantity: quantity,
       servings: template.serves_count * quantity,
       templateId: template.id,
-      includedItems: template.includedItems?.map(item => ({
+      includedItems: template.items?.map(item => ({
         name: item.name,
-        quantity: item.quantity
+        quantity: '1'
       })) || [],
       substitutions: Object.entries(selectedSubstitutions).map(([original, replacement]) => ({
         original,
@@ -81,17 +81,12 @@ export default function TemplateDetailsModal({ template, open, onClose }: Templa
               <div className="mb-6">
                 <h3 className="font-medium mb-3">What's Included</h3>
                 <div className="space-y-2">
-                  {template.includedItems?.map((item, idx) => (
+                  {template.items?.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-3 p-3 bg-smoke/10 dark:bg-smoke/20 rounded-lg">
                       <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                       <span className="text-sm">
-                        {item.name} <span className="text-navy/60 dark:text-white/60">({item.quantity})</span>
+                        {item.name} <span className="text-navy/60 dark:text-white/60">({item.category})</span>
                       </span>
-                      {item.canSubstitute && (
-                        <span className="ml-auto text-xs bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 px-2 py-1 rounded-full">
-                          Can substitute
-                        </span>
-                      )}
                     </div>
                   ))}
                 </div>

@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { Clock, Users, ChevronRight, Check } from 'lucide-react';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
-import { MealTemplate } from '@/lib/data/meal-templates';
+import { MealTemplateComplete } from '@/lib/data/templates-with-items';
 import TemplateDetailsModal from './TemplateDetailsModal';
 
 interface OptimalTemplateCardProps {
-  template: MealTemplate;
+  template: MealTemplateComplete;
 }
 
 export default function OptimalTemplateCard({ template }: OptimalTemplateCardProps) {
@@ -28,9 +28,9 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
       quantity: 1,
       servings: template.serves_count,
       templateId: template.id,
-      includedItems: template.includedItems?.map(item => ({
+      includedItems: template.items?.map(item => ({
         name: item.name,
-        quantity: item.quantity
+        quantity: '1'
       })) || [],
       notes: template.description
     });
