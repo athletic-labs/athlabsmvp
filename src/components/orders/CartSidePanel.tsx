@@ -23,8 +23,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
   // Calculate totals correctly
   const subtotal = items.reduce((acc, item) => {
     const itemTotal = item.unitPrice * item.quantity;
-    const addOnsTotal = item.addOnsTotal || 0;
-    return acc + itemTotal + addOnsTotal;
+    return acc + itemTotal;
   }, 0);
   
   const tax = subtotal * 0.0875; // 8.75% tax
