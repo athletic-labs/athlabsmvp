@@ -151,12 +151,33 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Template ID is required' }, { status: 400 });
     }
     
+    // First check if template exists and belongs to team
+    const { data: existingTemplate } = await supabase
+      .from('saved_templates')
+      .select('id, team_id')
+      .eq('id', templateId)
+      .single();
+    
+    console.log('Existing template found:', existingTemplate);
+    
+    if (!existingTemplate) {
+      console.log('Template not found in database');
+      return NextResponse.json({ error: 'Template not found' }, { status: 404 });
+    }
+    
+    if (existingTemplate.team_id !== profile.team_id) {
+      console.log('Team mismatch - template belongs to:', existingTemplate.team_id, 'user belongs to:', profile.team_id);
+      return NextResponse.json({ error: 'Not authorized to delete this template' }, { status: 403 });
+    }
+    
     // Delete template (only if it belongs to the user's team)
-    const { error } = await supabase
+    const { error, count } = await supabase
       .from('saved_templates')
       .delete()
       .eq('id', templateId)
       .eq('team_id', profile.team_id);
+    
+    console.log('Delete operation result - error:', error, 'affected rows:', count);
     
     if (error) {
       console.error('Error deleting template:', error);
