@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { Clock, Users, ChevronRight, Check } from 'lucide-react';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
-import { MealTemplate } from '@/lib/data/meal-templates';
-import TemplateDetailsModal from './TemplateDetailsModal';
+import { MealTemplateComplete } from '@/lib/data/meal-templates-complete';
+import TemplateDetailsModalEnhanced from './TemplateDetailsModalEnhanced';
 
 interface OptimalTemplateCardProps {
-  template: MealTemplate;
+  template: MealTemplateComplete;
 }
 
 export default function OptimalTemplateCard({ template }: OptimalTemplateCardProps) {
@@ -21,17 +21,19 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
     
+    const baseItems = template.items?.filter(item => item.section === 'Base' && item.includedInBundle) || [];
+    
     addItem({
       type: 'template',
       name: template.name,
-      unitPrice: template.bundle_price,
+      unitPrice: template.bundlePrice,
       quantity: 1,
-      servings: template.serves_count,
+      servings: template.servesCount,
       templateId: template.id,
-      includedItems: template.includedItems?.map(item => ({
+      includedItems: baseItems.map(item => ({
         name: item.name,
-        quantity: item.quantity
-      })) || [],
+        quantity: item.notes
+      })),
       notes: template.description
     });
     
@@ -69,7 +71,7 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
               {template.name}
             </h3>
             <span className="text-xl font-bold text-electric-blue whitespace-nowrap">
-              ${template.bundle_price.toLocaleString()}
+              ${template.bundlePrice.toLocaleString()}
             </span>
           </div>
           
@@ -90,7 +92,7 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
           <div className="flex items-center gap-4 text-xs text-navy/50 dark:text-white/50 mb-4">
             <span className="flex items-center gap-1">
               <Users className="w-3.5 h-3.5" />
-              {template.serves_count}
+              {template.servesCount}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
@@ -98,26 +100,32 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
             </span>
           </div>
 
-          {/* Customizable Items Preview */}
-          {template.substitutableItems && template.substitutableItems.length > 0 && (
-            <div className="mb-4 flex-1">
-              <p className="text-xs font-medium text-navy/60 dark:text-white/60 mb-1.5">
-                Customizable items:
-              </p>
-              <div className="flex flex-wrap gap-1">
-                {template.substitutableItems.slice(0, 2).map((item: string, idx: number) => (
-                  <span key={idx} className="text-xs px-2 py-0.5 bg-electric-blue/10 text-electric-blue rounded">
-                    {item}
-                  </span>
-                ))}
-                {template.substitutableItems.length > 2 && (
-                  <span className="text-xs px-2 py-0.5 bg-smoke/20 dark:bg-smoke/30 text-navy/60 dark:text-white/60 rounded">
-                    +{template.substitutableItems.length - 2}
-                  </span>
-                )}
+          {/* Add-Ons Preview */}
+          {(() => {
+            const addOnItems = template.items?.filter(item => 
+              item.section === 'Add-Ons / Alternatives' && !item.includedInBundle
+            ) || [];
+            
+            return addOnItems.length > 0 && (
+              <div className="mb-4 flex-1">
+                <p className="text-xs font-medium text-navy/60 dark:text-white/60 mb-1.5">
+                  Available add-ons:
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {addOnItems.slice(0, 2).map((item, idx: number) => (
+                    <span key={idx} className="text-xs px-2 py-0.5 bg-electric-blue/10 text-electric-blue rounded">
+                      {item.name}
+                    </span>
+                  ))}
+                  {addOnItems.length > 2 && (
+                    <span className="text-xs px-2 py-0.5 bg-smoke/20 dark:bg-smoke/30 text-navy/60 dark:text-white/60 rounded">
+                      +{addOnItems.length - 2} more
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* Card Actions - Fixed at bottom */}
@@ -159,7 +167,7 @@ export default function OptimalTemplateCard({ template }: OptimalTemplateCardPro
 
       {/* Details Modal */}
       {showDetails && (
-        <TemplateDetailsModal
+        <TemplateDetailsModalEnhanced
           template={template}
           open={showDetails}
           onClose={() => setShowDetails(false)}

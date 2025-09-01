@@ -19,6 +19,12 @@ export interface CartItem {
     original: string;
     replacement: string;
   }>;
+  addOns?: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
+  addOnsTotal?: number;
   notes?: string;
   image?: string;
   category?: string;
@@ -111,7 +117,11 @@ export const useCartStore = create<CartState>()(
       },
       
       get subtotal() {
-        return get().items.reduce((total, item) => total + (item.unitPrice * item.quantity), 0);
+        return get().items.reduce((total, item) => {
+          const itemTotal = item.unitPrice * item.quantity;
+          const addOnTotal = (item.addOnsTotal || 0);
+          return total + itemTotal + addOnTotal;
+        }, 0);
       },
       
       get tax() {

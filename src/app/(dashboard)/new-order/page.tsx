@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Plus, Search, Info, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { MEAL_TEMPLATES } from '@/lib/data/meal-templates';
+import { COMPLETE_TEMPLATES } from '@/lib/data/meal-templates-complete';
 import OptimalTemplateCard from '@/components/orders/OptimalTemplateCard';
 import CreateTemplateModal from '@/components/templates/CreateTemplateModal';
 import CartDrawer from '@/components/cart/CartDrawer';
@@ -48,9 +48,9 @@ export default function NewOrderPage() {
   
   const { itemCount, subtotal } = useCartStore();
   
-  const cuisineTypes = ['all', ...Array.from(new Set(MEAL_TEMPLATES.map(t => t.cuisine_type)))];
+  const cuisineTypes = ['all', ...Array.from(new Set(COMPLETE_TEMPLATES.map(t => t.cuisine_type)))];
   
-  const filteredTemplates = MEAL_TEMPLATES.filter(template => {
+  const filteredTemplates = COMPLETE_TEMPLATES.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           template.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCuisine = selectedCuisine === 'all' || template.cuisine_type === selectedCuisine;

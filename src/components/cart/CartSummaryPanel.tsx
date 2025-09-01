@@ -67,7 +67,15 @@ export default function CartSummaryPanel({ onViewCart }: CartSummaryPanelProps) 
                 <p className="text-sm font-medium text-navy dark:text-white">{item.name}</p>
                 <p className="text-xs text-navy/60 dark:text-white/60">
                   Qty: {item.quantity} • ${item.unitPrice.toLocaleString()}
+                  {item.addOnsTotal && item.addOnsTotal > 0 && (
+                    <span className="text-electric-blue"> (+${item.addOnsTotal.toFixed(2)} add-ons)</span>
+                  )}
                 </p>
+                {item.type === 'template' && item.addOns && item.addOns.length > 0 && (
+                  <p className="text-xs text-electric-blue/80 mt-0.5">
+                    Add-ons: {item.addOns.map(a => `${a.name} x${a.quantity}`).join(', ')}
+                  </p>
+                )}
               </div>
               <button
                 onClick={() => removeItem(item.id)}

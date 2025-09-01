@@ -124,14 +124,34 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       </div>
                       
                       {/* Show included items for templates */}
-                      {item.includedItems && item.includedItems.length > 0 && (
-                        <div className="mb-3 p-2 bg-white dark:bg-gray-900 rounded text-xs space-y-1">
-                          <p className="font-medium text-gray-700 dark:text-gray-300">Includes:</p>
-                          {item.includedItems.map((included, idx) => (
-                            <p key={idx} className="text-gray-600 dark:text-gray-400 pl-2">
-                              • {included.name} ({included.quantity})
-                            </p>
-                          ))}
+                      {item.type === 'template' && (
+                        <div className="mt-2 text-xs space-y-1">
+                          {item.includedItems && item.includedItems.length > 0 && (
+                            <details className="cursor-pointer">
+                              <summary className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium">
+                                Included items ({item.includedItems.length})
+                              </summary>
+                              <div className="mt-1 pl-3 space-y-0.5">
+                                {item.includedItems.map((included, idx) => (
+                                  <p key={idx} className="text-gray-500 dark:text-gray-500">
+                                    • {included.name} ({included.quantity})
+                                  </p>
+                                ))}
+                              </div>
+                            </details>
+                          )}
+                          
+                          {/* Show add-ons if any */}
+                          {item.addOns && item.addOns.length > 0 && (
+                            <div className="pt-1 border-t border-gray-200 dark:border-gray-700">
+                              <p className="text-electric-blue font-medium">Add-ons:</p>
+                              {item.addOns.map((addOn, idx) => (
+                                <p key={idx} className="text-gray-600 dark:text-gray-400 pl-3">
+                                  • {addOn.name} x{addOn.quantity} (+${(addOn.price * addOn.quantity).toFixed(2)})
+                                </p>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       )}
                       
@@ -161,9 +181,16 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             <Plus className="w-4 h-4" />
                           </button>
                         </div>
-                        <p className="font-semibold">
-                          ${(item.unitPrice * item.quantity).toFixed(2)}
-                        </p>
+                        <div className="text-right">
+                          <p className="font-semibold">
+                            ${((item.unitPrice * item.quantity) + (item.addOnsTotal || 0)).toFixed(2)}
+                          </p>
+                          {item.addOnsTotal && item.addOnsTotal > 0 && (
+                            <p className="text-xs text-gray-500">
+                              Base: ${(item.unitPrice * item.quantity).toFixed(2)} + Add-ons: ${item.addOnsTotal.toFixed(2)}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </motion.div>
                   ))}
