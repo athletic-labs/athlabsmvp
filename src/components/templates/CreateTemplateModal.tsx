@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { X, Plus, Minus, Save, Search, ChevronRight, ShoppingCart, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 import { MENU_ITEMS, MenuItem, getCategoryColor } from '@/lib/data/menu-items';
 import { TemplateService } from '@/lib/services/template-service';
 
@@ -19,7 +19,7 @@ interface CreateTemplateModalProps {
 }
 
 export default function CreateTemplateModal({ open, onClose }: CreateTemplateModalProps) {
-  const { addItem } = useCartStore();
+  const addItem = useCartStore((state) => state.addItem);
   const [templateName, setTemplateName] = useState('');
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');

@@ -5,10 +5,12 @@ import { Plus, ShoppingCart, X } from 'lucide-react';
 import { ACTUAL_MENU_TEMPLATES } from '@/lib/data/actual-menu-templates';
 import TemplateCard from '@/components/orders/TemplateCard';
 import CartSidePanel from '@/components/orders/CartSidePanel';
+import CreateTemplateModal from '@/components/templates/CreateTemplateModal';
 import { useCartStore } from '@/lib/store/cart-store';
 
 export default function NewOrderPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [showCreateTemplate, setShowCreateTemplate] = useState(false);
   const cartItems = useCartStore((state) => state.items);
   const itemCount = cartItems.length; // Number of different items
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
@@ -80,14 +82,17 @@ export default function NewOrderPage() {
                 : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
             }`}>
               {/* Create Your Own Card */}
-              <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border-2 border-dashed border-electric-blue/30 min-h-[220px] max-h-[240px]">
-                <div className="p-4 h-full flex flex-col items-center justify-center text-center">
+              <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border-2 border-dashed border-electric-blue/30 min-h-[220px] max-h-[240px] cursor-pointer">
+                <button
+                  onClick={() => setShowCreateTemplate(true)}
+                  className="w-full p-4 h-full flex flex-col items-center justify-center text-center"
+                >
                   <div className="w-12 h-12 bg-electric-blue/10 rounded-full flex items-center justify-center mb-3">
                     <Plus className="w-6 h-6 text-electric-blue" />
                   </div>
                   <h3 className="font-semibold text-sm mb-2">Create Your Own</h3>
                   <p className="text-xs text-gray-600">Build a custom template from individual items</p>
-                </div>
+                </button>
               </div>
               
               {/* Template Cards */}
@@ -105,6 +110,14 @@ export default function NewOrderPage() {
           <CartSidePanel onClose={() => setIsCartOpen(false)} />
         </div>
       </div>
+
+      {/* Create Template Modal */}
+      {showCreateTemplate && (
+        <CreateTemplateModal
+          open={showCreateTemplate}
+          onClose={() => setShowCreateTemplate(false)}
+        />
+      )}
     </div>
   );
 }
