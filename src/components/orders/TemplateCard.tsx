@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ShoppingCart, Users, Clock, Star, ChevronRight } from 'lucide-react';
-import { toast } from 'sonner';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
-import { MealTemplate } from '@/lib/data/meal-templates';
+import { Clock, Users } from 'lucide-react';
+import { useCartStore } from '@/lib/store/cart-store';
+import TemplateDetailsModalEnhanced from './TemplateDetailsModalEnhanced';
+import { MealTemplate } from '@/lib/data/actual-menu-templates';
 
 interface TemplateCardProps {
   template: MealTemplate;
@@ -12,139 +12,111 @@ interface TemplateCardProps {
 
 export default function TemplateCard({ template }: TemplateCardProps) {
   const [showDetails, setShowDetails] = useState(false);
-  const { addItem } = useCartStore();
-
-  const handleAddToCart = () => {
-    addItem({
+  const [isQuickAdding, setIsQuickAdding] = useState(false);
+  const addToCart = useCartStore((state) => state.addItem);
+  
+  const formatPrice = (cents: number) => {
+    return (cents / 100).toLocaleString('en-US', { 
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2 
+    });
+  };
+  
+  const handleQuickAdd = async () => {
+    setIsQuickAdding(true);
+    const baseItems = template.items?.filter(item => item.section === 'Base' && item.includedInBundle) || [];
+    
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
+    addToCart({
       type: 'template',
       name: template.name,
-      unitPrice: template.bundle_price,
       quantity: 1,
-      servings: template.serves_count,
-      templateId: template.id,
-      includedItems: template.includedItems?.map(item => ({
+      unitPrice: template.bundlePrice,
+      servings: template.servesCount,
+      includedItems: baseItems.map(item => ({
         name: item.name,
-        quantity: item.quantity
-      })) || [],
-      notes: template.description
+        quantity: item.notes
+      }))
     });
     
-    toast.success(`${template.name} added to cart`);
+    setIsQuickAdding(false);
   };
-
-  const getCuisineColor = (cuisine: string) => {
+  
+  const getCuisineColor = (type: string) => {
     const colors: Record<string, string> = {
-      Mediterranean: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-      Mexican: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-      Asian: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-      Italian: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-      Latin: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      American: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-      Premium: 'bg-gold-100 text-gold-800 dark:bg-gold-900/30 dark:text-gold-300',
-      Breakfast: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300'
+      'Mediterranean': 'text-blue-600',
+      'Mexican': 'text-orange-600',
+      'Asian': 'text-purple-600',
+      'Italian': 'text-green-600',
+      'Latin': 'text-red-600',
+      'American': 'text-red-700',
+      'Premium': 'text-purple-700',
+      'Breakfast': 'text-amber-600'
     };
-    return colors[cuisine] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
+    return colors[type] || 'text-gray-600';
   };
 
   return (
-    <div className="bg-white dark:bg-navy rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 border border-smoke/20 h-full flex flex-col">
-      {/* Header */}
-      <div className="p-6 flex-1">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-semibold text-lg">{template.name}</h3>
-              {template.cuisine_type === 'Premium' && (
-                <Star className="w-4 h-4 text-gold-500 fill-current" />
-              )}
-            </div>
-            <span className={`inline-block px-2 py-1 text-xs rounded-full ${getCuisineColor(template.cuisine_type)}`}>
-              {template.cuisine_type}
+    <>
+      <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow h-full flex flex-col min-h-[220px] max-h-[240px]">
+        <div className="p-4 flex-1 flex flex-col">
+          {/* Compact Header */}
+          <div className="flex items-start justify-between mb-2">
+            <h3 className="font-semibold text-sm leading-tight flex-1">
+              {template.name}
+            </h3>
+            <span className="text-lg font-bold text-electric-blue ml-2 whitespace-nowrap">
+              ${formatPrice(template.bundlePrice)}
             </span>
           </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-electric-blue">${template.bundle_price.toFixed(2)}</p>
-            <p className="text-xs text-navy/60 dark:text-white/60">for {template.serves_count} people</p>
-          </div>
-        </div>
-        
-        <p className="text-sm text-navy/70 dark:text-white/70 mb-4">
-          {template.description}
-        </p>
-        
-        {/* Key Info */}
-        <div className="flex items-center gap-4 text-xs text-navy/60 dark:text-white/60 mb-4">
-          <div className="flex items-center gap-1">
-            <Users className="w-3 h-3" />
-            <span>Serves {template.serves_count}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            <span>{template.min_order_hours}h notice</span>
-          </div>
-        </div>
-        
-        {/* Substitutable Items Preview */}
-        {template.substitutableItems && template.substitutableItems.length > 0 && (
-          <div className="mb-4">
-            <p className="text-xs font-medium text-navy/80 dark:text-white/80 mb-1">
-              Customizable:
-            </p>
-            <div className="flex flex-wrap gap-1">
-              {template.substitutableItems.slice(0, 2).map((item, idx) => (
-                <span key={idx} className="px-2 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-xs rounded">
-                  {item}
-                </span>
-              ))}
-              {template.substitutableItems.length > 2 && (
-                <span className="px-2 py-1 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs rounded">
-                  +{template.substitutableItems.length - 2} more
-                </span>
-              )}
+          
+          {/* Cuisine Badge */}
+          <p className={`text-xs font-medium mb-2 ${getCuisineColor(template.cuisineType)}`}>
+            {template.cuisineType}
+          </p>
+          
+          {/* Compact Description */}
+          <p className="text-xs text-gray-600 mb-3 flex-1 line-clamp-2">
+            {template.description}
+          </p>
+          
+          {/* Info Row */}
+          <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+            <div className="flex items-center gap-1">
+              <Users className="w-3 h-3" />
+              <span>{template.servesCount}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              <span>{template.minOrderHours}h notice</span>
             </div>
           </div>
-        )}
-      </div>
-      
-      {/* Expandable Details */}
-      {showDetails && template.includedItems && (
-        <div className="border-t border-smoke/20 p-6 pt-4">
-          <h4 className="font-medium text-sm mb-3">Included Items:</h4>
-          <div className="space-y-2">
-            {template.includedItems.map((item, idx) => (
-              <div key={idx} className="flex justify-between text-sm">
-                <span className={item.canSubstitute ? 'text-red-600 dark:text-red-400' : ''}>
-                  {item.name}
-                  {item.canSubstitute && <span className="text-xs ml-1">(customizable)</span>}
-                </span>
-                <span className="text-navy/60 dark:text-white/60">{item.quantity}</span>
-              </div>
-            ))}
+          
+          {/* Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowDetails(true)}
+              className="flex-1 px-3 py-1.5 border border-electric-blue text-electric-blue rounded-lg text-xs font-medium hover:bg-electric-blue/5 transition-colors"
+            >
+              View Details
+            </button>
+            <button
+              onClick={handleQuickAdd}
+              disabled={isQuickAdding}
+              className="flex-1 px-3 py-1.5 bg-electric-blue text-white rounded-lg text-xs font-medium hover:bg-electric-blue/90 transition-colors disabled:opacity-70"
+            >
+              {isQuickAdding ? 'Adding...' : 'Quick Add'}
+            </button>
           </div>
         </div>
-      )}
-      
-      {/* Footer */}
-      <div className="p-6 pt-0">
-        <div className="flex gap-2">
-          {template.includedItems && (
-            <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="flex-1 md-outlined-button text-sm flex items-center justify-center"
-            >
-              {showDetails ? 'Hide Details' : 'View Details'}
-              <ChevronRight className={`w-4 h-4 ml-1 transition-transform ${showDetails ? 'rotate-90' : ''}`} />
-            </button>
-          )}
-          <button
-            onClick={handleAddToCart}
-            className="flex-1 md-filled-button text-sm flex items-center justify-center"
-          >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            Add to Cart
-          </button>
-        </div>
       </div>
-    </div>
+      
+      <TemplateDetailsModalEnhanced
+        template={template}
+        open={showDetails}
+        onClose={() => setShowDetails(false)}
+      />
+    </>
   );
 }
