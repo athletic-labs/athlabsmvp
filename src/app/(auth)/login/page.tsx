@@ -84,29 +84,33 @@ export default function LoginPage() {
               </div>
             )}
 
-            <TextField
-              {...register('email')}
-              type="email"
-              label="Email Address"
-              placeholder="you@team.com"
-              disabled={loading}
-              error={!!errors.email}
-              errorMessage={errors.email?.message}
-              variant="outlined"
-              fullWidth
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-[var(--md-sys-color-on-surface)]">Email Address</label>
+              <input
+                {...register('email')}
+                type="email"
+                placeholder="you@team.com"
+                disabled={loading}
+                className={`w-full px-4 py-3 border rounded-lg bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] placeholder:text-[var(--md-sys-color-on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--md-sys-color-primary)] focus:border-transparent ${errors.email ? 'border-[var(--md-sys-color-error)]' : 'border-[var(--md-sys-color-outline)]'}`}
+              />
+              {errors.email && (
+                <p className="text-sm text-[var(--md-sys-color-error)]">{errors.email.message}</p>
+              )}
+            </div>
 
-            <TextField
-              {...register('password')}
-              type="password"
-              label="Password"
-              placeholder="••••••••"
-              disabled={loading}
-              error={!!errors.password}
-              errorMessage={errors.password?.message}
-              variant="outlined"
-              fullWidth
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-[var(--md-sys-color-on-surface)]">Password</label>
+              <input
+                {...register('password')}
+                type="password"
+                placeholder="••••••••"
+                disabled={loading}
+                className={`w-full px-4 py-3 border rounded-lg bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] placeholder:text-[var(--md-sys-color-on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--md-sys-color-primary)] focus:border-transparent ${errors.password ? 'border-[var(--md-sys-color-error)]' : 'border-[var(--md-sys-color-outline)]'}`}
+              />
+              {errors.password && (
+                <p className="text-sm text-[var(--md-sys-color-error)]">{errors.password.message}</p>
+              )}
+            </div>
 
             <Button
               type="submit"
