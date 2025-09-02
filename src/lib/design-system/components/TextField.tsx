@@ -1,6 +1,6 @@
 'use client';
 
-import React, { forwardRef, useState, ReactNode } from 'react';
+import React, { forwardRef, useState, ReactNode, memo, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -17,7 +17,7 @@ export interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputEleme
   fullWidth?: boolean;
 }
 
-const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = memo(forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
       className,
@@ -65,12 +65,12 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       props.onChange?.(e);
     };
 
-    const baseClasses = [
+    const baseClasses = useMemo(() => [
       'relative',
       fullWidth ? 'w-full' : 'min-w-[200px]'
-    ];
+    ], [fullWidth]);
 
-    const containerClasses = variant === 'filled' 
+    const containerClasses = useMemo(() => variant === 'filled' 
       ? [
           'relative',
           'bg-[var(--md-sys-color-surface-container-highest)]',
@@ -88,9 +88,9 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           error ? 'border-[var(--md-sys-color-error)]' : 'border-[var(--md-sys-color-outline)]',
           focused && !error ? 'border-[var(--md-sys-color-primary)] border-2' : '',
           'transition-all duration-200'
-        ];
+        ], [variant, error, focused]);
 
-    const inputClasses = [
+    const inputClasses = useMemo(() => [
       'w-full',
       'bg-transparent',
       'border-none',
@@ -102,9 +102,9 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       variant === 'filled' ? 'px-4 pt-6 pb-2' : 'px-4 py-4',
       leadingIcon ? 'pl-12' : '',
       trailingIcon ? 'pr-12' : ''
-    ];
+    ], [variant, leadingIcon, trailingIcon]);
 
-    const labelClasses = [
+    const labelClasses = useMemo(() => [
       'absolute left-4 pointer-events-none',
       'md3-body-large',
       error ? 'text-[var(--md-sys-color-error)]' : focused ? 'text-[var(--md-sys-color-primary)]' : 'text-[var(--md-sys-color-on-surface-variant)]',
@@ -120,13 +120,13 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         'scale-100'
       ],
       leadingIcon && !focused && !hasValue ? 'left-12' : 'left-4'
-    ];
+    ], [error, focused, hasValue, variant, leadingIcon]);
 
-    const supportingTextClasses = [
+    const supportingTextClasses = useMemo(() => [
       'mt-1 px-4',
       'md3-body-small',
       error ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface-variant)]'
-    ];
+    ], [error]);
 
     const currentLength = String(currentValue).length;
 
@@ -182,7 +182,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       </div>
     );
   }
-);
+));
 
 TextField.displayName = 'TextField';
 

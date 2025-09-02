@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
 import { format, addDays } from 'date-fns';
 import Link from 'next/link';
+import { Button, IconButton, TextField, Card, Badge } from '@/lib/design-system/components';
 
 interface CartDrawerProps {
   open: boolean;
@@ -51,44 +52,46 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white dark:bg-gray-900 shadow-xl z-50 flex flex-col"
+            className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-[var(--md-sys-color-surface-container)] shadow-xl z-50 flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--md-sys-color-outline-variant)]">
               <div className="flex items-center gap-3">
-                <ShoppingCart className="w-5 h-5 text-blue-600" />
+                <Badge badgeContent={itemCount} color="primary" invisible={itemCount === 0}>
+                  <ShoppingCart className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
+                </Badge>
                 <div>
-                  <h2 className="text-xl font-semibold">Your Cart</h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <h2 className="md3-title-large font-semibold text-[var(--md-sys-color-on-surface)]">Your Cart</h2>
+                  <p className="md3-body-medium text-[var(--md-sys-color-on-surface-variant)]">
                     {itemCount} {itemCount === 1 ? 'item' : 'items'}
                   </p>
                 </div>
               </div>
-              <button 
+              <IconButton
+                icon={<X className="w-5 h-5" />}
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+                variant="standard"
+                aria-label="Close cart"
+              />
             </div>
             
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full p-6">
-                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                    <ShoppingCart className="w-10 h-10 text-gray-400" />
+                  <div className="w-20 h-20 bg-[var(--md-sys-color-surface-container-highest)] rounded-full flex items-center justify-center mb-4">
+                    <ShoppingCart className="w-10 h-10 text-[var(--md-sys-color-on-surface-variant)]" />
                   </div>
-                  <p className="text-lg font-medium mb-2">Your cart is empty</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+                  <p className="md3-title-large font-medium mb-2 text-[var(--md-sys-color-on-surface)]">Your cart is empty</p>
+                  <p className="md3-body-medium text-[var(--md-sys-color-on-surface-variant)] text-center mb-4">
                     Add items from the menu to get started
                   </p>
-                  <button 
+                  <Button 
                     onClick={onClose}
-                    className="md-filled-button"
+                    variant="filled"
                   >
                     Browse Menu
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="p-6 space-y-4">
@@ -115,12 +118,14 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             </p>
                           )}
                         </div>
-                        <button
+                        <IconButton
+                          icon={<Trash2 className="w-4 h-4" />}
                           onClick={() => removeItem(item.id)}
-                          className="p-1 hover:bg-red-500/10 rounded transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </button>
+                          variant="standard"
+                          size="small"
+                          className="text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)]"
+                          aria-label={`Remove ${item.name} from cart`}
+                        />
                       </div>
                       
                       {/* Show included items for templates */}
@@ -166,20 +171,22 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       
                       {/* Quantity and Price */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <button
+                          <div className="flex items-center gap-2">
+                          <IconButton
+                            icon={<Minus className="w-4 h-4" />}
                             onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                            className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                          >
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <span className="w-8 text-center font-medium">{item.quantity}</span>
-                          <button
+                            variant="outlined"
+                            size="small"
+                            aria-label="Decrease quantity"
+                          />
+                          <span className="w-8 text-center md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">{item.quantity}</span>
+                          <IconButton
+                            icon={<Plus className="w-4 h-4" />}
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
+                            variant="outlined"
+                            size="small"
+                            aria-label="Increase quantity"
+                          />
                         </div>
                         <div className="text-right">
                           <p className="font-semibold">
@@ -196,31 +203,31 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   ))}
                   
                   {/* Promo Code */}
-                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="pt-4 border-t border-[var(--md-sys-color-outline-variant)]">
                     <div className="flex gap-2">
-                      <div className="flex-1 relative">
-                        <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
-                        <input
+                      <div className="flex-1">
+                        <TextField
                           type="text"
                           placeholder="Promo code"
                           value={promoCode}
                           onChange={(e) => setPromoCode(e.target.value)}
                           disabled={promoApplied}
-                          className="w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800"
+                          variant="outlined"
+                          leadingIcon={<Tag className="w-4 h-4" />}
                         />
                       </div>
-                      <button
+                      <Button
                         onClick={handleApplyPromo}
                         disabled={promoApplied || !promoCode}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50 hover:bg-blue-700 transition-colors"
+                        variant="filled"
                       >
                         {promoApplied ? 'Applied' : 'Apply'}
-                      </button>
+                      </Button>
                     </div>
                     {promoApplied && (
-                      <p className="text-xs text-green-600 dark:text-green-400 mt-2">
-                        <Info className="w-3 h-3 inline mr-1" />
-                        Promo code applied successfully
+                      <p className="md3-body-small text-[var(--md-saas-color-success)] mt-2 flex items-center gap-1">
+                        <Info className="w-3 h-3" aria-hidden="true" />
+                        <span>Promo code applied successfully</span>
                       </p>
                     )}
                   </div>
@@ -282,20 +289,34 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 
                 {/* Actions */}
                 <div className="space-y-2">
-                  <Link
-                    href={belowMinimum ? "#" : "/checkout"}
-                    onClick={belowMinimum ? (e) => e.preventDefault() : onClose}
-                    className={`w-full md-filled-button flex items-center justify-center ${belowMinimum ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    Proceed to Checkout
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Link>
-                  <button
+                  {belowMinimum ? (
+                    <Button
+                      variant="filled"
+                      fullWidth
+                      disabled={true}
+                      rightIcon={<ChevronRight className="w-4 h-4" />}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      Proceed to Checkout
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="filled"
+                      fullWidth
+                      rightIcon={<ChevronRight className="w-4 h-4" />}
+                      asChild
+                    >
+                      <Link href="/checkout" onClick={onClose}>Proceed to Checkout</Link>
+                    </Button>
+                  )}
+                  <Button
                     onClick={clearCart}
-                    className="w-full text-sm text-red-600 hover:text-red-700 transition-colors"
+                    variant="text"
+                    fullWidth
+                    className="text-[var(--md-sys-color-error)] hover:text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error-container)]"
                   >
                     Clear Cart
-                  </button>
+                  </Button>
                 </div>
                 
                 {/* Delivery Estimate */}

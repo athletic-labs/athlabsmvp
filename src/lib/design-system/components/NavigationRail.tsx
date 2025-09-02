@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, memo, useMemo } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
@@ -29,7 +29,75 @@ export interface NavigationRailProps {
   onItemClick?: (key: string) => void;
 }
 
-export function NavigationRail({
+// Memoized navigation item for performance
+const NavigationItem = memo(function NavigationItem({
+  item,
+  isActive,
+  onItemClick
+}: {
+  item: NavigationItem;
+  isActive: boolean;
+  onItemClick?: (key: string) => void;
+}) {
+  return (
+    <div className="px-3">
+      <Link
+        href={item.href}
+        className={cn(
+          'relative flex flex-col items-center gap-1 p-3 rounded-2xl',
+          'min-h-[56px] w-14',
+          'transition-all duration-200 ease-out',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] focus-visible:ring-offset-2',
+          item.disabled && 'pointer-events-none opacity-50',
+          isActive 
+            ? [
+                'bg-[var(--md-sys-color-secondary-container)]',
+                'text-[var(--md-sys-color-on-secondary-container)]'
+              ]
+            : [
+                'text-[var(--md-sys-color-on-surface-variant)]',
+                'hover:bg-[var(--md-sys-color-on-surface)]/8',
+                'hover:text-[var(--md-sys-color-on-surface)]'
+              ]
+        )}
+        onClick={() => onItemClick?.(item.key)}
+        aria-label={item.label}
+      >
+        {/* Active Indicator */}
+        {isActive && (
+          <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-1 h-8 bg-[var(--md-sys-color-primary)] rounded-r-full" />
+        )}
+        
+        {/* Icon */}
+        <div className="relative flex items-center justify-center w-6 h-6">
+          {item.icon}
+          
+          {/* Badge */}
+          {item.badge && (
+            <div className={cn(
+              'absolute -top-1 -right-1',
+              'min-w-[16px] h-4 px-1',
+              'bg-[var(--md-saas-color-error)]',
+              'text-[var(--md-saas-color-on-error)]',
+              'text-xs font-medium',
+              'rounded-full',
+              'flex items-center justify-center'
+            )}>
+              {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
+            </div>
+          )}
+        </div>
+        
+        {/* Label */}
+        <span className="md3-label-small text-center leading-tight max-w-full break-words">
+          {item.label}
+        </span>
+      </Link>
+    </div>
+  );
+});
+
+export const NavigationRail = memo(function NavigationRail({
   items,
   activeKey,
   header,
@@ -49,6 +117,8 @@ export function NavigationRail({
         className
       )}
       style={{ width }}
+      role="navigation"
+      aria-label="Main navigation"
     >
       {/* Header */}
       {header && (
@@ -84,60 +154,12 @@ export function NavigationRail({
             const isActive = activeKey === item.key;
             
             return (
-              <div key={item.key} className="px-3">
-                <Link
-                  href={item.href}
-                  className={cn(
-                    'relative flex flex-col items-center gap-1 p-3 rounded-2xl',
-                    'min-h-[56px] w-14',
-                    'transition-all duration-200 ease-out',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] focus-visible:ring-offset-2',
-                    item.disabled && 'pointer-events-none opacity-50',
-                    isActive 
-                      ? [
-                          'bg-[var(--md-sys-color-secondary-container)]',
-                          'text-[var(--md-sys-color-on-secondary-container)]'
-                        ]
-                      : [
-                          'text-[var(--md-sys-color-on-surface-variant)]',
-                          'hover:bg-[var(--md-sys-color-on-surface)]/8',
-                          'hover:text-[var(--md-sys-color-on-surface)]'
-                        ]
-                  )}
-                  onClick={() => onItemClick?.(item.key)}
-                  aria-label={item.label}
-                >
-                  {/* Active Indicator */}
-                  {isActive && (
-                    <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-1 h-8 bg-[var(--md-sys-color-primary)] rounded-r-full" />
-                  )}
-                  
-                  {/* Icon */}
-                  <div className="relative flex items-center justify-center w-6 h-6">
-                    {item.icon}
-                    
-                    {/* Badge */}
-                    {item.badge && (
-                      <div className={cn(
-                        'absolute -top-1 -right-1',
-                        'min-w-[16px] h-4 px-1',
-                        'bg-[var(--md-saas-color-error)]',
-                        'text-[var(--md-saas-color-on-error)]',
-                        'text-xs font-medium',
-                        'rounded-full',
-                        'flex items-center justify-center'
-                      )}>
-                        {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Label */}
-                  <span className="md3-label-small text-center leading-tight max-w-full break-words">
-                    {item.label}
-                  </span>
-                </Link>
-              </div>
+              <NavigationItem
+                key={item.key}
+                item={item}
+                isActive={isActive}
+                onItemClick={onItemClick}
+              />
             );
           })}
         </div>
@@ -151,7 +173,7 @@ export function NavigationRail({
       )}
     </nav>
   );
-}
+});
 
 // Wider Navigation Rail variant for more complex applications
 export interface NavigationRailExpandedProps extends Omit<NavigationRailProps, 'width'> {
@@ -159,7 +181,87 @@ export interface NavigationRailExpandedProps extends Omit<NavigationRailProps, '
   showLabels?: boolean;
 }
 
-export function NavigationRailExpanded({
+// Memoized expanded navigation item for performance
+const NavigationItemExpanded = memo(function NavigationItemExpanded({
+  item,
+  isActive,
+  showLabels,
+  onItemClick
+}: {
+  item: NavigationItem;
+  isActive: boolean;
+  showLabels: boolean;
+  onItemClick?: (key: string) => void;
+}) {
+  return (
+    <div className="px-3">
+      <Link
+        href={item.href}
+        className={cn(
+          'relative flex items-center gap-3 px-4 py-3 rounded-full',
+          'transition-all duration-200 ease-out',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] focus-visible:ring-offset-2',
+          item.disabled && 'pointer-events-none opacity-50',
+          isActive 
+            ? [
+                'bg-[var(--md-sys-color-secondary-container)]',
+                'text-[var(--md-sys-color-on-secondary-container)]'
+              ]
+            : [
+                'text-[var(--md-sys-color-on-surface-variant)]',
+                'hover:bg-[var(--md-sys-color-on-surface)]/8',
+                'hover:text-[var(--md-sys-color-on-surface)]'
+              ]
+        )}
+        onClick={() => onItemClick?.(item.key)}
+      >
+        {/* Icon */}
+        <div className="relative flex items-center justify-center w-6 h-6 flex-shrink-0">
+          {item.icon}
+          
+          {/* Badge */}
+          {item.badge && !showLabels && (
+            <div className={cn(
+              'absolute -top-1 -right-1',
+              'min-w-[16px] h-4 px-1',
+              'bg-[var(--md-saas-color-error)]',
+              'text-[var(--md-saas-color-on-error)]',
+              'text-xs font-medium',
+              'rounded-full',
+              'flex items-center justify-center'
+            )}>
+              {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
+            </div>
+          )}
+        </div>
+        
+        {/* Label and Badge */}
+        {showLabels && (
+          <div className="flex-1 flex items-center justify-between min-w-0">
+            <span className="md3-label-large font-medium truncate">
+              {item.label}
+            </span>
+            
+            {item.badge && (
+              <div className={cn(
+                'ml-2 min-w-[20px] h-5 px-2',
+                'bg-[var(--md-saas-color-error)]',
+                'text-[var(--md-saas-color-on-error)]',
+                'text-xs font-medium',
+                'rounded-full',
+                'flex items-center justify-center'
+              )}>
+                {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
+              </div>
+            )}
+          </div>
+        )}
+      </Link>
+    </div>
+  );
+});
+
+export const NavigationRailExpanded = memo(function NavigationRailExpanded({
   items,
   activeKey,
   header,
@@ -180,6 +282,8 @@ export function NavigationRailExpanded({
         className
       )}
       style={{ width }}
+      role="navigation"
+      aria-label="Main navigation"
     >
       {/* Header */}
       {header && (
@@ -214,70 +318,13 @@ export function NavigationRailExpanded({
             const isActive = activeKey === item.key;
             
             return (
-              <div key={item.key} className="px-3">
-                <Link
-                  href={item.href}
-                  className={cn(
-                    'relative flex items-center gap-3 px-4 py-3 rounded-full',
-                    'transition-all duration-200 ease-out',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--md-sys-color-primary)] focus-visible:ring-offset-2',
-                    item.disabled && 'pointer-events-none opacity-50',
-                    isActive 
-                      ? [
-                          'bg-[var(--md-sys-color-secondary-container)]',
-                          'text-[var(--md-sys-color-on-secondary-container)]'
-                        ]
-                      : [
-                          'text-[var(--md-sys-color-on-surface-variant)]',
-                          'hover:bg-[var(--md-sys-color-on-surface)]/8',
-                          'hover:text-[var(--md-sys-color-on-surface)]'
-                        ]
-                  )}
-                  onClick={() => onItemClick?.(item.key)}
-                >
-                  {/* Icon */}
-                  <div className="relative flex items-center justify-center w-6 h-6 flex-shrink-0">
-                    {item.icon}
-                    
-                    {/* Badge */}
-                    {item.badge && !showLabels && (
-                      <div className={cn(
-                        'absolute -top-1 -right-1',
-                        'min-w-[16px] h-4 px-1',
-                        'bg-[var(--md-saas-color-error)]',
-                        'text-[var(--md-saas-color-on-error)]',
-                        'text-xs font-medium',
-                        'rounded-full',
-                        'flex items-center justify-center'
-                      )}>
-                        {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Label and Badge */}
-                  {showLabels && (
-                    <div className="flex-1 flex items-center justify-between min-w-0">
-                      <span className="md3-label-large font-medium truncate">
-                        {item.label}
-                      </span>
-                      
-                      {item.badge && (
-                        <div className={cn(
-                          'ml-2 min-w-[20px] h-5 px-2',
-                          'bg-[var(--md-saas-color-error)]',
-                          'text-[var(--md-saas-color-on-error)]',
-                          'text-xs font-medium',
-                          'rounded-full',
-                          'flex items-center justify-center'
-                        )}>
-                          {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Link>
-              </div>
+              <NavigationItemExpanded
+                key={item.key}
+                item={item}
+                isActive={isActive}
+                showLabels={showLabels}
+                onItemClick={onItemClick}
+              />
             );
           })}
         </div>
@@ -291,4 +338,4 @@ export function NavigationRailExpanded({
       )}
     </nav>
   );
-}
+});

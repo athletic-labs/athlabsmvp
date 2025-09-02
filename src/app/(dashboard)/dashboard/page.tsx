@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Package, DollarSign, Calendar, ChevronRight, Clock, MapPin, Users, Trophy, Target, AlertCircle, Star, Utensils } from 'lucide-react';
+import { Card, CardContent, Button, Badge } from '@/lib/design-system/components';
 import { useSupabase } from '@/lib/supabase/client';
 import { format, subDays, subMonths } from 'date-fns';
 import Link from 'next/link';
@@ -167,12 +168,17 @@ export default function DashboardPage() {
               key={index}
               className={`p-3 rounded-lg flex items-start gap-3 ${
                 alert.type === 'warning'
-                  ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-900 dark:text-orange-100'
-                  : 'bg-blue-50 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100'
+                  ? 'bg-[var(--md-saas-color-warning-container)] text-[var(--md-saas-color-on-warning-container)]'
+                  : 'bg-[var(--md-saas-color-info-container)] text-[var(--md-saas-color-on-info-container)]'
               }`}
+              role="alert"
+              aria-live="polite"
             >
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-              <span className="text-sm">{alert.message}</span>
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <span className="md3-body-medium">
+                <span className="sr-only">{alert.type === 'warning' ? 'Warning: ' : 'Information: '}</span>
+                {alert.message}
+              </span>
             </div>
           ))}
         </motion.div>
@@ -185,69 +191,69 @@ export default function DashboardPage() {
         transition={{ delay: 0.2 }}
         className="grid grid-cols-2 lg:grid-cols-6 gap-4"
       >
-        <div className="md-card">
+        <Card variant="elevated" className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-blue-500/10 rounded-lg">
-              <Package className="w-5 h-5 text-blue-500" />
+            <div className="p-2 bg-[var(--md-sys-color-primary-container)] rounded-lg">
+              <Package className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
             </div>
-            <span className="text-2xl font-bold">{analytics.activeOrders}</span>
+            <span className="md3-display-small font-bold text-[var(--md-sys-color-on-surface)]">{analytics.activeOrders}</span>
           </div>
-          <h3 className="text-sm font-medium text-navy/60 dark:text-white/60">Active Orders</h3>
-        </div>
+          <h3 className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface-variant)]">Active Orders</h3>
+        </Card>
 
-        <div className="md-card">
+        <Card variant="elevated" className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-green-500/10 rounded-lg">
-              <DollarSign className="w-5 h-5 text-green-500" />
+            <div className="p-2 bg-[var(--md-saas-color-success-container)] rounded-lg">
+              <DollarSign className="w-5 h-5 text-[var(--md-saas-color-success)]" />
             </div>
-            <span className="text-xl font-bold">${analytics.monthlySpend.toLocaleString()}</span>
+            <span className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]">${analytics.monthlySpend.toLocaleString()}</span>
           </div>
-          <h3 className="text-sm font-medium text-navy/60 dark:text-white/60">Monthly Spend</h3>
+          <h3 className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface-variant)]">Monthly Spend</h3>
           <div className="flex items-center gap-1 mt-1">
-            <TrendingUp className="w-3 h-3 text-green-500" />
-            <span className="text-xs text-green-500">+{analytics.monthlyTrend}%</span>
+            <TrendingUp className="w-3 h-3 text-[var(--md-saas-color-success)]" />
+            <span className="md3-body-small text-[var(--md-saas-color-success)]">+{analytics.monthlyTrend}%</span>
           </div>
-        </div>
+        </Card>
 
-        <div className="md-card">
+        <Card variant="elevated" className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-purple-500/10 rounded-lg">
-              <Users className="w-5 h-5 text-purple-500" />
+            <div className="p-2 bg-[var(--md-sys-color-secondary-container)] rounded-lg">
+              <Users className="w-5 h-5 text-[var(--md-sys-color-secondary)]" />
             </div>
-            <span className="text-2xl font-bold">{analytics.totalTeamMembers}</span>
+            <span className="md3-display-small font-bold text-[var(--md-sys-color-on-surface)]">{analytics.totalTeamMembers}</span>
           </div>
-          <h3 className="text-sm font-medium text-navy/60 dark:text-white/60">Team Members</h3>
-        </div>
+          <h3 className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface-variant)]">Team Members</h3>
+        </Card>
 
-        <div className="md-card">
+        <Card variant="elevated" className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-orange-500/10 rounded-lg">
-              <Target className="w-5 h-5 text-orange-500" />
+            <div className="p-2 bg-[var(--md-saas-color-warning-container)] rounded-lg">
+              <Target className="w-5 h-5 text-[var(--md-saas-color-warning)]" />
             </div>
-            <span className="text-xl font-bold">${analytics.averageOrderValue}</span>
+            <span className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]">${analytics.averageOrderValue}</span>
           </div>
-          <h3 className="text-sm font-medium text-navy/60 dark:text-white/60">Avg Order</h3>
-        </div>
+          <h3 className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface-variant)]">Avg Order</h3>
+        </Card>
 
-        <div className="md-card">
+        <Card variant="elevated" className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-yellow-500/10 rounded-lg">
-              <Star className="w-5 h-5 text-yellow-500" />
+            <div className="p-2 bg-[var(--md-sys-color-tertiary-container)] rounded-lg">
+              <Star className="w-5 h-5 text-[var(--md-sys-color-tertiary)]" />
             </div>
-            <span className="text-2xl font-bold">{analytics.customerSatisfaction}</span>
+            <span className="md3-display-small font-bold text-[var(--md-sys-color-on-surface)]">{analytics.customerSatisfaction}</span>
           </div>
-          <h3 className="text-sm font-medium text-navy/60 dark:text-white/60">Satisfaction</h3>
-        </div>
+          <h3 className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface-variant)]">Satisfaction</h3>
+        </Card>
 
-        <div className="md-card">
+        <Card variant="elevated" className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-red-500/10 rounded-lg">
-              <Utensils className="w-5 h-5 text-red-500" />
+            <div className="p-2 bg-[var(--md-sys-color-error-container)] rounded-lg">
+              <Utensils className="w-5 h-5 text-[var(--md-sys-color-error)]" />
             </div>
-            <span className="text-xl font-bold">{analytics.recentOrders.length}</span>
+            <span className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]">{analytics.recentOrders.length}</span>
           </div>
-          <h3 className="text-sm font-medium text-navy/60 dark:text-white/60">Recent Orders</h3>
-        </div>
+          <h3 className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface-variant)]">Recent Orders</h3>
+        </Card>
       </motion.div>
 
       {/* Main Content Grid */}
@@ -257,25 +263,35 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="md-card"
         >
-          <h3 className="text-lg font-semibold mb-4">Weekly Order Trends</h3>
-          <div className="space-y-3">
-            {analytics.weeklyOrders.map((day) => (
-              <div key={day.day} className="flex items-center justify-between">
-                <span className="text-sm text-navy/60 dark:text-white/60">{day.day}</span>
-                <div className="flex items-center gap-2 flex-1 mx-3">
-                  <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-500 transition-all duration-500"
-                      style={{ width: `${(day.orders / 7) * 100}%` }}
-                    />
+          <Card variant="elevated">
+            <CardContent className="p-6">
+              <h3 className="md3-title-large font-semibold mb-4 text-[var(--md-sys-color-on-surface)]">Weekly Order Trends</h3>
+              <div className="space-y-3">
+                {analytics.weeklyOrders.map((day) => (
+                  <div key={day.day} className="flex items-center justify-between">
+                    <span className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">{day.day}</span>
+                    <div className="flex items-center gap-2 flex-1 mx-3">
+                      <div 
+                        className="flex-1 h-2 bg-[var(--md-sys-color-surface-container-highest)] rounded-full overflow-hidden"
+                        role="progressbar"
+                        aria-label={`${day.day} orders`}
+                        aria-valuenow={day.orders}
+                        aria-valuemin={0}
+                        aria-valuemax={7}
+                      >
+                        <div
+                          className="h-full bg-[var(--md-sys-color-primary)] transition-all duration-500"
+                          style={{ width: `${(day.orders / 7) * 100}%` }}
+                        />
+                      </div>
+                      <span className="md3-body-small font-medium w-6 text-[var(--md-sys-color-on-surface)]">{day.orders}</span>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium w-6">{day.orders}</span>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Team Nutrition Profile */}
@@ -283,30 +299,40 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="md-card"
         >
-          <h3 className="text-lg font-semibold mb-4">Team Nutrition Profile</h3>
-          <div className="space-y-4">
-            {Object.entries(analytics.teamNutrition).map(([macro, value]) => (
-              <div key={macro}>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="capitalize font-medium">{macro}</span>
-                  <span className="font-bold">{value}%</span>
-                </div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${value}%` }}
-                    transition={{ delay: 0.5 + Object.keys(analytics.teamNutrition).indexOf(macro) * 0.1, duration: 0.8 }}
-                    className={`h-full transition-all ${
-                      macro === 'protein' ? 'bg-red-500' :
-                      macro === 'carbs' ? 'bg-green-500' : 'bg-yellow-500'
-                    }`}
-                  />
-                </div>
+          <Card variant="elevated">
+            <CardContent className="p-6">
+              <h3 className="md3-title-large font-semibold mb-4 text-[var(--md-sys-color-on-surface)]">Team Nutrition Profile</h3>
+              <div className="space-y-4">
+                {Object.entries(analytics.teamNutrition).map(([macro, value]) => (
+                  <div key={macro}>
+                    <div className="flex justify-between md3-body-small mb-2">
+                      <span className="capitalize font-medium text-[var(--md-sys-color-on-surface)]">{macro}</span>
+                      <span className="font-bold text-[var(--md-sys-color-on-surface)]">{value}%</span>
+                    </div>
+                    <div 
+                      className="h-3 bg-[var(--md-sys-color-surface-container-highest)] rounded-full overflow-hidden"
+                      role="progressbar"
+                      aria-label={`${macro} percentage`}
+                      aria-valuenow={value}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    >
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${value}%` }}
+                        transition={{ delay: 0.5 + Object.keys(analytics.teamNutrition).indexOf(macro) * 0.1, duration: 0.8 }}
+                        className={`h-full transition-all ${
+                          macro === 'protein' ? 'bg-[var(--md-sys-color-error)]' :
+                          macro === 'carbs' ? 'bg-[var(--md-saas-color-success)]' : 'bg-[var(--md-saas-color-warning)]'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Popular Items */}
@@ -314,20 +340,23 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="md-card"
         >
-          <h3 className="text-lg font-semibold mb-4">Most Popular Items</h3>
-          <div className="space-y-3">
-            {analytics.popularItems.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div>
-                  <p className="font-medium text-sm">{item.name}</p>
-                  <p className="text-xs text-navy/60 dark:text-white/60">{item.orders} orders</p>
-                </div>
-                <span className="text-xs font-medium text-green-600">{item.trend}</span>
+          <Card variant="elevated">
+            <CardContent className="p-6">
+              <h3 className="md3-title-large font-semibold mb-4 text-[var(--md-sys-color-on-surface)]">Most Popular Items</h3>
+              <div className="space-y-3">
+                {analytics.popularItems.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-[var(--md-sys-color-surface-container-highest)] rounded-lg">
+                    <div>
+                      <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">{item.name}</p>
+                      <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">{item.orders} orders</p>
+                    </div>
+                    <span className="md3-body-small font-medium text-[var(--md-saas-color-success)]">{item.trend}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
 
@@ -338,40 +367,48 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="md-card"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Upcoming Deliveries</h3>
-            <Link href="/order-history" className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
-              View All <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="space-y-3">
-            {analytics.upcomingDeliveries.map((delivery) => (
-              <div key={delivery.id} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="p-2 bg-blue-500/10 rounded-lg">
-                  <Clock className="w-4 h-4 text-blue-500" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{format(delivery.date, 'MMM d, h:mm a')}</p>
-                  <p className="text-xs text-navy/60 dark:text-white/60 mb-1">
-                    {delivery.items.join(', ')}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-3 h-3 text-navy/40" />
-                    <span className="text-xs text-navy/60 dark:text-white/60">{delivery.location}</span>
-                  </div>
-                </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  delivery.status === 'confirmed' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                    : 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
-                }`}>
-                  {delivery.status}
-                </span>
+          <Card variant="elevated">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="md3-title-large font-semibold text-[var(--md-sys-color-on-surface)]">Upcoming Deliveries</h3>
+                <Button 
+                  variant="text" 
+                  size="small" 
+                  rightIcon={<ChevronRight className="w-4 h-4" />}
+                  asChild
+                >
+                  <Link href="/order-history">View All</Link>
+                </Button>
               </div>
-            ))}
-          </div>
+              <div className="space-y-3">
+                {analytics.upcomingDeliveries.map((delivery) => (
+                  <div key={delivery.id} className="flex items-start gap-3 p-3 bg-[var(--md-sys-color-surface-container-highest)] rounded-lg">
+                    <div className="p-2 bg-[var(--md-sys-color-primary-container)] rounded-lg">
+                      <Clock className="w-4 h-4 text-[var(--md-sys-color-primary)]" aria-hidden="true" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">{format(delivery.date, 'MMM d, h:mm a')}</p>
+                      <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)] mb-1">
+                        {delivery.items.join(', ')}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-3 h-3 text-[var(--md-sys-color-on-surface-variant)]" aria-hidden="true" />
+                        <span className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">{delivery.location}</span>
+                      </div>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full md3-label-small font-medium ${
+                      delivery.status === 'confirmed' 
+                        ? 'bg-[var(--md-saas-color-success-container)] text-[var(--md-saas-color-on-success-container)]'
+                        : 'bg-[var(--md-saas-color-warning-container)] text-[var(--md-saas-color-on-warning-container)]'
+                    }`}>
+                      {delivery.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Achievements */}
@@ -379,25 +416,28 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="md-card"
         >
-          <h3 className="text-lg font-semibold mb-4">Recent Achievements</h3>
-          <div className="space-y-3">
-            {analytics.achievements.map((achievement, index) => {
-              const Icon = achievement.icon;
-              return (
-                <div key={index} className="flex items-start gap-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg">
-                  <div className="p-2 bg-yellow-500/20 rounded-lg">
-                    <Icon className="w-5 h-5 text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">{achievement.name}</p>
-                    <p className="text-xs text-navy/60 dark:text-white/60">{achievement.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <Card variant="elevated">
+            <CardContent className="p-6">
+              <h3 className="md3-title-large font-semibold mb-4 text-[var(--md-sys-color-on-surface)]">Recent Achievements</h3>
+              <div className="space-y-3">
+                {analytics.achievements.map((achievement, index) => {
+                  const Icon = achievement.icon;
+                  return (
+                    <div key={index} className="flex items-start gap-3 p-3 bg-[var(--md-sys-color-tertiary-container)] rounded-lg">
+                      <div className="p-2 bg-[var(--md-saas-color-warning-container)] rounded-lg">
+                        <Icon className="w-5 h-5 text-[var(--md-saas-color-warning)]" aria-hidden="true" />
+                      </div>
+                      <div>
+                        <p className="md3-body-medium font-semibold text-[var(--md-sys-color-on-surface)]">{achievement.name}</p>
+                        <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">{achievement.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
 
@@ -408,18 +448,18 @@ export default function DashboardPage() {
         transition={{ delay: 0.8 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       >
-        <Link href="/new-order" className="md-filled-button text-center">
-          Place New Order
-        </Link>
-        <Link href="/saved-templates" className="md-outlined-button text-center">
-          Use Saved Template
-        </Link>
-        <Link href="/calendar" className="md-outlined-button text-center">
-          View Team Calendar
-        </Link>
-        <Link href="/order-history" className="md-outlined-button text-center">
-          Order History
-        </Link>
+        <Button variant="filled" fullWidth asChild>
+          <Link href="/new-order">Place New Order</Link>
+        </Button>
+        <Button variant="outlined" fullWidth asChild>
+          <Link href="/saved-templates">Use Saved Template</Link>
+        </Button>
+        <Button variant="outlined" fullWidth asChild>
+          <Link href="/calendar">View Team Calendar</Link>
+        </Button>
+        <Button variant="outlined" fullWidth asChild>
+          <Link href="/order-history">Order History</Link>
+        </Button>
       </motion.div>
     </div>
   );

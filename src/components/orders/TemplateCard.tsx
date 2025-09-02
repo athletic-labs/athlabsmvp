@@ -5,6 +5,7 @@ import { Clock, Users } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cart-store';
 import TemplateDetailsModalEnhanced from './TemplateDetailsModalEnhanced';
 import { MealTemplate } from '@/lib/data/actual-menu-templates';
+import { Card, CardContent, Button, Chip } from '@/lib/design-system/components';
 
 interface TemplateCardProps {
   template: MealTemplate;
@@ -59,30 +60,30 @@ export default function TemplateCard({ template }: TemplateCardProps) {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow h-full flex flex-col min-h-[220px] max-h-[240px]">
-        <div className="p-4 flex-1 flex flex-col">
+      <Card variant="elevated" className="h-full flex flex-col min-h-[220px] max-h-[240px] hover:shadow-lg transition-shadow">
+        <CardContent className="p-4 flex-1 flex flex-col">
           {/* Compact Header */}
           <div className="flex items-start justify-between mb-2">
-            <h3 className="font-semibold text-sm leading-tight flex-1">
+            <h3 className="md3-title-medium font-semibold leading-tight flex-1 text-[var(--md-sys-color-on-surface)]">
               {template.name}
             </h3>
-            <span className="text-lg font-bold text-electric-blue ml-2 whitespace-nowrap">
+            <span className="md3-headline-small font-bold text-[var(--md-sys-color-primary)] ml-2 whitespace-nowrap">
               ${formatPrice(template.bundlePrice)}
             </span>
           </div>
           
           {/* Cuisine Badge */}
-          <p className={`text-xs font-medium mb-2 ${getCuisineColor(template.cuisineType)}`}>
+          <Chip variant="assist" size="small" className="mb-2 self-start">
             {template.cuisineType}
-          </p>
+          </Chip>
           
           {/* Compact Description */}
-          <p className="text-xs text-gray-600 mb-3 flex-1 line-clamp-2">
+          <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)] mb-3 flex-1 line-clamp-2">
             {template.description}
           </p>
           
           {/* Info Row */}
-          <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+          <div className="flex items-center gap-3 md3-body-small text-[var(--md-sys-color-on-surface-variant)] mb-3">
             <div className="flex items-center gap-1">
               <Users className="w-3 h-3" />
               <span>{template.servesCount}</span>
@@ -95,22 +96,26 @@ export default function TemplateCard({ template }: TemplateCardProps) {
           
           {/* Buttons */}
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => setShowDetails(true)}
-              className="flex-1 px-3 py-1.5 border border-electric-blue text-electric-blue rounded-lg text-xs font-medium hover:bg-electric-blue/5 transition-colors"
+              variant="outlined"
+              size="small"
+              className="flex-1"
             >
               View Details
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleQuickAdd}
               disabled={isQuickAdding}
-              className="flex-1 px-3 py-1.5 bg-electric-blue text-white rounded-lg text-xs font-medium hover:bg-electric-blue/90 transition-colors disabled:opacity-70"
+              variant="filled"
+              size="small"
+              className="flex-1"
             >
               {isQuickAdding ? 'Adding...' : 'Quick Add'}
-            </button>
+            </Button>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
       
       <TemplateDetailsModalEnhanced
         template={template}

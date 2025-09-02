@@ -9,6 +9,7 @@ import { SimpleAuthService } from '@/lib/auth/simple-auth';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Card, CardContent, Button, TextField } from '@/lib/design-system/components';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -56,9 +57,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-smoke/20 to-white dark:from-navy dark:to-navy/90">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--md-sys-color-surface-container-lowest)]">
       <div className="w-full max-w-md">
-        <div className="md-card">
+        <Card variant="elevated">
+          <CardContent className="p-8">
           <div className="flex justify-center mb-8">
             <Image
               src="/athletic-labs-logo.png"
@@ -70,8 +72,8 @@ export default function LoginPage() {
             />
           </div>
 
-          <h2 className="text-2xl font-medium text-center mb-2">Welcome Back</h2>
-          <p className="text-center text-navy/60 dark:text-white/60 mb-8">
+          <h2 className="md3-headline-medium font-medium text-center mb-2 text-[var(--md-sys-color-on-surface)]">Welcome Back</h2>
+          <p className="md3-body-large text-center text-[var(--md-sys-color-on-surface-variant)] mb-8">
             Sign in to your Athletic Labs account
           </p>
 
@@ -82,58 +84,39 @@ export default function LoginPage() {
               </div>
             )}
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Email Address
-              </label>
-              <input
-                {...register('email')}
-                type="email"
-                id="email"
-                className="md-text-field"
-                placeholder="you@team.com"
-                disabled={loading}
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
+            <TextField
+              {...register('email')}
+              type="email"
+              label="Email Address"
+              placeholder="you@team.com"
+              disabled={loading}
+              error={!!errors.email}
+              errorMessage={errors.email?.message}
+              variant="outlined"
+              fullWidth
+            />
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
-                Password
-              </label>
-              <input
-                {...register('password')}
-                type="password"
-                id="password"
-                className="md-text-field"
-                placeholder="••••••••"
-                disabled={loading}
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
+            <TextField
+              {...register('password')}
+              type="password"
+              label="Password"
+              placeholder="••••••••"
+              disabled={loading}
+              error={!!errors.password}
+              errorMessage={errors.password?.message}
+              variant="outlined"
+              fullWidth
+            />
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="md-filled-button w-full flex items-center justify-center"
+              variant="filled"
+              fullWidth
+              leftIcon={loading ? <Loader2 className="animate-spin h-4 w-4" /> : undefined}
             >
-              {loading ? (
-                <>
-                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </button>
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
           </form>
 
           <div className="mt-6 space-y-4">
@@ -149,22 +132,23 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-3">
-              <Link href="/request-access" className="md-outlined-button w-full text-center block">
-                Request Access
-              </Link>
-              <Link href="/signup" className="md-text-button w-full text-center block">
-                Have an invitation code? Get Started
-              </Link>
+              <Button variant="outlined" fullWidth asChild>
+                <Link href="/request-access">Request Access</Link>
+              </Button>
+              <Button variant="text" fullWidth asChild>
+                <Link href="/signup">Have an invitation code? Get Started</Link>
+              </Button>
             </div>
           </div>
 
-          <p className="mt-8 text-center text-xs text-navy/60 dark:text-white/60">
+          <p className="mt-8 text-center md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
             For technical support, email{' '}
-            <a href="mailto:support@athleticlabs.com" className="text-electric-blue hover:underline">
+            <a href="mailto:support@athleticlabs.com" className="text-[var(--md-sys-color-primary)] hover:underline">
               support@athleticlabs.com
             </a>
           </p>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

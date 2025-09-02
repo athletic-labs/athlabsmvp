@@ -4,12 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, ShoppingCart, Save, Calendar, History, Settings, LogOut, Menu, Moon, Sun, Plus } from 'lucide-react';
+import { Home, ShoppingCart, Save, Calendar, History, Settings, LogOut, Menu, Moon, Sun, Plus, X } from 'lucide-react';
 import { useMaterial3Theme } from '@/lib/design-system/theme';
 import { SimpleAuthService } from '@/lib/auth/simple-auth';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
-import { NavigationRailExpanded } from '@/lib/design-system/components';
-import { Button } from '@/lib/design-system/components';
+import { NavigationRailExpanded, ScreenReaderOnly, IconButton, Button, Badge } from '@/lib/design-system/components';
 import CartDrawer from '@/components/cart/CartDrawer';
 
 const NAVIGATION_ITEMS = [
@@ -58,12 +57,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const MobileHeader = () => (
     <header className="lg:hidden bg-[var(--md-sys-color-surface)] border-b border-[var(--md-sys-color-outline-variant)] p-4">
       <div className="flex items-center justify-between">
-        <Button
-          variant="text"
-          size="medium"
+        <IconButton
+          icon={<Menu className="w-6 h-6" />}
           onClick={() => setSidebarOpen(true)}
-          leftIcon={<Menu className="w-6 h-6" />}
-          className="p-2"
+          variant="standard"
+          aria-label="Open navigation menu"
         />
         <Image 
           src={colorScheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
@@ -72,19 +70,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           height={40}
           className="h-8 w-auto"
         />
-        <Button
-          variant="text"
-          size="medium"
-          onClick={openCart}
-          className="relative p-2"
-          leftIcon={<ShoppingCart className="w-6 h-6" />}
-        >
-          {itemCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-[var(--md-saas-color-error)] text-[var(--md-saas-color-on-error)] text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-              {itemCount > 99 ? '99+' : itemCount}
-            </span>
-          )}
-        </Button>
+        <Badge badgeContent={itemCount} color="error" invisible={itemCount === 0}>
+          <IconButton
+            icon={<ShoppingCart className="w-6 h-6" />}
+            onClick={openCart}
+            variant="standard"
+            aria-label={`Shopping cart ${itemCount > 0 ? `with ${itemCount} items` : '(empty)'}`}
+          />
+        </Badge>
       </div>
     </header>
   );
@@ -178,14 +171,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               height={44}
               className="h-10 w-auto"
             />
-            <Button
-              variant="text"
-              size="small"
+            <IconButton
+              icon={<X className="w-6 h-6" />}
               onClick={() => setSidebarOpen(false)}
-              className="p-1 lg:hidden"
-            >
-              ×
-            </Button>
+              variant="standard"
+              size="small"
+              aria-label="Close navigation menu"
+              className="lg:hidden"
+            />
           </div>
         }
         fabAction={{
@@ -247,14 +240,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen bg-[var(--md-sys-color-surface)]">
+      {/* Skip Links */}
+      <ScreenReaderOnly as="a" href="#main-content" className="focus:not-sr-only">
+        Skip to main content
+      </ScreenReaderOnly>
+      <ScreenReaderOnly as="a" href="#navigation" className="focus:not-sr-only">
+        Skip to navigation
+      </ScreenReaderOnly>
+      
       <MobileOverlay />
-      <DesktopNavigation />
-      <MobileNavigation />
+      <div id="navigation">
+        <DesktopNavigation />
+        <MobileNavigation />
+      </div>
 
       <div className="flex-1 flex flex-col">
         <MobileHeader />
         
-        <main className="flex-1 overflow-y-auto bg-[var(--md-sys-color-surface-container-lowest)]">
+        <main 
+          id="main-content"
+          className="flex-1 overflow-y-auto bg-[var(--md-sys-color-surface-container-lowest)]"
+          role="main"
+          aria-label="Main content area"
+        >
           <div className="p-6">{children}</div>
         </main>
       </div>

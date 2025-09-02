@@ -1,6 +1,6 @@
 'use client';
 
-import React, { forwardRef } from 'react';
+import React, { forwardRef, memo } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +10,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   asChild?: boolean;
 }
 
-const Card = forwardRef<HTMLDivElement, CardProps>(
+const Card = memo(forwardRef<HTMLDivElement, CardProps>(
   (
     {
       className,
@@ -74,12 +74,12 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       </Comp>
     );
   }
-);
+));
 
 Card.displayName = 'Card';
 
 // Card Sub-components
-const CardHeader = forwardRef<
+const CardHeader = memo(forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
@@ -88,10 +88,10 @@ const CardHeader = forwardRef<
     className={cn('flex flex-col space-y-1.5 p-6', className)}
     {...props}
   />
-));
+)));
 CardHeader.displayName = 'CardHeader';
 
-const CardTitle = forwardRef<
+const CardTitle = memo(forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
@@ -100,10 +100,10 @@ const CardTitle = forwardRef<
     className={cn('md3-title-large font-semibold leading-none tracking-tight', className)}
     {...props}
   />
-));
+)));
 CardTitle.displayName = 'CardTitle';
 
-const CardDescription = forwardRef<
+const CardDescription = memo(forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
@@ -112,18 +112,18 @@ const CardDescription = forwardRef<
     className={cn('md3-body-medium text-[var(--md-sys-color-on-surface-variant)]', className)}
     {...props}
   />
-));
+)));
 CardDescription.displayName = 'CardDescription';
 
-const CardContent = forwardRef<
+const CardContent = memo(forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
-));
+)));
 CardContent.displayName = 'CardContent';
 
-const CardFooter = forwardRef<
+const CardFooter = memo(forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
@@ -132,7 +132,7 @@ const CardFooter = forwardRef<
     className={cn('flex items-center p-6 pt-0', className)}
     {...props}
   />
-));
+)));
 CardFooter.displayName = 'CardFooter';
 
 export { 

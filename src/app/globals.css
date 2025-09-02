@@ -27,6 +27,71 @@
     outline-offset: 2px;
     border-radius: var(--md-sys-shape-corner-small);
   }
+  
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    * {
+      --md-sys-color-outline: #000000;
+      --md-sys-color-outline-variant: #333333;
+    }
+    
+    .dark * {
+      --md-sys-color-outline: #ffffff;
+      --md-sys-color-outline-variant: #cccccc;
+    }
+  }
+  
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  .sr-only.focus:not(.focus\:not-sr-only):focus,
+  .sr-only.focus-within:not(.focus-within\:not-sr-only):focus-within {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  /* Material 3 Progress Animations */
+  @keyframes md-progress-indeterminate {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(300%);
+    }
+  }
+  
+  .md-progress-indeterminate {
+    animation: md-progress-indeterminate 2s infinite linear;
+  }
 }
 
 @layer components {

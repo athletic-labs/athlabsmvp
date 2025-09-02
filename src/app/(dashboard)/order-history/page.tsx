@@ -5,6 +5,7 @@ import { Package, Eye, Repeat, Download, Calendar, Clock, CheckCircle, XCircle, 
 import { format, subDays } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DataTable, Button, Card, CardHeader, CardTitle } from '@/lib/design-system/components';
+import { FocusTrap } from '@/lib/design-system/accessibility/FocusTrap';
 import type { Column } from '@/lib/design-system/components';
 
 interface OrderItem {
@@ -388,19 +389,35 @@ export default function OrderHistoryPage() {
               className="fixed inset-0 bg-[var(--md-sys-color-scrim)]/50 z-40"
             />
             
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="fixed inset-4 md:inset-8 lg:inset-16 bg-[var(--md-sys-color-surface)] md-elevation-3 rounded-xl z-50 flex flex-col max-h-screen"
-            >
+            <FocusTrap active={true}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="fixed inset-4 md:inset-8 lg:inset-16 bg-[var(--md-sys-color-surface)] md-elevation-3 rounded-xl z-50 flex flex-col max-h-screen"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="order-detail-title"
+                aria-describedby="order-detail-description"
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setSelectedOrder(null);
+                  }
+                }}
+              >
               {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-[var(--md-sys-color-outline-variant)]">
                 <div>
-                  <h2 className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]">
+                  <h2 
+                    id="order-detail-title"
+                    className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]"
+                  >
                     Order Details
                   </h2>
-                  <p className="md3-body-medium text-[var(--md-sys-color-on-surface-variant)] mt-1">
+                  <p 
+                    id="order-detail-description"
+                    className="md3-body-medium text-[var(--md-sys-color-on-surface-variant)] mt-1"
+                  >
                     {selectedOrder.orderNumber} - {format(selectedOrder.date, 'MMM d, yyyy')}
                   </p>
                 </div>
@@ -409,6 +426,7 @@ export default function OrderHistoryPage() {
                   size="small"
                   onClick={() => setSelectedOrder(null)}
                   className="p-2"
+                  aria-label="Close order details"
                 >
                   ×
                 </Button>
@@ -560,6 +578,7 @@ export default function OrderHistoryPage() {
                 </div>
               </div>
             </motion.div>
+            </FocusTrap>
           </>
         )}
       </AnimatePresence>

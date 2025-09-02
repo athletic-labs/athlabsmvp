@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, ReactNode } from 'react';
+import React, { useState, useCallback, useMemo, ReactNode, memo } from 'react';
 import { ChevronUp, ChevronDown, MoreVertical, Check, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
@@ -48,6 +48,110 @@ export interface DataTableProps<T = any> {
     destructive?: boolean;
   }>;
 }
+
+// Memoized table row for performance - using any type for simplicity
+const TableRow = memo(function TableRow({
+  row,
+  index,
+  columns,
+  rowId,
+  isSelected,
+  selectable,
+  density,
+  onRowClick,
+  onRowSelect,
+  getRowKey,
+  densityClasses
+}: {
+  row: any;
+  index: number;
+  columns: Column<any>[];
+  rowId: string;
+  isSelected: boolean;
+  selectable: boolean;
+  density: 'comfortable' | 'compact' | 'spacious';
+  onRowClick?: (row: any, index: number) => void;
+  onRowSelect: (rowId: string, selected: boolean) => void;
+  getRowKey: (row: any, index: number) => string;
+  densityClasses: Record<string, string>;
+}) {
+  return (
+    <tr
+      className={cn(
+        'border-b border-[var(--md-sys-color-outline-variant)] transition-colors',
+        'hover:bg-[var(--md-sys-color-on-surface)]/4',
+        isSelected && 'bg-[var(--md-sys-color-primary-container)]/20',
+        onRowClick && 'cursor-pointer'
+      )}
+      onClick={() => onRowClick?.(row, index)}
+      role="row"
+      aria-rowindex={index + 2}
+      aria-selected={selectable ? isSelected : undefined}
+      tabIndex={onRowClick ? 0 : undefined}
+      onKeyDown={onRowClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onRowClick(row, index);
+        }
+      } : undefined}
+    >
+      {selectable && (
+        <td 
+          className={densityClasses[density]}
+          role="cell"
+          aria-colindex={1}
+        >
+          <div className="flex items-center">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={isSelected}
+                onChange={(e) => onRowSelect(rowId, e.target.checked)}
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`Select row ${index + 1}`}
+              />
+              <div className={cn(
+                'w-5 h-5 border-2 rounded-sm flex items-center justify-center transition-colors',
+                isSelected
+                  ? 'bg-[var(--md-sys-color-primary)] border-[var(--md-sys-color-primary)]'
+                  : 'border-[var(--md-sys-color-outline)]'
+              )}>
+                {isSelected && (
+                  <Check className="w-3 h-3 text-[var(--md-sys-color-on-primary)]" aria-hidden="true" />
+                )}
+              </div>
+            </label>
+          </div>
+        </td>
+      )}
+      
+      {columns.map((column, colIndex) => (
+        <td
+          key={column.key}
+          className={cn(
+            'md3-body-medium text-[var(--md-sys-color-on-surface)]',
+            densityClasses[density],
+            column.align === 'center' && 'text-center',
+            column.align === 'right' && 'text-right',
+            column.sticky && 'sticky left-0 bg-[var(--md-sys-color-surface)] border-r border-[var(--md-sys-color-outline-variant)]'
+          )}
+          style={{
+            width: column.width,
+            minWidth: column.minWidth
+          }}
+          role="cell"
+          aria-colindex={colIndex + (selectable ? 2 : 1)}
+        >
+          {column.render 
+            ? column.render((row as any)[column.key], row, index)
+            : (row as any)[column.key]
+          }
+        </td>
+      ))}
+    </tr>
+  );
+});
 
 export function DataTable<T>({
   data,
@@ -185,11 +289,26 @@ export function DataTable<T>({
         className="overflow-auto"
         style={{ maxHeight }}
       >
-        <table className="w-full">
-          <thead className={cn(stickyHeader && 'sticky top-0 z-10')}>
-            <tr className="bg-[var(--md-sys-color-surface-container)] border-b border-[var(--md-sys-color-outline-variant)]">
+        <table 
+          className="w-full" 
+          role="table"
+          aria-label={`Data table with ${data.length} rows`}
+          aria-rowcount={data.length + 1}
+          aria-colcount={columns.length + (selectable ? 1 : 0)}
+        >
+          <thead className={cn(stickyHeader && 'sticky top-0 z-10')} role="rowgroup">
+            <tr 
+              className="bg-[var(--md-sys-color-surface-container)] border-b border-[var(--md-sys-color-outline-variant)]"
+              role="row"
+              aria-rowindex={1}
+            >
               {selectable && (
-                <th className={cn('text-left', densityClasses[density])}>
+                <th 
+                  className={cn('text-left', densityClasses[density])}
+                  role="columnheader"
+                  aria-colindex={1}
+                  scope="col"
+                >
                   <div className="flex items-center">
                     <label className="flex items-center cursor-pointer">
                       <input
@@ -200,6 +319,7 @@ export function DataTable<T>({
                           if (el) el.indeterminate = isIndeterminate;
                         }}
                         onChange={(e) => handleSelectAll(e.target.checked)}
+                        aria-label={isAllSelected ? 'Deselect all rows' : isIndeterminate ? 'Select all rows (some selected)' : 'Select all rows'}
                       />
                       <div className={cn(
                         'w-5 h-5 border-2 rounded-sm flex items-center justify-center transition-colors',
@@ -208,7 +328,7 @@ export function DataTable<T>({
                           : 'border-[var(--md-sys-color-outline)]'
                       )}>
                         {(isAllSelected || isIndeterminate) && (
-                          <Check className="w-3 h-3 text-[var(--md-sys-color-on-primary)]" />
+                          <Check className="w-3 h-3 text-[var(--md-sys-color-on-primary)]" aria-hidden="true" />
                         )}
                       </div>
                     </label>
@@ -216,7 +336,7 @@ export function DataTable<T>({
                 </th>
               )}
               
-              {columns.map((column) => (
+              {columns.map((column, colIndex) => (
                 <th
                   key={column.key}
                   className={cn(
@@ -230,18 +350,31 @@ export function DataTable<T>({
                     width: column.width,
                     minWidth: column.minWidth
                   }}
+                  role="columnheader"
+                  aria-colindex={colIndex + (selectable ? 2 : 1)}
+                  scope="col"
+                  aria-sort={
+                    sortConfig?.key === column.key 
+                      ? sortConfig.direction === 'asc' ? 'ascending' : 'descending'
+                      : column.sortable ? 'none' : undefined
+                  }
                 >
                   {column.sortable ? (
                     <button
                       className="flex items-center gap-1 hover:bg-[var(--md-sys-color-on-surface)]/8 p-1 rounded transition-colors"
                       onClick={() => handleSort(column.key)}
+                      aria-label={`Sort by ${column.title} ${
+                        sortConfig?.key === column.key 
+                          ? sortConfig.direction === 'asc' ? 'descending' : 'ascending'
+                          : 'ascending'
+                      }`}
                     >
                       {column.title}
                       <div className="flex flex-col">
                         <ChevronUp 
                           className={cn(
                             'w-3 h-3 -mb-1',
-                            sortConfig?.key === column.key && sortConfig.direction === 'asc'
+                            sortConfig?.key === column.key && sortConfig?.direction === 'asc'
                               ? 'text-[var(--md-sys-color-primary)]'
                               : 'text-[var(--md-sys-color-on-surface-variant)]'
                           )}
@@ -249,7 +382,7 @@ export function DataTable<T>({
                         <ChevronDown 
                           className={cn(
                             'w-3 h-3',
-                            sortConfig?.key === column.key && sortConfig.direction === 'desc'
+                            sortConfig?.key === column.key && sortConfig?.direction === 'desc'
                               ? 'text-[var(--md-sys-color-primary)]'
                               : 'text-[var(--md-sys-color-on-surface-variant)]'
                           )}
@@ -264,7 +397,7 @@ export function DataTable<T>({
             </tr>
           </thead>
           
-          <tbody>
+          <tbody role="rowgroup">
             {loading ? (
               <tr>
                 <td colSpan={columns.length + (selectable ? 1 : 0)} className="text-center py-8">
@@ -293,64 +426,20 @@ export function DataTable<T>({
                 const isSelected = selectedRows.includes(rowId);
                 
                 return (
-                  <tr
+                  <TableRow
                     key={rowId}
-                    className={cn(
-                      'border-b border-[var(--md-sys-color-outline-variant)] transition-colors',
-                      'hover:bg-[var(--md-sys-color-on-surface)]/4',
-                      isSelected && 'bg-[var(--md-sys-color-primary-container)]/20',
-                      onRowClick && 'cursor-pointer'
-                    )}
-                    onClick={() => onRowClick?.(row, index)}
-                  >
-                    {selectable && (
-                      <td className={densityClasses[density]}>
-                        <div className="flex items-center">
-                          <label className="flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="sr-only"
-                              checked={isSelected}
-                              onChange={(e) => handleRowSelect(rowId, e.target.checked)}
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            <div className={cn(
-                              'w-5 h-5 border-2 rounded-sm flex items-center justify-center transition-colors',
-                              isSelected
-                                ? 'bg-[var(--md-sys-color-primary)] border-[var(--md-sys-color-primary)]'
-                                : 'border-[var(--md-sys-color-outline)]'
-                            )}>
-                              {isSelected && (
-                                <Check className="w-3 h-3 text-[var(--md-sys-color-on-primary)]" />
-                              )}
-                            </div>
-                          </label>
-                        </div>
-                      </td>
-                    )}
-                    
-                    {columns.map((column) => (
-                      <td
-                        key={column.key}
-                        className={cn(
-                          'md3-body-medium text-[var(--md-sys-color-on-surface)]',
-                          densityClasses[density],
-                          column.align === 'center' && 'text-center',
-                          column.align === 'right' && 'text-right',
-                          column.sticky && 'sticky left-0 bg-[var(--md-sys-color-surface)] border-r border-[var(--md-sys-color-outline-variant)]'
-                        )}
-                        style={{
-                          width: column.width,
-                          minWidth: column.minWidth
-                        }}
-                      >
-                        {column.render 
-                          ? column.render((row as any)[column.key], row, index)
-                          : (row as any)[column.key]
-                        }
-                      </td>
-                    ))}
-                  </tr>
+                    row={row}
+                    index={index}
+                    columns={columns}
+                    rowId={rowId}
+                    isSelected={isSelected}
+                    selectable={selectable}
+                    density={density}
+                    onRowClick={onRowClick}
+                    onRowSelect={handleRowSelect}
+                    getRowKey={getRowKey}
+                    densityClasses={densityClasses}
+                  />
                 );
               })
             )}
