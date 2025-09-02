@@ -43,7 +43,8 @@ const TextField = memo(forwardRef<HTMLInputElement, TextFieldProps>(
   ) => {
     const [focused, setFocused] = useState(false);
     const [internalValue, setInternalValue] = useState(defaultValue || '');
-    const currentValue = value !== undefined ? value : internalValue;
+    const isControlled = value !== undefined;
+    const currentValue = isControlled ? value : internalValue;
     const hasValue = String(currentValue).length > 0;
 
     const inputId = id || `textfield-${Math.random().toString(36).substr(2, 9)}`;
@@ -59,7 +60,7 @@ const TextField = memo(forwardRef<HTMLInputElement, TextFieldProps>(
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (value === undefined) {
+      if (!isControlled) {
         setInternalValue(e.target.value);
       }
       props.onChange?.(e);
@@ -143,12 +144,12 @@ const TextField = memo(forwardRef<HTMLInputElement, TextFieldProps>(
             ref={ref}
             id={inputId}
             className={cn(...inputClasses)}
-            value={currentValue}
             onFocus={handleFocus}
             onBlur={handleBlur}
             onChange={handleChange}
             maxLength={maxLength}
             {...props}
+            value={currentValue}
           />
           
           {label && (
