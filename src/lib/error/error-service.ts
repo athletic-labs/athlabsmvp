@@ -214,13 +214,14 @@ export class ErrorService {
       // Integration point for external monitoring services
       // Example: Sentry, DataDog, New Relic, etc.
       
-      if (typeof window !== 'undefined' && (window as any).__SENTRY__) {
-        // Sentry integration example
-        // Sentry.captureException(new Error(error.message), {
-        //   tags: { errorCode: error.code },
-        //   extra: error.details,
-        //   user: { id: error.userId },
-        // });
+      if (typeof window !== 'undefined') {
+        // Sentry integration
+        const Sentry = await import('@sentry/nextjs');
+        Sentry.captureException(new Error(error.message), {
+          tags: { errorCode: error.code },
+          extra: error.details,
+          user: { id: error.userId },
+        });
       }
       
       // Could also send to custom monitoring endpoint

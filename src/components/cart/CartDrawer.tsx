@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Minus, Trash2, ShoppingCart, ChevronRight, Tag, Clock, AlertCircle, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 import { format, addDays } from 'date-fns';
 import Link from 'next/link';
 import { Button, IconButton, TextField, Card, Badge } from '@/lib/design-system/components';
@@ -190,11 +190,11 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         </div>
                         <div className="text-right">
                           <p className="font-semibold">
-                            ${((item.unitPrice * item.quantity) + (item.addOnsTotal || 0)).toFixed(2)}
+                            ${((item.unitPrice * item.quantity) + ((item.addOns?.reduce((sum, addon) => sum + addon.price * addon.quantity, 0)) || 0)).toFixed(2)}
                           </p>
-                          {item.addOnsTotal && item.addOnsTotal > 0 && (
+                          {item.addOns && item.addOns.length > 0 && (
                             <p className="text-xs text-gray-500">
-                              Base: ${(item.unitPrice * item.quantity).toFixed(2)} + Add-ons: ${item.addOnsTotal.toFixed(2)}
+                              Base: ${(item.unitPrice * item.quantity).toFixed(2)} + Add-ons: ${(item.addOns.reduce((sum, addon) => sum + addon.price * addon.quantity, 0)).toFixed(2)}
                             </p>
                           )}
                         </div>

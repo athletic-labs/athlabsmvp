@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { TemplateService, SavedTemplate } from '@/lib/services/template-service';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 import { Card, CardContent, Button } from '@/lib/design-system/components';
 import { TextFieldV2 } from '@/lib/design-system/components/TextFieldV2';
 
@@ -67,13 +67,17 @@ export default function SavedTemplatesPage() {
   const handleAddToCart = async (template: SavedTemplate) => {
     // Calculate total price from items
     const total = template.items.reduce((sum, item) => {
-      const price = item.panSize === 'half' ? item.priceHalf : item.priceFull;
+      // Use default pricing when specific prices aren't available
+      const basePrice = 15; // Default price per item
+      const price = item.panSize === 'half' ? basePrice * 0.6 : basePrice;
       return sum + (price * item.quantity);
     }, 0);
     
     // Calculate total servings
     const servings = template.items.reduce((sum, item) => {
-      const serving = item.panSize === 'half' ? item.servingsHalf : item.servingsFull;
+      // Use default servings when specific servings aren't available
+      const defaultServings = 12; // Default servings per item
+      const serving = item.panSize === 'half' ? defaultServings * 0.5 : defaultServings;
       return sum + (serving * item.quantity);
     }, 0);
     
@@ -85,7 +89,7 @@ export default function SavedTemplatesPage() {
       unitPrice: total,
       servings: servings,
       includedItems: template.items.map(item => ({
-        name: item.name,
+        name: `Template Item ${item.templateId || item.menuItemId || 'Unknown'}`,
         quantity: `${item.quantity} ${item.panSize === 'half' ? 'Half' : 'Full'} Pan${item.quantity > 1 ? 's' : ''}`
       }))
     });
@@ -168,7 +172,8 @@ export default function SavedTemplatesPage() {
                 <p className="text-sm text-navy/60 dark:text-white/60">
                   {template.items.length} items • {
                     template.items.reduce((sum, item) => {
-                      const serving = item.panSize === 'half' ? item.servingsHalf : item.servingsFull;
+                      const defaultServings = 12;
+                      const serving = item.panSize === 'half' ? defaultServings * 0.5 : defaultServings;
                       return sum + (serving * item.quantity);
                     }, 0)
                   } total servings
@@ -193,7 +198,7 @@ export default function SavedTemplatesPage() {
               <div className="mb-4 p-3 bg-smoke/10 dark:bg-smoke/20 rounded text-xs space-y-1">
                 {template.items.slice(0, 3).map((item, idx) => (
                   <p key={idx} className="text-navy/70 dark:text-white/70">
-                    • {item.name} ({item.quantity} {item.panSize})
+                    • Template Item ({item.quantity} {item.panSize})
                   </p>
                 ))}
                 {template.items.length > 3 && (

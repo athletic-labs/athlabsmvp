@@ -19,6 +19,12 @@ export interface CartItem {
     original: string;
     replacement: string;
   }>;
+  addOns?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }>;
   notes?: string;
   image?: string;
   category?: string;

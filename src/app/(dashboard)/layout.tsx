@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Home, ShoppingCart, Save, Calendar, History, Settings, LogOut, Menu, Moon, Sun, Plus, X } from 'lucide-react';
 import { useMaterial3Theme } from '@/lib/design-system/theme';
 import { SimpleAuthService } from '@/lib/auth/simple-auth';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 import { NavigationRailExpanded, ScreenReaderOnly, IconButton, Button, Badge } from '@/lib/design-system/components';
 import CartDrawer from '@/components/cart/CartDrawer';
 

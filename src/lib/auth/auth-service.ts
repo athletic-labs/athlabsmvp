@@ -51,7 +51,12 @@ export class AuthService {
         await this.updateLastLogin(data.user.id);
         
         // Create session record
-        await this.createSession(data.user.id, data.session);
+        if (data.session?.access_token && data.session?.expires_at) {
+          await this.createSession(data.user.id, {
+            access_token: data.session.access_token,
+            expires_at: data.session.expires_at
+          });
+        }
         
         // Log successful login
         await RBACService.logAuditEvent('login', 'auth', data.user.id);
@@ -264,7 +269,7 @@ export class AuthService {
 
       if (profile) {
         const attempts = (profile.failed_login_attempts || 0) + 1;
-        const updates: any = { failed_login_attempts: attempts };
+        const updates: { failed_login_attempts: number; locked_until?: string } = { failed_login_attempts: attempts };
 
         if (attempts >= this.MAX_LOGIN_ATTEMPTS) {
           updates.locked_until = new Date(Date.now() + this.LOCKOUT_DURATION).toISOString();
@@ -305,7 +310,7 @@ export class AuthService {
     }
   }
 
-  private static async createSession(userId: string, session: any): Promise<void> {
+  private static async createSession(userId: string, session: { access_token: string; expires_at: number }): Promise<void> {
     try {
       await this.supabase
         .from('user_sessions')

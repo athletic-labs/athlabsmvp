@@ -1,11 +1,20 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
+export interface SavedTemplateItem {
+  templateId?: string;
+  menuItemId?: string;
+  quantity: number;
+  panSize?: 'half' | 'full';
+  substitutions?: Record<string, string>;
+  notes?: string;
+}
+
 export interface SavedTemplate {
   id: string;
   team_id: string;
   created_by: string;
   name: string;
-  items: any[];
+  items: SavedTemplateItem[];
   times_used: number;
   last_used_at?: string;
   created_at: string;
@@ -17,7 +26,7 @@ export class TemplateService {
   /**
    * Save a new template
    */
-  static async saveTemplate(name: string, items: any[]): Promise<SavedTemplate> {
+  static async saveTemplate(name: string, items: SavedTemplateItem[]): Promise<SavedTemplate> {
     const response = await fetch('/api/templates', {
       method: 'POST',
       headers: {

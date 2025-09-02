@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Clock, Users } from 'lucide-react';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 import TemplateDetailsModalEnhanced from './TemplateDetailsModalEnhanced';
 import { MealTemplate } from '@/lib/data/actual-menu-templates';
 

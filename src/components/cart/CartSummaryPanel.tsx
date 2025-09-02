@@ -1,7 +1,7 @@
 'use client';
 
 import { ShoppingCart, X, ChevronRight, AlertCircle } from 'lucide-react';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CartSummaryPanelProps {
@@ -67,8 +67,8 @@ export default function CartSummaryPanel({ onViewCart }: CartSummaryPanelProps) 
                 <p className="text-sm font-medium text-navy dark:text-white">{item.name}</p>
                 <p className="text-xs text-navy/60 dark:text-white/60">
                   Qty: {item.quantity} • ${item.unitPrice.toLocaleString()}
-                  {item.addOnsTotal && item.addOnsTotal > 0 && (
-                    <span className="text-electric-blue"> (+${item.addOnsTotal.toFixed(2)} add-ons)</span>
+                  {item.addOns && item.addOns.length > 0 && (
+                    <span className="text-electric-blue"> (+${(item.addOns.reduce((sum, addon) => sum + addon.price * addon.quantity, 0)).toFixed(2)} add-ons)</span>
                   )}
                 </p>
                 {item.type === 'template' && item.addOns && item.addOns.length > 0 && (

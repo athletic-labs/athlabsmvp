@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { X, Check, Clock, Users, Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 import { MealTemplateComplete } from '@/lib/data/templates-with-items';
 
 interface TemplateDetailsModalProps {

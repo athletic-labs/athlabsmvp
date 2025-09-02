@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Replace, ArrowRight, Check, AlertTriangle, Utensils, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { useCartStore } from '@/lib/store/cart-store';
 
 interface TemplateItem {
   id: string;
