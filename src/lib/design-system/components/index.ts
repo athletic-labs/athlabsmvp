@@ -52,5 +52,20 @@ export type { SwitchProps } from './Switch';
 export { Slider } from './Slider';
 export type { SliderProps } from './Slider';
 
+export { Dialog } from './Dialog';
+export type { DialogProps } from './Dialog';
+
+export { Menu, MenuItem } from './Menu';
+export type { MenuProps, MenuItemProps } from './Menu';
+
+export { Select } from './Select';
+export type { SelectProps, SelectOption } from './Select';
+
+export { FloatingActionButton } from './FloatingActionButton';
+export type { FloatingActionButtonProps } from './FloatingActionButton';
+
+export { Tooltip } from './Tooltip';
+export type { TooltipProps } from './Tooltip';
+
 // Accessibility components
 export { ScreenReaderOnly, FocusTrap, LiveRegion, GlobalLiveAnnouncer } from '../accessibility';

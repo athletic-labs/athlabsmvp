@@ -19,23 +19,23 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--md-sys-color-surface-container-lowest)] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <AlertTriangle className="mx-auto h-16 w-16 text-red-500" />
-          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+          <AlertTriangle className="mx-auto h-16 w-16 text-[var(--md-sys-color-error)]" aria-hidden="true" />
+          <h2 className="mt-6 md3-display-small font-bold text-[var(--md-sys-color-on-surface)]">
             Something went wrong
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 md3-body-medium text-[var(--md-sys-color-on-surface-variant)]">
             We apologize for the inconvenience. The error has been logged and our team has been notified.
           </p>
           
           {process.env.NODE_ENV === 'development' && (
             <details className="mt-4 text-left">
-              <summary className="cursor-pointer text-sm font-medium text-gray-500 hover:text-gray-700">
+              <summary className="cursor-pointer md3-body-small font-medium text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]">
                 Error Details (Development Only)
               </summary>
-              <pre className="mt-2 text-xs bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-auto max-h-40">
+              <pre className="mt-2 md3-body-small bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)] p-3 rounded-[var(--md-sys-shape-corner-small)] overflow-auto max-h-40">
                 {error.message}
                 {'\n\n'}
                 {error.stack}
@@ -47,9 +47,9 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
         <div className="space-y-3">
           <button
             onClick={resetErrorBoundary}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent md3-label-large font-medium rounded-[var(--md-sys-shape-corner-full)] text-[var(--md-sys-color-on-primary)] bg-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--md-sys-color-primary)]"
           >
-            <RefreshCw className="w-4 h-4 mr-2" />
+            <RefreshCw className="w-4 h-4 mr-2" aria-hidden="true" />
             Try Again
           </button>
           

@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { TemplateService, SavedTemplate } from '@/lib/services/template-service';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { Card, CardContent, Button } from '@/lib/design-system/components';
+import { TextFieldV2 } from '@/lib/design-system/components/TextFieldV2';
 
 export default function SavedTemplatesPage() {
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
@@ -121,18 +123,19 @@ export default function SavedTemplatesPage() {
         </Link>
       </div>
       
-      <div className="md-card mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-navy/50 dark:text-white/50 w-5 h-5" />
-          <input
+      <Card variant="filled" className="mb-6">
+        <CardContent className="p-4">
+          <TextFieldV2
             type="text"
             placeholder="Search saved templates..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="md-text-field pl-10"
+            leadingIcon={<Search className="w-5 h-5" />}
+            variant="outlined"
+            fullWidth
           />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
       
       {filteredTemplates.length === 0 ? (
         <div className="text-center py-12 bg-smoke/10 dark:bg-smoke/20 rounded-lg">

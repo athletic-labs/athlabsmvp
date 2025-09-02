@@ -44,18 +44,18 @@ export default function TemplateCard({ template }: TemplateCardProps) {
     setIsQuickAdding(false);
   };
   
-  const getCuisineColor = (type: string) => {
-    const colors: Record<string, string> = {
-      'Mediterranean': 'text-blue-600',
-      'Mexican': 'text-orange-600',
-      'Asian': 'text-purple-600',
-      'Italian': 'text-green-600',
-      'Latin': 'text-red-600',
-      'American': 'text-red-700',
-      'Premium': 'text-purple-700',
-      'Breakfast': 'text-amber-600'
+  const getCuisineVariant = (type: string) => {
+    const variants: Record<string, 'assist' | 'filter' | 'input' | 'suggestion'> = {
+      'Mediterranean': 'assist',
+      'Mexican': 'filter', 
+      'Asian': 'suggestion',
+      'Italian': 'assist',
+      'Latin': 'filter',
+      'American': 'assist',
+      'Premium': 'suggestion',
+      'Breakfast': 'filter'
     };
-    return colors[type] || 'text-gray-600';
+    return variants[type] || 'assist';
   };
 
   return (
@@ -73,7 +73,7 @@ export default function TemplateCard({ template }: TemplateCardProps) {
           </div>
           
           {/* Cuisine Badge */}
-          <Chip variant="assist" size="small" className="mb-2 self-start">
+          <Chip variant={getCuisineVariant(template.cuisineType)} size="small" className="mb-2 self-start">
             {template.cuisineType}
           </Chip>
           

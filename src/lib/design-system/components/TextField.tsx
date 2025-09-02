@@ -43,11 +43,12 @@ const TextField = memo(forwardRef<HTMLInputElement, TextFieldProps>(
   ) => {
     const [focused, setFocused] = useState(false);
     const [internalValue, setInternalValue] = useState(defaultValue || '');
-    const isControlled = value !== undefined;
-    const currentValue = isControlled ? value : internalValue;
-    const hasValue = String(currentValue).length > 0;
-
+    
     const inputId = id || `textfield-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Use external value if provided, otherwise use internal state
+    const displayValue = value !== undefined ? value : internalValue;
+    const hasValue = String(displayValue).length > 0;
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
       setFocused(true);
@@ -60,9 +61,11 @@ const TextField = memo(forwardRef<HTMLInputElement, TextFieldProps>(
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!isControlled) {
+      // Always update internal state for uncontrolled usage
+      if (value === undefined) {
         setInternalValue(e.target.value);
       }
+      // Always call external onChange if provided
       props.onChange?.(e);
     };
 
@@ -129,7 +132,7 @@ const TextField = memo(forwardRef<HTMLInputElement, TextFieldProps>(
       error ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface-variant)]'
     ], [error]);
 
-    const currentLength = String(currentValue).length;
+    const currentLength = String(displayValue).length;
 
     return (
       <div className={cn(...baseClasses, className)}>
@@ -149,7 +152,7 @@ const TextField = memo(forwardRef<HTMLInputElement, TextFieldProps>(
             onChange={handleChange}
             maxLength={maxLength}
             {...props}
-            value={currentValue}
+            value={displayValue}
           />
           
           {label && (

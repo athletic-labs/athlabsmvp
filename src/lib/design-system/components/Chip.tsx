@@ -134,8 +134,11 @@ const Chip = memo(forwardRef<HTMLButtonElement, ChipProps>(
           </button>
         )}
         
-        {/* State layer */}
-        <span className="absolute inset-0 rounded-full transition-opacity duration-200 opacity-0 hover:opacity-100 bg-current/8" />
+        {/* Material 3 State layer */}
+        <span 
+          className="absolute inset-0 rounded-full transition-opacity duration-200 opacity-0 hover:opacity-8 focus-visible:opacity-12 active:opacity-16 bg-[var(--md-sys-color-on-surface)]" 
+          aria-hidden="true"
+        />
       </button>
     );
   }

@@ -163,7 +163,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       {/* Show substitutions */}
                       {item.substitutions && item.substitutions.length > 0 && (
                         <div className="mb-3 text-xs">
-                          <p className="text-orange-600 dark:text-orange-400">
+                          <p className="text-[var(--md-saas-color-warning)]">
                             Substitutions: {item.substitutions.map(s => s.replacement).join(', ')}
                           </p>
                         </div>
@@ -240,14 +240,14 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               <div className="border-t border-gray-200 dark:border-gray-700 p-6 space-y-4">
                 {/* Minimum Order Warning */}
                 {belowMinimum && (
-                  <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                  <div className="p-3 bg-[var(--md-saas-color-warning-container)] rounded-lg">
                     <div className="flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <div className="text-sm">
-                        <p className="font-medium text-orange-900 dark:text-orange-100">
+                      <AlertCircle className="w-4 h-4 text-[var(--md-saas-color-warning)] flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <div className="md3-body-small">
+                        <p className="font-medium text-[var(--md-saas-color-on-warning-container)] mb-1">
                           Minimum order not met
                         </p>
-                        <p className="text-orange-700 dark:text-orange-300">
+                        <p className="text-[var(--md-saas-color-on-warning-container)]">
                           Add ${(MINIMUM_ORDER - subtotal).toFixed(2)} more to meet the $500 minimum
                         </p>
                       </div>
@@ -262,7 +262,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
                   {promoApplied && (
-                    <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+                    <div className="flex justify-between md3-body-small text-[var(--md-saas-color-success)]">
                       <span>Promo Discount</span>
                       <span>-${promoDiscount.toFixed(2)}</span>
                     </div>
@@ -272,7 +272,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <span>${tax.toFixed(2)}</span>
                   </div>
                   {rushFee > 0 && (
-                    <div className="flex justify-between text-sm text-orange-600 dark:text-orange-400">
+                    <div className="flex justify-between md3-body-small text-[var(--md-saas-color-warning)]">
                       <span>Rush Fee (25%)</span>
                       <span>${rushFee.toFixed(2)}</span>
                     </div>
@@ -320,10 +320,10 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 </div>
                 
                 {/* Delivery Estimate */}
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="w-4 h-4 text-blue-600" />
-                    <p className="text-blue-700 dark:text-blue-300">
+                <div className="p-3 bg-[var(--md-saas-color-info-container)] rounded-lg">
+                  <div className="flex items-center gap-2 md3-body-small">
+                    <Clock className="w-4 h-4 text-[var(--md-saas-color-info)]" aria-hidden="true" />
+                    <p className="text-[var(--md-saas-color-on-info-container)]">
                       Earliest delivery: {format(addDays(new Date(), 3), 'EEEE, MMM d')}
                     </p>
                   </div>

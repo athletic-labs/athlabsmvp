@@ -9,7 +9,8 @@ import { SimpleAuthService } from '@/lib/auth/simple-auth';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent, Button, TextField } from '@/lib/design-system/components';
+import { Card, CardContent, Button } from '@/lib/design-system/components';
+import { TextFieldV2 } from '@/lib/design-system/components/TextFieldV2';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -79,38 +80,34 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
+              <div className="p-3 bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)] rounded-[var(--md-sys-shape-corner-small)] text-[var(--md-sys-color-on-error-container)] md3-body-small">
                 {error}
               </div>
             )}
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-[var(--md-sys-color-on-surface)]">Email Address</label>
-              <input
-                {...register('email')}
-                type="email"
-                placeholder="you@team.com"
-                disabled={loading}
-                className={`w-full px-4 py-3 border rounded-lg bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] placeholder:text-[var(--md-sys-color-on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--md-sys-color-primary)] focus:border-transparent ${errors.email ? 'border-[var(--md-sys-color-error)]' : 'border-[var(--md-sys-color-outline)]'}`}
-              />
-              {errors.email && (
-                <p className="text-sm text-[var(--md-sys-color-error)]">{errors.email.message}</p>
-              )}
-            </div>
+            <TextFieldV2
+              {...register('email')}
+              type="email"
+              label="Email Address"
+              placeholder="you@team.com"
+              disabled={loading}
+              error={!!errors.email}
+              errorMessage={errors.email?.message}
+              variant="outlined"
+              fullWidth
+            />
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-[var(--md-sys-color-on-surface)]">Password</label>
-              <input
-                {...register('password')}
-                type="password"
-                placeholder="••••••••"
-                disabled={loading}
-                className={`w-full px-4 py-3 border rounded-lg bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] placeholder:text-[var(--md-sys-color-on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--md-sys-color-primary)] focus:border-transparent ${errors.password ? 'border-[var(--md-sys-color-error)]' : 'border-[var(--md-sys-color-outline)]'}`}
-              />
-              {errors.password && (
-                <p className="text-sm text-[var(--md-sys-color-error)]">{errors.password.message}</p>
-              )}
-            </div>
+            <TextFieldV2
+              {...register('password')}
+              type="password"
+              label="Password"
+              placeholder="••••••••"
+              disabled={loading}
+              error={!!errors.password}
+              errorMessage={errors.password?.message}
+              variant="outlined"
+              fullWidth
+            />
 
             <Button
               type="submit"
