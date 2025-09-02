@@ -1,50 +1,371 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import '../lib/design-system/material3.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-white;
-    font-family: 'Roboto', system-ui, sans-serif;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    font-weight: var(--md-sys-typescale-body-large-weight);
+    line-height: var(--md-sys-typescale-body-large-line-height);
+    letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  }
+  
+  /* Remove default focus outlines - we'll use our own */
+  *:focus {
+    outline: none;
+  }
+  
+  /* Focus-visible for better accessibility */
+  *:focus-visible {
+    @apply md-focus-ring;
   }
 }
 
 @layer components {
-  .md-surface {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg;
+  /* Material 3 Surface Components */
+  .md3-surface {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
   }
   
+  .md3-surface-variant {
+    background-color: var(--md-sys-color-surface-variant);
+    color: var(--md-sys-color-on-surface-variant);
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+  
+  .md3-surface-container {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+  
+  .md3-surface-container-low {
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+  
+  .md3-surface-container-high {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+  
+  .md3-surface-container-highest {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+  
+  /* Material 3 Button Components */
+  .md3-button-filled {
+    @apply md-state-layer md-motion-emphasized;
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-radius: var(--md-sys-shape-corner-full);
+    min-height: 40px;
+    padding: 10px 24px;
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .md3-button-filled:hover::before {
+    background-color: var(--md-sys-color-on-primary);
+  }
+  
+  .md3-button-filled:disabled {
+    background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+    color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+    cursor: not-allowed;
+  }
+  
+  .md3-button-outlined {
+    @apply md-state-layer md-motion-emphasized;
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-full);
+    min-height: 40px;
+    padding: 10px 24px;
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .md3-button-outlined:hover::before {
+    background-color: var(--md-sys-color-primary);
+  }
+  
+  .md3-button-text {
+    @apply md-state-layer md-motion-emphasized;
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    min-height: 40px;
+    padding: 10px 12px;
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .md3-button-text:hover::before {
+    background-color: var(--md-sys-color-primary);
+  }
+  
+  /* Material 3 Card Components */
+  .md3-card {
+    @apply md-elevation-1 md-motion-emphasized;
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .md3-card-elevated {
+    @apply md-elevation-1;
+    background-color: var(--md-sys-color-surface-container-low);
+  }
+  
+  .md3-card-filled {
+    background-color: var(--md-sys-color-surface-container-highest);
+    box-shadow: none;
+  }
+  
+  .md3-card-outlined {
+    background-color: var(--md-sys-color-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    box-shadow: none;
+  }
+  
+  /* Material 3 Text Field */
+  .md3-text-field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .md3-text-field-filled {
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small) 0 0;
+    border-bottom: 1px solid var(--md-sys-color-outline);
+    padding: 8px 16px 8px 16px;
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    font-weight: var(--md-sys-typescale-body-large-weight);
+    line-height: var(--md-sys-typescale-body-large-line-height);
+    letter-spacing: var(--md-sys-typescale-body-large-tracking);
+    color: var(--md-sys-color-on-surface);
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    outline: none;
+    transition: border-bottom-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  }
+  
+  .md3-text-field-filled:focus {
+    border-bottom-color: var(--md-sys-color-primary);
+    border-bottom-width: 2px;
+  }
+  
+  .md3-text-field-outlined {
+    background-color: var(--md-sys-color-surface);
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    padding: 16px;
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    font-weight: var(--md-sys-typescale-body-large-weight);
+    line-height: var(--md-sys-typescale-body-large-line-height);
+    letter-spacing: var(--md-sys-typescale-body-large-tracking);
+    color: var(--md-sys-color-on-surface);
+    outline: none;
+    transition: border-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+  }
+  
+  .md3-text-field-outlined:focus {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+  }
+  
+  /* Typography Utility Classes */
+  .md3-display-large {
+    font-family: var(--md-sys-typescale-display-large-font);
+    font-size: var(--md-sys-typescale-display-large-size);
+    font-weight: var(--md-sys-typescale-display-large-weight);
+    line-height: var(--md-sys-typescale-display-large-line-height);
+    letter-spacing: var(--md-sys-typescale-display-large-tracking);
+  }
+  
+  .md3-display-medium {
+    font-family: var(--md-sys-typescale-display-medium-font);
+    font-size: var(--md-sys-typescale-display-medium-size);
+    font-weight: var(--md-sys-typescale-display-medium-weight);
+    line-height: var(--md-sys-typescale-display-medium-line-height);
+    letter-spacing: var(--md-sys-typescale-display-medium-tracking);
+  }
+  
+  .md3-display-small {
+    font-family: var(--md-sys-typescale-display-small-font);
+    font-size: var(--md-sys-typescale-display-small-size);
+    font-weight: var(--md-sys-typescale-display-small-weight);
+    line-height: var(--md-sys-typescale-display-small-line-height);
+    letter-spacing: var(--md-sys-typescale-display-small-tracking);
+  }
+  
+  .md3-headline-large {
+    font-family: var(--md-sys-typescale-headline-large-font);
+    font-size: var(--md-sys-typescale-headline-large-size);
+    font-weight: var(--md-sys-typescale-headline-large-weight);
+    line-height: var(--md-sys-typescale-headline-large-line-height);
+    letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+  }
+  
+  .md3-headline-medium {
+    font-family: var(--md-sys-typescale-headline-medium-font);
+    font-size: var(--md-sys-typescale-headline-medium-size);
+    font-weight: var(--md-sys-typescale-headline-medium-weight);
+    line-height: var(--md-sys-typescale-headline-medium-line-height);
+    letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
+  }
+  
+  .md3-headline-small {
+    font-family: var(--md-sys-typescale-headline-small-font);
+    font-size: var(--md-sys-typescale-headline-small-size);
+    font-weight: var(--md-sys-typescale-headline-small-weight);
+    line-height: var(--md-sys-typescale-headline-small-line-height);
+    letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+  }
+  
+  .md3-title-large {
+    font-family: var(--md-sys-typescale-title-large-font);
+    font-size: var(--md-sys-typescale-title-large-size);
+    font-weight: var(--md-sys-typescale-title-large-weight);
+    line-height: var(--md-sys-typescale-title-large-line-height);
+    letter-spacing: var(--md-sys-typescale-title-large-tracking);
+  }
+  
+  .md3-title-medium {
+    font-family: var(--md-sys-typescale-title-medium-font);
+    font-size: var(--md-sys-typescale-title-medium-size);
+    font-weight: var(--md-sys-typescale-title-medium-weight);
+    line-height: var(--md-sys-typescale-title-medium-line-height);
+    letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+  }
+  
+  .md3-title-small {
+    font-family: var(--md-sys-typescale-title-small-font);
+    font-size: var(--md-sys-typescale-title-small-size);
+    font-weight: var(--md-sys-typescale-title-small-weight);
+    line-height: var(--md-sys-typescale-title-small-line-height);
+    letter-spacing: var(--md-sys-typescale-title-small-tracking);
+  }
+  
+  .md3-body-large {
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    font-weight: var(--md-sys-typescale-body-large-weight);
+    line-height: var(--md-sys-typescale-body-large-line-height);
+    letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  }
+  
+  .md3-body-medium {
+    font-family: var(--md-sys-typescale-body-medium-font);
+    font-size: var(--md-sys-typescale-body-medium-size);
+    font-weight: var(--md-sys-typescale-body-medium-weight);
+    line-height: var(--md-sys-typescale-body-medium-line-height);
+    letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+  }
+  
+  .md3-body-small {
+    font-family: var(--md-sys-typescale-body-small-font);
+    font-size: var(--md-sys-typescale-body-small-size);
+    font-weight: var(--md-sys-typescale-body-small-weight);
+    line-height: var(--md-sys-typescale-body-small-line-height);
+    letter-spacing: var(--md-sys-typescale-body-small-tracking);
+  }
+  
+  .md3-label-large {
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  }
+  
+  .md3-label-medium {
+    font-family: var(--md-sys-typescale-label-medium-font);
+    font-size: var(--md-sys-typescale-label-medium-size);
+    font-weight: var(--md-sys-typescale-label-medium-weight);
+    line-height: var(--md-sys-typescale-label-medium-line-height);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+  }
+  
+  .md3-label-small {
+    font-family: var(--md-sys-typescale-label-small-font);
+    font-size: var(--md-sys-typescale-label-small-size);
+    font-weight: var(--md-sys-typescale-label-small-weight);
+    line-height: var(--md-sys-typescale-label-small-line-height);
+    letter-spacing: var(--md-sys-typescale-label-small-tracking);
+  }
+  
+  /* Legacy compatibility - gradually remove these */
   .md-filled-button {
-    @apply bg-blue-600 text-white px-6 py-3 rounded-full font-medium
-           hover:bg-blue-700 transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-blue-500/50
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply md3-button-filled;
   }
   
   .md-outlined-button {
-    @apply border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-full font-medium
-           hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-blue-500/50
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply md3-button-outlined;
   }
   
   .md-text-button {
-    @apply text-blue-600 px-4 py-2 rounded-lg font-medium
-           hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-blue-500/50;
-  }
-  
-  .md-text-field {
-    @apply w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg
-           border border-gray-200 dark:border-gray-600 focus:border-blue-600
-           focus:outline-none focus:ring-1 focus:ring-blue-600
-           placeholder:text-gray-500 dark:placeholder:text-gray-400
-           transition-all duration-200;
+    @apply md3-button-text;
   }
   
   .md-card {
-    @apply bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700
-           hover:shadow-xl transition-shadow duration-200;
+    @apply md3-card;
+  }
+  
+  .md-text-field {
+    @apply md3-text-field-filled;
   }
 }
