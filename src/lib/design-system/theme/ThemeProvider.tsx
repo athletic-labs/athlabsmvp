@@ -37,7 +37,7 @@ export interface ThemeContextType {
 const defaultTheme: Material3Theme = {
   id: 'default',
   name: 'Athletic Labs',
-  seedColor: '#00697b', // Teal primary from existing tokens
+  seedColor: '#3b82f6', // Electric Blue - your approved primary
   description: 'Default Athletic Labs theme'
 };
 
@@ -46,26 +46,26 @@ const presetThemes: Material3Theme[] = [
   {
     id: 'blue-sports',
     name: 'Blue Sports',
-    seedColor: '#1976d2',
-    description: 'Classic sports blue theme'
+    seedColor: '#3b82f6',
+    description: 'Athletic Labs primary blue theme'
   },
   {
     id: 'energy-orange',
     name: 'Energy Orange',
-    seedColor: '#ff5722',
-    description: 'High-energy orange theme'
+    seedColor: '#f57c00',
+    description: 'High-energy orange theme (M3 compliant)'
   },
   {
     id: 'nature-green',
     name: 'Nature Green',
-    seedColor: '#4caf50',
-    description: 'Natural green theme'
+    seedColor: '#2e7d32',
+    description: 'Natural green theme (M3 compliant)'
   },
   {
     id: 'premium-purple',
     name: 'Premium Purple',
-    seedColor: '#9c27b0',
-    description: 'Premium purple theme'
+    seedColor: '#6a1b9a',
+    description: 'Premium purple theme (M3 compliant)'
   }
 ];
 

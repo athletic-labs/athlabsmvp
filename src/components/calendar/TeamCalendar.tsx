@@ -117,7 +117,7 @@ export default function TeamCalendar() {
         <div className="flex gap-3">
           <button
             onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-electric-blue text-electric-blue rounded-lg hover:bg-electric-blue/10"
+            className="flex items-center gap-2 px-4 py-2 border border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] rounded-lg hover:bg-[var(--md-sys-color-primary)]/10"
           >
             <Upload className="w-4 h-4" />
             Import Schedule
@@ -166,7 +166,7 @@ export default function TeamCalendar() {
           </button>
           <button
             onClick={() => setCurrentDate(new Date())}
-            className="px-4 py-2 bg-electric-blue text-white rounded-lg text-sm"
+            className="px-4 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg text-sm"
           >
             Today
           </button>
@@ -209,7 +209,7 @@ export default function TeamCalendar() {
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className={`text-sm font-medium ${
-                    isToday(day) ? 'bg-electric-blue text-white w-6 h-6 rounded-full flex items-center justify-center' : ''
+                    isToday(day) ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] w-6 h-6 rounded-full flex items-center justify-center' : ''
                   }`}>
                     {format(day, 'd')}
                   </span>

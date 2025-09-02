@@ -470,7 +470,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                       >
                         {saving ? (
                           <>
-                            <span className="w-4 h-4 border-2 border-electric-blue border-t-transparent rounded-full animate-spin" />
+                            <span className="w-4 h-4 border-2 border-[var(--md-sys-color-primary)] border-t-transparent rounded-full animate-spin" />
                             Saving...
                           </>
                         ) : (

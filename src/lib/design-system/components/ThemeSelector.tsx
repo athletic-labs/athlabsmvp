@@ -29,7 +29,7 @@ export function ThemeSelector({
   } = useMaterial3Theme();
 
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [customColor, setCustomColor] = useState('#00697b');
+  const [customColor, setCustomColor] = useState('#3b82f6');
 
   const handleCreateCustomTheme = () => {
     const theme = generateThemeFromColor(customColor, `Custom ${customColor}`);
@@ -122,7 +122,7 @@ export function ThemeSelector({
                       type="text"
                       value={customColor}
                       onChange={(e) => setCustomColor(e.target.value)}
-                      placeholder="#00697b"
+                      placeholder="#3b82f6"
                       className="flex-1 px-3 py-2 border border-[var(--md-sys-color-outline)] rounded-lg md3-body-medium bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)]"
                     />
                   </div>
