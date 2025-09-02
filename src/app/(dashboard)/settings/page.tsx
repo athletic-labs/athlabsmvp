@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { User, Bell, CreditCard, Shield, Lock, Eye, EyeOff, Key, Smartphone, AlertCircle, Check, Plus, Trash2, Edit, Palette } from 'lucide-react';
-import { Card, Button, TextField, ThemeSelector } from '@/lib/design-system/components';
+import { Card, Button, ThemeSelector, Switch, IconButton } from '@/lib/design-system/components';
+import { TextFieldV2 } from '@/lib/design-system/components/TextFieldV2';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -55,11 +56,33 @@ export default function SettingsPage() {
           <div className="space-y-6">
             <h3 className="md3-headline-small font-semibold text-[var(--md-sys-color-on-surface)]">Profile Information</h3>
             <div className="grid grid-cols-2 gap-4">
-              <TextField placeholder="First Name" />
-              <TextField placeholder="Last Name" />
+              <TextFieldV2 
+                label="First Name"
+                placeholder="Enter your first name"
+                variant="outlined"
+                fullWidth
+              />
+              <TextFieldV2 
+                label="Last Name"
+                placeholder="Enter your last name"
+                variant="outlined"
+                fullWidth
+              />
             </div>
-            <TextField type="email" placeholder="Email Address" />
-            <TextField type="tel" placeholder="Phone Number" />
+            <TextFieldV2 
+              type="email" 
+              label="Email Address"
+              placeholder="Enter your email address"
+              variant="outlined"
+              fullWidth
+            />
+            <TextFieldV2 
+              type="tel" 
+              label="Phone Number"
+              placeholder="Enter your phone number"
+              variant="outlined"
+              fullWidth
+            />
             <Button variant="filled">Save Changes</Button>
           </div>
         )}
@@ -95,7 +118,7 @@ export default function SettingsPage() {
                       Minimize motion for better performance and accessibility
                     </div>
                   </div>
-                  <input type="checkbox" className="rounded" />
+                  <Switch />
                 </label>
                 <label className="flex items-center justify-between">
                   <div>
@@ -106,7 +129,7 @@ export default function SettingsPage() {
                       Increase contrast for better visibility
                     </div>
                   </div>
-                  <input type="checkbox" className="rounded" />
+                  <Switch />
                 </label>
                 <label className="flex items-center justify-between">
                   <div>
@@ -117,7 +140,7 @@ export default function SettingsPage() {
                       Show more content with tighter spacing
                     </div>
                   </div>
-                  <input type="checkbox" className="rounded" />
+                  <Switch />
                 </label>
               </div>
             </Card>
@@ -126,365 +149,400 @@ export default function SettingsPage() {
 
         {activeTab === 'notifications' && (
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Notification Preferences</h3>
+            <h3 className="md3-headline-small font-semibold text-[var(--md-sys-color-on-surface)]">Notification Preferences</h3>
             <div className="space-y-4">
-              <label className="flex items-center gap-3">
-                <input type="checkbox" className="rounded" />
-                <span>Email notifications for order updates</span>
+              <label className="flex items-center justify-between">
+                <div>
+                  <div className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                    Email notifications for order updates
+                  </div>
+                  <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                    Get notified about order status changes
+                  </div>
+                </div>
+                <Switch defaultChecked />
               </label>
-              <label className="flex items-center gap-3">
-                <input type="checkbox" className="rounded" />
-                <span>SMS notifications for delivery confirmations</span>
+              <label className="flex items-center justify-between">
+                <div>
+                  <div className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                    SMS notifications for delivery confirmations
+                  </div>
+                  <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                    Text messages when orders are delivered
+                  </div>
+                </div>
+                <Switch />
               </label>
-              <label className="flex items-center gap-3">
-                <input type="checkbox" className="rounded" />
-                <span>Weekly nutrition reports</span>
+              <label className="flex items-center justify-between">
+                <div>
+                  <div className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                    Weekly nutrition reports
+                  </div>
+                  <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                    Weekly summary of your nutrition intake
+                  </div>
+                </div>
+                <Switch defaultChecked />
               </label>
-              <label className="flex items-center gap-3">
-                <input type="checkbox" className="rounded" />
-                <span>Marketing and promotional emails</span>
+              <label className="flex items-center justify-between">
+                <div>
+                  <div className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                    Marketing and promotional emails
+                  </div>
+                  <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                    Special offers and product updates
+                  </div>
+                </div>
+                <Switch />
               </label>
             </div>
-            <button className="md-filled-button">Save Preferences</button>
+            <Button variant="filled">Save Preferences</Button>
           </div>
         )}
 
         {activeTab === 'billing' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Billing & Payment</h3>
-              <button className="md-outlined-button flex items-center gap-2">
-                <Plus className="w-4 h-4" />
+              <h3 className="md3-headline-small font-semibold text-[var(--md-sys-color-on-surface)]">Billing & Payment</h3>
+              <Button variant="outlined" leftIcon={<Plus className="w-4 h-4" />}>
                 Add Payment Method
-              </button>
+              </Button>
             </div>
 
             {/* Current Plan */}
-            <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+            <Card variant="filled" className="p-6 bg-gradient-to-r from-[var(--md-sys-color-primary-container)] to-[var(--md-sys-color-secondary-container)]">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h4 className="text-lg font-semibold">Team Premium Plan</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Up to 50 team members</p>
+                  <h4 className="md3-title-large font-semibold text-[var(--md-sys-color-on-primary-container)]">Team Premium Plan</h4>
+                  <p className="md3-body-small text-[var(--md-sys-color-on-primary-container)]/80">Up to 50 team members</p>
                 </div>
-                <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full text-sm font-medium">
+                <span className="px-3 py-1 bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] rounded-full md3-label-medium font-medium">
                   Active
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-2xl font-bold">$299<span className="text-base font-normal text-gray-500">/month</span></p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Billed monthly • Next billing: March 15, 2024</p>
+                  <p className="md3-display-small font-bold text-[var(--md-sys-color-on-primary-container)]">$299<span className="md3-body-large font-normal text-[var(--md-sys-color-on-primary-container)]/60">/month</span></p>
+                  <p className="md3-body-small text-[var(--md-sys-color-on-primary-container)]/80">Billed monthly • Next billing: March 15, 2024</p>
                 </div>
-                <button className="md-outlined-button">Change Plan</button>
+                <Button variant="outlined" className="border-[var(--md-sys-color-on-primary-container)] text-[var(--md-sys-color-on-primary-container)]">
+                  Change Plan
+                </Button>
               </div>
-            </div>
+            </Card>
 
             {/* Payment Methods */}
             <div>
-              <h4 className="font-semibold mb-4">Payment Methods</h4>
+              <h4 className="md3-title-medium font-semibold mb-4 text-[var(--md-sys-color-on-surface)]">Payment Methods</h4>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
-                      VISA
+                <Card variant="outlined" className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-8 bg-[var(--md-sys-color-primary)] rounded-[var(--md-sys-shape-corner-extra-small)] flex items-center justify-center text-[var(--md-sys-color-on-primary)] md3-label-small font-bold">
+                        VISA
+                      </div>
+                      <div>
+                        <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">•••• •••• •••• 4242</p>
+                        <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">Expires 12/2027</p>
+                      </div>
+                      <span className="px-2 py-1 bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] rounded-[var(--md-sys-shape-corner-extra-small)] md3-label-small font-medium">
+                        Default
+                      </span>
                     </div>
-                    <div>
-                      <p className="font-medium">•••• •••• •••• 4242</p>
-                      <p className="text-sm text-gray-500">Expires 12/2027</p>
+                    <div className="flex items-center gap-2">
+                      <IconButton variant="standard" icon={<Edit className="w-4 h-4" />} aria-label="Edit payment method" className="text-[var(--md-sys-color-on-surface-variant)]" />
+                      <IconButton variant="standard" icon={<Trash2 className="w-4 h-4" />} aria-label="Delete payment method" className="text-[var(--md-sys-color-error)]" />
                     </div>
-                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-xs">
-                      Default
-                    </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-red-500">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                </Card>
                 
-                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-8 bg-gray-700 rounded flex items-center justify-center text-white text-xs font-bold">
-                      MSTR
+                <Card variant="outlined" className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-8 bg-[var(--md-sys-color-surface-variant)] rounded-[var(--md-sys-shape-corner-extra-small)] flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] md3-label-small font-bold">
+                        MSTR
+                      </div>
+                      <div>
+                        <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">•••• •••• •••• 8888</p>
+                        <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">Expires 08/2026</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">•••• •••• •••• 8888</p>
-                      <p className="text-sm text-gray-500">Expires 08/2026</p>
+                    <div className="flex items-center gap-2">
+                      <IconButton variant="standard" icon={<Edit className="w-4 h-4" />} aria-label="Edit payment method" className="text-[var(--md-sys-color-on-surface-variant)]" />
+                      <IconButton variant="standard" icon={<Trash2 className="w-4 h-4" />} aria-label="Delete payment method" className="text-[var(--md-sys-color-error)]" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-red-500">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                </Card>
               </div>
             </div>
 
             {/* Billing History */}
             <div>
-              <h4 className="font-semibold mb-4">Recent Invoices</h4>
-              <div className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
+              <h4 className="md3-title-medium font-semibold mb-4 text-[var(--md-sys-color-on-surface)]">Recent Invoices</h4>
+              <Card variant="outlined" className="overflow-hidden">
                 <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
+                  <thead className="bg-[var(--md-sys-color-surface-container-highest)]">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left md3-label-small font-medium text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">
                         Invoice
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left md3-label-small font-medium text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">
                         Date
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left md3-label-small font-medium text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">
                         Amount
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left md3-label-small font-medium text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left md3-label-small font-medium text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wider">
                         Action
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="bg-[var(--md-sys-color-surface)] divide-y divide-[var(--md-sys-color-outline-variant)]">
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">INV-2024-003</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Feb 15, 2024</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">$299.00</td>
+                      <td className="px-6 py-4 whitespace-nowrap md3-body-small font-medium text-[var(--md-sys-color-on-surface)]">INV-2024-003</td>
+                      <td className="px-6 py-4 whitespace-nowrap md3-body-small text-[var(--md-sys-color-on-surface-variant)]">Feb 15, 2024</td>
+                      <td className="px-6 py-4 whitespace-nowrap md3-body-small text-[var(--md-sys-color-on-surface)]">$299.00</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                        <span className="px-3 py-1 inline-flex md3-label-small font-semibold rounded-full bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]">
                           Paid
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-500">Download</button>
+                      <td className="px-6 py-4 whitespace-nowrap md3-body-small font-medium">
+                        <Button variant="text" className="text-[var(--md-sys-color-primary)]">
+                          Download
+                        </Button>
                       </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">INV-2024-002</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 15, 2024</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">$299.00</td>
+                      <td className="px-6 py-4 whitespace-nowrap md3-body-small font-medium text-[var(--md-sys-color-on-surface)]">INV-2024-002</td>
+                      <td className="px-6 py-4 whitespace-nowrap md3-body-small text-[var(--md-sys-color-on-surface-variant)]">Jan 15, 2024</td>
+                      <td className="px-6 py-4 whitespace-nowrap md3-body-small text-[var(--md-sys-color-on-surface)]">$299.00</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                        <span className="px-3 py-1 inline-flex md3-label-small font-semibold rounded-full bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]">
                           Paid
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-500">Download</button>
+                      <td className="px-6 py-4 whitespace-nowrap md3-body-small font-medium">
+                        <Button variant="text" className="text-[var(--md-sys-color-primary)]">
+                          Download
+                        </Button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
-              </div>
+              </Card>
             </div>
           </div>
         )}
 
         {activeTab === 'security' && (
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Security Settings</h3>
+            <h3 className="md3-headline-small font-semibold text-[var(--md-sys-color-on-surface)]">Security Settings</h3>
 
             {/* Password Change */}
-            <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <Card variant="outlined" className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <Lock className="w-5 h-5 text-gray-500" />
-                <h4 className="font-semibold">Change Password</h4>
+                <Lock className="w-5 h-5 text-[var(--md-sys-color-on-surface-variant)]" />
+                <h4 className="md3-title-medium font-semibold text-[var(--md-sys-color-on-surface)]">Change Password</h4>
               </div>
               <div className="space-y-4">
-                <div className="relative">
-                  <input
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    placeholder="Current Password"
-                    className="md-text-field pr-12"
-                  />
-                  <button
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
-                    {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showNewPassword ? 'text' : 'password'}
-                    placeholder="New Password"
-                    className="md-text-field pr-12"
-                  />
-                  <button
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
-                    {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Confirm New Password"
-                    className="md-text-field pr-12"
-                  />
-                  <button
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <TextFieldV2
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  label="Current Password"
+                  placeholder="Enter current password"
+                  variant="outlined"
+                  fullWidth
+                  trailingIcon={
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
+                    >
+                      {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  }
+                />
+                <TextFieldV2
+                  type={showNewPassword ? 'text' : 'password'}
+                  label="New Password"
+                  placeholder="Enter new password"
+                  variant="outlined"
+                  fullWidth
+                  trailingIcon={
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
+                    >
+                      {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  }
+                />
+                <TextFieldV2
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  label="Confirm New Password"
+                  placeholder="Confirm new password"
+                  variant="outlined"
+                  fullWidth
+                  trailingIcon={
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  }
+                />
+                <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                   <p className="mb-2">Password must contain:</p>
                   <ul className="space-y-1 ml-4">
                     <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Check className="w-4 h-4 text-[var(--md-sys-color-tertiary)]" />
                       At least 8 characters
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Check className="w-4 h-4 text-[var(--md-sys-color-tertiary)]" />
                       One uppercase letter
                     </li>
                     <li className="flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-gray-400" />
+                      <AlertCircle className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />
                       One number
                     </li>
                     <li className="flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-gray-400" />
+                      <AlertCircle className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />
                       One special character
                     </li>
                   </ul>
                 </div>
-                <button className="md-filled-button">Update Password</button>
+                <Button variant="filled">Update Password</Button>
               </div>
-            </div>
+            </Card>
 
             {/* Two-Factor Authentication */}
-            <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <Card variant="outlined" className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <Smartphone className="w-5 h-5 text-gray-500" />
+                  <Smartphone className="w-5 h-5 text-[var(--md-sys-color-on-surface-variant)]" />
                   <div>
-                    <h4 className="font-semibold">Two-Factor Authentication</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <h4 className="md3-title-medium font-semibold text-[var(--md-sys-color-on-surface)]">Two-Factor Authentication</h4>
+                    <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                       Add an extra layer of security to your account
                     </p>
                   </div>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={twoFactorEnabled}
-                    onChange={(e) => setTwoFactorEnabled(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
+                <Switch
+                  checked={twoFactorEnabled}
+                  onChange={(e) => setTwoFactorEnabled(e.target.checked)}
+                />
               </div>
               {twoFactorEnabled && (
-                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
+                <div className="mt-4 p-4 bg-[var(--md-sys-color-primary-container)] rounded-[var(--md-sys-shape-corner-medium)]">
+                  <p className="md3-body-small text-[var(--md-sys-color-on-primary-container)] mb-3">
                     Set up your authenticator app:
                   </p>
-                  <ol className="text-sm space-y-2 text-blue-700 dark:text-blue-300">
+                  <ol className="md3-body-small space-y-2 text-[var(--md-sys-color-on-primary-container)]">
                     <li>1. Download an authenticator app (Google Authenticator, Authy, etc.)</li>
                     <li>2. Scan the QR code or enter the setup key</li>
                     <li>3. Enter the 6-digit code from your app</li>
                   </ol>
                   <div className="mt-4 flex gap-3">
-                    <input
+                    <TextFieldV2
                       type="text"
                       placeholder="000000"
-                      className="flex-1 px-3 py-2 border border-blue-200 dark:border-blue-800 rounded bg-white dark:bg-gray-800"
+                      variant="outlined"
                       maxLength={6}
+                      className="flex-1"
                     />
-                    <button className="md-filled-button">Verify</button>
+                    <Button variant="filled">Verify</Button>
                   </div>
                 </div>
               )}
-            </div>
+            </Card>
 
             {/* Login Notifications */}
-            <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <Card variant="outlined" className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Bell className="w-5 h-5 text-gray-500" />
+                  <Bell className="w-5 h-5 text-[var(--md-sys-color-on-surface-variant)]" />
                   <div>
-                    <h4 className="font-semibold">Login Notifications</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <h4 className="md3-title-medium font-semibold text-[var(--md-sys-color-on-surface)]">Login Notifications</h4>
+                    <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                       Get notified when someone logs into your account
                     </p>
                   </div>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={loginNotifications}
-                    onChange={(e) => setLoginNotifications(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
+                <Switch
+                  checked={loginNotifications}
+                  onChange={(e) => setLoginNotifications(e.target.checked)}
+                />
               </div>
-            </div>
+            </Card>
 
             {/* Active Sessions */}
-            <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <Card variant="outlined" className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <Key className="w-5 h-5 text-gray-500" />
-                  <h4 className="font-semibold">Active Sessions</h4>
+                  <Key className="w-5 h-5 text-[var(--md-sys-color-on-surface-variant)]" />
+                  <h4 className="md3-title-medium font-semibold text-[var(--md-sys-color-on-surface)]">Active Sessions</h4>
                 </div>
-                <button className="text-red-600 hover:text-red-700 text-sm font-medium">
+                <Button variant="text" className="text-[var(--md-sys-color-error)]">
                   Sign out all devices
-                </button>
+                </Button>
               </div>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                <div className="flex items-center justify-between p-3 bg-[var(--md-sys-color-surface-container-lowest)] rounded-[var(--md-sys-shape-corner-medium)]">
                   <div>
-                    <p className="font-medium">MacBook Pro - Chrome</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">MacBook Pro - Chrome</p>
+                    <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                       San Francisco, CA • Active now
                     </p>
                   </div>
-                  <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-sm">
+                  <span className="px-3 py-1 bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] rounded-full md3-label-small font-medium">
                     Current
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                <div className="flex items-center justify-between p-3 bg-[var(--md-sys-color-surface-container-lowest)] rounded-[var(--md-sys-shape-corner-medium)]">
                   <div>
-                    <p className="font-medium">iPhone - Safari</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">iPhone - Safari</p>
+                    <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                       San Francisco, CA • 2 hours ago
                     </p>
                   </div>
-                  <button className="text-red-600 hover:text-red-700 text-sm">
+                  <Button variant="text" className="text-[var(--md-sys-color-error)] md3-label-small">
                     Sign out
-                  </button>
+                  </Button>
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Account Danger Zone */}
-            <div className="p-6 border-2 border-red-200 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/10">
+            <Card variant="outlined" className="p-6 border-2 border-[var(--md-sys-color-error)] bg-[var(--md-sys-color-error-container)]">
               <div className="flex items-center gap-3 mb-4">
-                <AlertCircle className="w-5 h-5 text-red-600" />
-                <h4 className="font-semibold text-red-800 dark:text-red-200">Danger Zone</h4>
+                <AlertCircle className="w-5 h-5 text-[var(--md-sys-color-error)]" />
+                <h4 className="md3-title-medium font-semibold text-[var(--md-sys-color-on-error-container)]">Danger Zone</h4>
               </div>
-              <p className="text-sm text-red-700 dark:text-red-300 mb-4">
+              <p className="md3-body-small text-[var(--md-sys-color-on-error-container)] mb-4">
                 These actions are permanent and cannot be undone.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <button className="px-4 py-2 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 rounded hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors">
+                <Button 
+                  variant="outlined" 
+                  className="border-[var(--md-sys-color-error)] text-[var(--md-sys-color-error)] hover:bg-[var(--md-sys-color-error)]/8"
+                >
                   Export Account Data
-                </button>
-                <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                </Button>
+                <Button 
+                  variant="filled" 
+                  className="bg-[var(--md-sys-color-error)] text-[var(--md-sys-color-on-error)] hover:bg-[var(--md-sys-color-error)]/90"
+                >
                   Delete Account
-                </button>
+                </Button>
               </div>
-            </div>
+            </Card>
           </div>
         )}
       </Card>
