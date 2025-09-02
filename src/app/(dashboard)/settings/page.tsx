@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Bell, CreditCard, Shield, Lock, Eye, EyeOff, Key, Smartphone, AlertCircle, Check, Plus, Trash2, Edit } from 'lucide-react';
+import { User, Bell, CreditCard, Shield, Lock, Eye, EyeOff, Key, Smartphone, AlertCircle, Check, Plus, Trash2, Edit, Palette } from 'lucide-react';
+import { Card, Button, TextField, ThemeSelector } from '@/lib/design-system/components';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -13,6 +14,7 @@ export default function SettingsPage() {
 
   const TABS = [
     { id: 'profile', label: 'Profile', icon: User },
+    { id: 'appearance', label: 'Appearance', icon: Palette },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'billing', label: 'Billing', icon: CreditCard },
     { id: 'security', label: 'Security', icon: Shield }
@@ -21,14 +23,14 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-navy dark:text-white">Settings</h1>
-        <p className="text-navy/60 dark:text-white/60 mt-1">
+        <h1 className="md3-display-small font-bold text-[var(--md-sys-color-on-surface)]">Settings</h1>
+        <p className="md3-body-large text-[var(--md-sys-color-on-surface-variant)] mt-1">
           Manage your account and preferences
         </p>
       </div>
 
-      <div className="md-card">
-        <div className="border-b border-smoke dark:border-smoke/30 mb-6">
+      <Card variant="filled" className="p-6">
+        <div className="border-b border-[var(--md-sys-color-outline-variant)] mb-6">
           <nav className="flex space-x-8">
             {TABS.map((tab) => {
               const Icon = tab.icon;
@@ -36,10 +38,10 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 pb-4 border-b-2 transition-colors
+                  className={`flex items-center gap-2 pb-4 border-b-2 transition-colors md3-label-large
                     ${activeTab === tab.id
-                      ? 'border-electric-blue text-electric-blue'
-                      : 'border-transparent text-navy/60 dark:text-white/60 hover:text-navy dark:hover:text-white'}`}
+                      ? 'border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)]'
+                      : 'border-transparent text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]'}`}
                 >
                   <Icon className="w-4 h-4" />
                   {tab.label}
@@ -51,14 +53,74 @@ export default function SettingsPage() {
 
         {activeTab === 'profile' && (
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Profile Information</h3>
+            <h3 className="md3-headline-small font-semibold text-[var(--md-sys-color-on-surface)]">Profile Information</h3>
             <div className="grid grid-cols-2 gap-4">
-              <input type="text" placeholder="First Name" className="md-text-field" />
-              <input type="text" placeholder="Last Name" className="md-text-field" />
+              <TextField placeholder="First Name" />
+              <TextField placeholder="Last Name" />
             </div>
-            <input type="email" placeholder="Email Address" className="md-text-field" />
-            <input type="tel" placeholder="Phone Number" className="md-text-field" />
-            <button className="md-filled-button">Save Changes</button>
+            <TextField type="email" placeholder="Email Address" />
+            <TextField type="tel" placeholder="Phone Number" />
+            <Button variant="filled">Save Changes</Button>
+          </div>
+        )}
+
+        {activeTab === 'appearance' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="md3-headline-small font-semibold text-[var(--md-sys-color-on-surface)] mb-2">
+                Appearance & Theme
+              </h3>
+              <p className="md3-body-medium text-[var(--md-sys-color-on-surface-variant)]">
+                Customize the look and feel of your workspace. Changes apply instantly and are saved automatically.
+              </p>
+            </div>
+            
+            <ThemeSelector 
+              showModeToggle={true}
+              showCustomThemeCreator={true}
+              className="max-w-2xl"
+            />
+            
+            <Card variant="outlined" className="p-4">
+              <h4 className="md3-title-medium font-semibold text-[var(--md-sys-color-on-surface)] mb-3">
+                Additional Display Options
+              </h4>
+              <div className="space-y-4">
+                <label className="flex items-center justify-between">
+                  <div>
+                    <div className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                      Reduce animations
+                    </div>
+                    <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                      Minimize motion for better performance and accessibility
+                    </div>
+                  </div>
+                  <input type="checkbox" className="rounded" />
+                </label>
+                <label className="flex items-center justify-between">
+                  <div>
+                    <div className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                      High contrast mode
+                    </div>
+                    <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                      Increase contrast for better visibility
+                    </div>
+                  </div>
+                  <input type="checkbox" className="rounded" />
+                </label>
+                <label className="flex items-center justify-between">
+                  <div>
+                    <div className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                      Compact density
+                    </div>
+                    <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                      Show more content with tighter spacing
+                    </div>
+                  </div>
+                  <input type="checkbox" className="rounded" />
+                </label>
+              </div>
+            </Card>
           </div>
         )}
 
@@ -425,7 +487,7 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

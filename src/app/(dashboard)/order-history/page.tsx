@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Filter, Package, ChevronDown, Eye, Repeat, Download, Calendar, Clock, CheckCircle, XCircle, Truck, MapPin, Plus } from 'lucide-react';
+import { Package, Eye, Repeat, Download, Calendar, Clock, CheckCircle, XCircle, Truck, MapPin, Plus, MoreVertical } from 'lucide-react';
 import { format, subDays } from 'date-fns';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DataTable, Button, Card, CardHeader, CardTitle } from '@/lib/design-system/components';
+import type { Column } from '@/lib/design-system/components';
 
 interface OrderItem {
   id: string;
@@ -29,11 +30,11 @@ interface Order {
 }
 
 export default function OrderHistoryPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [showFilters, setShowFilters] = useState(false);
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Check for success redirect from checkout
   useEffect(() => {
@@ -114,52 +115,190 @@ export default function OrderHistoryPage() {
   ];
 
   const statusConfig = {
-    pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300', icon: Clock },
-    confirmed: { label: 'Confirmed', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300', icon: CheckCircle },
-    preparing: { label: 'Preparing', color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300', icon: Package },
-    delivered: { label: 'Delivered', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300', icon: CheckCircle },
-    cancelled: { label: 'Cancelled', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300', icon: XCircle }
+    pending: { 
+      label: 'Pending', 
+      color: 'bg-[var(--md-saas-color-warning-container)] text-[var(--md-saas-color-on-warning-container)]', 
+      icon: Clock 
+    },
+    confirmed: { 
+      label: 'Confirmed', 
+      color: 'bg-[var(--md-saas-color-info-container)] text-[var(--md-saas-color-on-info-container)]', 
+      icon: CheckCircle 
+    },
+    preparing: { 
+      label: 'Preparing', 
+      color: 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]', 
+      icon: Package 
+    },
+    delivered: { 
+      label: 'Delivered', 
+      color: 'bg-[var(--md-saas-color-success-container)] text-[var(--md-saas-color-on-success-container)]', 
+      icon: CheckCircle 
+    },
+    cancelled: { 
+      label: 'Cancelled', 
+      color: 'bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]', 
+      icon: XCircle 
+    }
   };
 
   const filteredOrders = useMemo(() => {
+    if (!searchQuery) return orders;
     return orders.filter(order => {
       const matchesSearch = order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            order.items.some(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      return matchesSearch;
     });
-  }, [orders, searchQuery, statusFilter]);
+  }, [orders, searchQuery]);
 
   const reorderOrder = (order: Order) => {
-    // This would typically add all items from the order to the cart
     console.log('Reordering:', order);
-    // For now, just navigate to new order page
     window.location.href = '/new-order';
   };
 
   const downloadInvoice = (order: Order) => {
-    // Mock download functionality
     console.log('Downloading invoice for:', order.orderNumber);
   };
+
+  const handleBulkReorder = (selectedIds: string[]) => {
+    console.log('Bulk reordering:', selectedIds);
+    // Implementation for bulk reorder
+  };
+
+  const handleBulkDownload = (selectedIds: string[]) => {
+    console.log('Bulk downloading invoices:', selectedIds);
+    // Implementation for bulk invoice download
+  };
+
+  // Define DataTable columns
+  const columns: Column<Order>[] = [
+    {
+      key: 'orderNumber',
+      title: 'Order Number',
+      sortable: true,
+      width: '150px',
+      render: (value: string, order: Order) => (
+        <div className="font-medium">
+          <div className="md3-label-large">{value}</div>
+          <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+            {format(order.date, 'MMM d, yyyy')}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'status',
+      title: 'Status',
+      width: '120px',
+      render: (value: string, order: Order) => {
+        const statusInfo = statusConfig[order.status];
+        const StatusIcon = statusInfo.icon;
+        return (
+          <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full md3-label-small ${statusInfo.color}`}>
+            <StatusIcon className="w-4 h-4" />
+            {statusInfo.label}
+          </span>
+        );
+      }
+    },
+    {
+      key: 'items',
+      title: 'Items',
+      render: (value: OrderItem[], order: Order) => (
+        <div>
+          <div className="md3-body-medium">
+            {order.items.slice(0, 2).map(item => item.name).join(', ')}
+          </div>
+          {order.items.length > 2 && (
+            <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+              +{order.items.length - 2} more items
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'deliveryLocation',
+      title: 'Delivery Location',
+      render: (value: string, order: Order) => (
+        <div className="flex items-center gap-2">
+          <MapPin className="w-4 h-4 text-[var(--md-sys-color-on-surface-variant)]" />
+          <div>
+            <div className="md3-body-medium">{value}</div>
+            <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+              {format(order.deliveryDate, 'MMM d, yyyy')}
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'total',
+      title: 'Total',
+      sortable: true,
+      align: 'right',
+      width: '100px',
+      render: (value: number) => (
+        <div className="md3-title-medium font-semibold text-[var(--md-sys-color-primary)]">
+          ${value.toFixed(2)}
+        </div>
+      )
+    },
+    {
+      key: 'actions',
+      title: 'Actions',
+      width: '120px',
+      render: (_, order: Order) => (
+        <div className="flex gap-1">
+          <Button
+            variant="text"
+            size="small"
+            leftIcon={<Eye className="w-4 h-4" />}
+            onClick={() => setSelectedOrder(order)}
+            className="p-2"
+          />
+          <Button
+            variant="text"
+            size="small"
+            leftIcon={<Repeat className="w-4 h-4" />}
+            onClick={() => reorderOrder(order)}
+            className="p-2"
+          />
+          <Button
+            variant="text"
+            size="small"
+            leftIcon={<Download className="w-4 h-4" />}
+            onClick={() => downloadInvoice(order)}
+            className="p-2"
+          />
+        </div>
+      )
+    }
+  ];
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-navy dark:text-white">Order History</h1>
-          <p className="text-navy/60 dark:text-white/60 mt-1">
-            View and manage your past orders
-          </p>
+      <Card variant="filled" className="p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="md3-headline-medium font-bold text-[var(--md-sys-color-on-surface)]">
+              Order History
+            </h1>
+            <p className="md3-body-large text-[var(--md-sys-color-on-surface-variant)] mt-1">
+              View and manage your past orders
+            </p>
+          </div>
+          <Button
+            variant="filled"
+            leftIcon={<Plus className="w-4 h-4" />}
+            onClick={() => window.location.href = '/new-order'}
+            className="mt-4 sm:mt-0"
+          >
+            Place New Order
+          </Button>
         </div>
-        <Link 
-          href="/new-order" 
-          className="flex items-center gap-2 px-4 py-2 text-sm bg-electric-blue text-white rounded-lg hover:bg-electric-blue/90 mt-4 sm:mt-0"
-        >
-          <Plus className="w-4 h-4" />
-          Place New Order
-        </Link>
-      </div>
+      </Card>
 
       {/* Success Message */}
       {showSuccess && (
@@ -167,211 +306,75 @@ export default function OrderHistoryPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6"
         >
-          <div className="flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-green-600" />
-            <div>
-              <h3 className="font-medium text-green-900">Order Placed Successfully!</h3>
-              <p className="text-sm text-green-700">Your order has been submitted and will appear in your history below.</p>
+          <Card variant="filled" className="p-4 bg-[var(--md-saas-color-success-container)]">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-[var(--md-saas-color-on-success-container)]" />
+              <div>
+                <h3 className="md3-title-small font-medium text-[var(--md-saas-color-on-success-container)]">
+                  Order Placed Successfully!
+                </h3>
+                <p className="md3-body-medium text-[var(--md-saas-color-on-success-container)]">
+                  Your order has been submitted and will appear in your history below.
+                </p>
+              </div>
             </div>
-          </div>
+          </Card>
         </motion.div>
       )}
 
-      {/* Search and Filters */}
-      <div className="flex gap-3 mb-6">
-        {/* Search bar - better proportions */}
-        <div className="flex-1 max-w-lg relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search orders..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-electric-blue"
-          />
-        </div>
-        
-        {/* Status dropdown - compact width */}
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-electric-blue bg-white"
-        >
-          <option value="all">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="preparing">Preparing</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-        
-        {/* More Filters - less prominent */}
-        <button 
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50"
-        >
-          <Filter className="w-4 h-4 text-gray-500" />
-          <span>More Filters</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-        </button>
-      </div>
-
-      {/* Additional Filters */}
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Date Range</label>
-                <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-electric-blue bg-white">
-                  <option>Last 30 days</option>
-                  <option>Last 90 days</option>
-                  <option>This year</option>
-                  <option>All time</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Order Value</label>
-                <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-electric-blue bg-white">
-                  <option>Any amount</option>
-                  <option>Under $1,000</option>
-                  <option>$1,000 - $5,000</option>
-                  <option>Over $5,000</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Delivery Location</label>
-                <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-electric-blue bg-white">
-                  <option>All locations</option>
-                  <option>Athletic Training Center</option>
-                  <option>Team Dining Hall</option>
-                  <option>Stadium Complex</option>
-                </select>
-              </div>
+      {/* Data Table */}
+      <DataTable
+        data={filteredOrders}
+        columns={columns}
+        loading={loading}
+        selectable={true}
+        selectedRows={selectedOrders}
+        onSelectionChange={setSelectedOrders}
+        rowKey="id"
+        onRowClick={(order) => setSelectedOrder(order)}
+        searchable={true}
+        searchPlaceholder="Search orders by number or items..."
+        onSearch={setSearchQuery}
+        density="comfortable"
+        stickyHeader={true}
+        emptyState={
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-[var(--md-sys-color-primary-container)] rounded-full flex items-center justify-center mx-auto mb-4">
+              <Package className="w-8 h-8 text-[var(--md-sys-color-on-primary-container)]" />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Orders List */}
-      {filteredOrders.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-electric-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Package className="w-8 h-8 text-electric-blue" />
+            <h3 className="md3-title-large font-semibold mb-2">
+              {searchQuery ? 'No matching orders found' : 'No orders yet'}
+            </h3>
+            <p className="md3-body-large text-[var(--md-sys-color-on-surface-variant)] mb-6">
+              {searchQuery
+                ? 'Try adjusting your search criteria'
+                : 'Your order history will appear here once you place your first order'
+              }
+            </p>
+            <Button
+              variant="filled"
+              onClick={() => window.location.href = '/new-order'}
+            >
+              Place Your First Order
+            </Button>
           </div>
-          <h3 className="text-lg font-semibold mb-2">
-            {searchQuery || statusFilter !== 'all' ? 'No matching orders found' : 'No orders yet'}
-          </h3>
-          <p className="text-navy/60 dark:text-white/60 mb-6">
-            {searchQuery || statusFilter !== 'all' 
-              ? 'Try adjusting your search or filter criteria'
-              : 'Your order history will appear here once you place your first order'
-            }
-          </p>
-          <Link href="/new-order" className="md-filled-button">
-            Place Your First Order
-          </Link>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredOrders.map((order, index) => {
-            const statusInfo = statusConfig[order.status];
-            const StatusIcon = statusInfo.icon;
-
-            return (
-              <motion.div
-                key={order.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="md-card hover:shadow-md-elevation-2 transition-shadow"
-              >
-                <div className="space-y-4">
-                  {/* Order Header */}
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold">{order.orderNumber}</h3>
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}>
-                          <StatusIcon className="w-3 h-3" />
-                          {statusInfo.label}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          Ordered: {format(order.date, 'MMM d, yyyy')}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Truck className="w-4 h-4" />
-                          Delivery: {format(order.deliveryDate, 'MMM d, yyyy')}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 mt-3 sm:mt-0">
-                      <button
-                        onClick={() => setSelectedOrder(order)}
-                        className="px-3 py-1.5 text-sm border border-electric-blue text-electric-blue rounded-lg hover:bg-electric-blue/10"
-                      >
-                        View Details
-                      </button>
-                      <button
-                        onClick={() => reorderOrder(order)}
-                        className="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                      >
-                        Reorder
-                      </button>
-                      <button
-                        onClick={() => downloadInvoice(order)}
-                        className="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                      >
-                        Invoice
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Order Summary */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Items</p>
-                      <div className="space-y-1">
-                        {order.items.slice(0, 2).map(item => (
-                          <p key={item.id} className="text-sm font-medium">
-                            {item.name} ({item.quantity})
-                          </p>
-                        ))}
-                        {order.items.length > 2 && (
-                          <p className="text-xs text-gray-500">+{order.items.length - 2} more items</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Delivery Location</p>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <p className="text-sm font-medium">{order.deliveryLocation}</p>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
-                      <p className="text-xl font-bold text-blue-600">${order.total.toFixed(2)}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      )}
+        }
+        bulkActions={[
+          {
+            key: 'reorder',
+            label: 'Reorder Selected',
+            icon: <Repeat className="w-4 h-4" />,
+            onClick: handleBulkReorder
+          },
+          {
+            key: 'download',
+            label: 'Download Invoices',
+            icon: <Download className="w-4 h-4" />,
+            onClick: handleBulkDownload
+          }
+        ]}
+      />
 
       {/* Order Details Modal */}
       <AnimatePresence>
@@ -382,39 +385,45 @@ export default function OrderHistoryPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedOrder(null)}
-              className="fixed inset-0 bg-black/50 z-40"
+              className="fixed inset-0 bg-[var(--md-sys-color-scrim)]/50 z-40"
             />
             
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="fixed inset-4 md:inset-8 lg:inset-16 bg-white dark:bg-gray-900 rounded-xl shadow-2xl z-50 flex flex-col max-h-screen"
+              className="fixed inset-4 md:inset-8 lg:inset-16 bg-[var(--md-sys-color-surface)] md-elevation-3 rounded-xl z-50 flex flex-col max-h-screen"
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between p-6 border-b border-[var(--md-sys-color-outline-variant)]">
                 <div>
-                  <h2 className="text-2xl font-bold">Order Details</h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  <h2 className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]">
+                    Order Details
+                  </h2>
+                  <p className="md3-body-medium text-[var(--md-sys-color-on-surface-variant)] mt-1">
                     {selectedOrder.orderNumber} - {format(selectedOrder.date, 'MMM d, yyyy')}
                   </p>
                 </div>
-                <button
+                <Button
+                  variant="text"
+                  size="small"
                   onClick={() => setSelectedOrder(null)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  className="p-2"
                 >
                   ×
-                </button>
+                </Button>
               </div>
 
               {/* Modal Content */}
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="space-y-6">
                   {/* Status and Timeline */}
-                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <h3 className="font-semibold mb-3">Order Status</h3>
+                  <Card variant="filled" className="p-4">
+                    <h3 className="md3-title-medium font-semibold mb-3 text-[var(--md-sys-color-on-surface)]">
+                      Order Status
+                    </h3>
                     <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${statusConfig[selectedOrder.status].color}`}>
+                      <span className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg md3-label-large ${statusConfig[selectedOrder.status].color}`}>
                         {(() => {
                           const StatusIcon = statusConfig[selectedOrder.status].icon;
                           return <StatusIcon className="w-4 h-4" />;
@@ -422,103 +431,131 @@ export default function OrderHistoryPage() {
                         {statusConfig[selectedOrder.status].label}
                       </span>
                     </div>
-                  </div>
+                  </Card>
 
                   {/* Items */}
-                  <div>
-                    <h3 className="font-semibold mb-3">Order Items</h3>
+                  <Card variant="outlined" className="p-4">
+                    <h3 className="md3-title-medium font-semibold mb-3 text-[var(--md-sys-color-on-surface)]">
+                      Order Items
+                    </h3>
                     <div className="space-y-3">
                       {selectedOrder.items.map(item => (
-                        <div key={item.id} className="flex justify-between items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
+                        <div key={item.id} className="flex justify-between items-center p-3 bg-[var(--md-sys-color-surface-container)] rounded-lg">
                           <div>
-                            <p className="font-medium">{item.name}</p>
+                            <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                              {item.name}
+                            </p>
                             {item.servings && (
-                              <p className="text-sm text-gray-500">Serves {item.servings} people</p>
+                              <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                                Serves {item.servings} people
+                              </p>
                             )}
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">${(item.unitPrice * item.quantity).toFixed(2)}</p>
-                            <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                            <p className="md3-title-small font-semibold text-[var(--md-sys-color-on-surface)]">
+                              ${(item.unitPrice * item.quantity).toFixed(2)}
+                            </p>
+                            <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                              Qty: {item.quantity}
+                            </p>
                           </div>
                         </div>
                       ))}
                     </div>
-                  </div>
+                  </Card>
 
                   {/* Delivery Details */}
-                  <div>
-                    <h3 className="font-semibold mb-3">Delivery Details</h3>
-                    <div className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <Card variant="outlined" className="p-4">
+                    <h3 className="md3-title-medium font-semibold mb-3 text-[var(--md-sys-color-on-surface)]">
+                      Delivery Details
+                    </h3>
+                    <div className="p-3 bg-[var(--md-sys-color-surface-container)] rounded-lg">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Date</p>
-                          <p className="font-medium">{format(selectedOrder.deliveryDate, 'EEEE, MMM d, yyyy')}</p>
+                          <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">Date</p>
+                          <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                            {format(selectedOrder.deliveryDate, 'EEEE, MMM d, yyyy')}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Location</p>
-                          <p className="font-medium">{selectedOrder.deliveryLocation}</p>
+                          <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">Location</p>
+                          <p className="md3-body-medium font-medium text-[var(--md-sys-color-on-surface)]">
+                            {selectedOrder.deliveryLocation}
+                          </p>
                         </div>
                       </div>
                       {selectedOrder.notes && (
-                        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Special Instructions</p>
-                          <p className="text-sm">{selectedOrder.notes}</p>
+                        <div className="mt-3 pt-3 border-t border-[var(--md-sys-color-outline-variant)]">
+                          <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                            Special Instructions
+                          </p>
+                          <p className="md3-body-medium text-[var(--md-sys-color-on-surface)]">
+                            {selectedOrder.notes}
+                          </p>
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Card>
 
                   {/* Payment Summary */}
-                  <div>
-                    <h3 className="font-semibold mb-3">Payment Summary</h3>
-                    <div className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <Card variant="outlined" className="p-4">
+                    <h3 className="md3-title-medium font-semibold mb-3 text-[var(--md-sys-color-on-surface)]">
+                      Payment Summary
+                    </h3>
+                    <div className="p-3 bg-[var(--md-sys-color-surface-container)] rounded-lg">
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span>Subtotal</span>
-                          <span>${selectedOrder.subtotal.toFixed(2)}</span>
+                          <span className="md3-body-medium text-[var(--md-sys-color-on-surface)]">Subtotal</span>
+                          <span className="md3-body-medium text-[var(--md-sys-color-on-surface)]">
+                            ${selectedOrder.subtotal.toFixed(2)}
+                          </span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Tax (8.75%)</span>
-                          <span>${selectedOrder.tax.toFixed(2)}</span>
+                          <span className="md3-body-medium text-[var(--md-sys-color-on-surface)]">Tax (8.75%)</span>
+                          <span className="md3-body-medium text-[var(--md-sys-color-on-surface)]">
+                            ${selectedOrder.tax.toFixed(2)}
+                          </span>
                         </div>
-                        <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                          <span>Total</span>
-                          <span className="text-blue-600">${selectedOrder.total.toFixed(2)}</span>
+                        <div className="flex justify-between pt-2 border-t border-[var(--md-sys-color-outline-variant)]">
+                          <span className="md3-title-medium font-bold text-[var(--md-sys-color-on-surface)]">Total</span>
+                          <span className="md3-title-medium font-bold text-[var(--md-sys-color-primary)]">
+                            ${selectedOrder.total.toFixed(2)}
+                          </span>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 </div>
               </div>
 
               {/* Modal Footer */}
-              <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="p-6 border-t border-[var(--md-sys-color-outline-variant)]">
                 <div className="flex justify-between">
-                  <button
+                  <Button
+                    variant="outlined"
+                    leftIcon={<Download className="w-4 h-4" />}
                     onClick={() => downloadInvoice(selectedOrder)}
-                    className="md-outlined-button"
                   >
-                    <Download className="w-4 h-4 mr-2" />
                     Download Invoice
-                  </button>
+                  </Button>
                   
                   <div className="flex gap-3">
-                    <button
+                    <Button
+                      variant="outlined"
                       onClick={() => setSelectedOrder(null)}
-                      className="md-outlined-button"
                     >
                       Close
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="filled"
+                      leftIcon={<Repeat className="w-4 h-4" />}
                       onClick={() => {
                         reorderOrder(selectedOrder);
                         setSelectedOrder(null);
                       }}
-                      className="md-filled-button"
                     >
-                      <Repeat className="w-4 h-4 mr-2" />
                       Reorder
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

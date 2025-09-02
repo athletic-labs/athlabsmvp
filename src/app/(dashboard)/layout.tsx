@@ -4,43 +4,32 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, ShoppingCart, Save, Calendar, History, Settings, LogOut, Menu, Moon, Sun } from 'lucide-react';
-import { useTheme } from '@/lib/theme/theme-provider';
+import { Home, ShoppingCart, Save, Calendar, History, Settings, LogOut, Menu, Moon, Sun, Plus } from 'lucide-react';
+import { useMaterial3Theme } from '@/lib/design-system/theme';
 import { SimpleAuthService } from '@/lib/auth/simple-auth';
 import { useCartStore } from '@/lib/store/enhanced-cart-store';
+import { NavigationRailExpanded } from '@/lib/design-system/components';
+import { Button } from '@/lib/design-system/components';
 import CartDrawer from '@/components/cart/CartDrawer';
 
 const NAVIGATION_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/new-order', label: 'New Order', icon: ShoppingCart },
-  { href: '/saved-templates', label: 'Saved Templates', icon: Save },
-  { href: '/calendar', label: 'Team Calendar', icon: Calendar },
-  { href: '/order-history', label: 'Order History', icon: History },
-  { href: '/settings', label: 'Settings', icon: Settings }
+  { key: 'dashboard', href: '/dashboard', label: 'Dashboard', icon: <Home className="w-6 h-6" /> },
+  { key: 'new-order', href: '/new-order', label: 'New Order', icon: <ShoppingCart className="w-6 h-6" /> },
+  { key: 'saved-templates', href: '/saved-templates', label: 'Templates', icon: <Save className="w-6 h-6" /> },
+  { key: 'calendar', href: '/calendar', label: 'Calendar', icon: <Calendar className="w-6 h-6" /> },
+  { key: 'order-history', href: '/order-history', label: 'History', icon: <History className="w-6 h-6" /> },
+  { key: 'settings', href: '/settings', label: 'Settings', icon: <Settings className="w-6 h-6" /> }
 ];
-
-function CartButton() {
-  const { itemCount, openCart } = useCartStore();
-
-  return (
-    <button
-      onClick={openCart}
-      className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-    >
-      <ShoppingCart className="w-6 h-6" />
-      {itemCount > 0 && (
-        <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-          {itemCount > 99 ? '99+' : itemCount}
-        </span>
-      )}
-    </button>
-  );
-}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { resolvedTheme, toggleTheme } = useTheme();
+  const { colorScheme, setThemeMode, themeMode } = useMaterial3Theme();
+  
+  const toggleTheme = () => {
+    const nextMode = themeMode === 'light' ? 'dark' : themeMode === 'dark' ? 'system' : 'light';
+    setThemeMode(nextMode);
+  };
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isOpen: cartOpen, closeCart, openCart, itemCount } = useCartStore();
 
@@ -49,87 +38,223 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.push('/login');
   };
 
-  return (
-    <div className="flex h-screen bg-white dark:bg-gray-900">
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
+  const getActiveKey = () => {
+    return NAVIGATION_ITEMS.find(item => pathname === item.href)?.key;
+  };
 
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-700
-        transform transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-center">
+  // Mobile overlay
+  const MobileOverlay = () => (
+    <>
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-[var(--md-sys-color-scrim)]/50 z-40 lg:hidden" 
+          onClick={() => setSidebarOpen(false)} 
+        />
+      )}
+    </>
+  );
+
+  // Mobile header
+  const MobileHeader = () => (
+    <header className="lg:hidden bg-[var(--md-sys-color-surface)] border-b border-[var(--md-sys-color-outline-variant)] p-4">
+      <div className="flex items-center justify-between">
+        <Button
+          variant="text"
+          size="medium"
+          onClick={() => setSidebarOpen(true)}
+          leftIcon={<Menu className="w-6 h-6" />}
+          className="p-2"
+        />
+        <Image 
+          src={colorScheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
+          alt="Athletic Labs" 
+          width={150} 
+          height={40}
+          className="h-8 w-auto"
+        />
+        <Button
+          variant="text"
+          size="medium"
+          onClick={openCart}
+          className="relative p-2"
+          leftIcon={<ShoppingCart className="w-6 h-6" />}
+        >
+          {itemCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[var(--md-saas-color-error)] text-[var(--md-saas-color-on-error)] text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+              {itemCount > 99 ? '99+' : itemCount}
+            </span>
+          )}
+        </Button>
+      </div>
+    </header>
+  );
+
+  // Desktop Navigation Rail
+  const DesktopNavigation = () => (
+    <div className="hidden lg:block">
+      <NavigationRailExpanded
+        items={NAVIGATION_ITEMS.map(item => ({
+          ...item,
+          badge: item.key === 'new-order' && itemCount > 0 ? itemCount : undefined
+        }))}
+        activeKey={getActiveKey()}
+        width={280}
+        header={
+          <div className="flex justify-center">
             <Image 
-              src={resolvedTheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
+              src={colorScheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
               alt="Athletic Labs" 
-              width={150} 
-              height={40}
-              className="h-8 w-auto"
+              width={160} 
+              height={44}
+              className="h-10 w-auto"
             />
           </div>
-
-          <nav className="flex-1 px-4 py-6 space-y-1">
-            {NAVIGATION_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-              
-              return (
-                <Link key={item.href} href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
-                    ${isActive ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white'}`}>
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
-            <button onClick={openCart}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-colors relative">
-              <ShoppingCart className="w-5 h-5" />
-              <span>Cart</span>
-              {itemCount > 0 && (
-                <span className="ml-auto bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 font-medium">
+        }
+        fabAction={{
+          icon: <Plus className="w-6 h-6" />,
+          label: 'New Order',
+          onClick: () => router.push('/new-order')
+        }}
+        footer={
+          <div className="space-y-2">
+            <Button
+              variant="text"
+              fullWidth
+              leftIcon={<ShoppingCart className="w-5 h-5" />}
+              rightIcon={itemCount > 0 ? (
+                <div className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] text-xs rounded-full px-2 py-0.5 font-medium min-w-[20px] text-center">
                   {itemCount}
-                </span>
-              )}
-            </button>
+                </div>
+              ) : undefined}
+              onClick={openCart}
+              className="justify-start"
+            >
+              Cart
+            </Button>
             
-            <button onClick={toggleTheme}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-colors">
-              {resolvedTheme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              <span>{resolvedTheme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
-            </button>
+            <Button
+              variant="text"
+              fullWidth
+              leftIcon={colorScheme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              onClick={toggleTheme}
+              className="justify-start"
+            >
+              {colorScheme === 'light' ? 'Dark Mode' : 'Light Mode'}
+            </Button>
             
-            <button onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-colors">
-              <LogOut className="w-5 h-5" />
-              <span>Logout</span>
-            </button>
+            <Button
+              variant="text"
+              fullWidth
+              leftIcon={<LogOut className="w-5 h-5" />}
+              onClick={handleLogout}
+              className="justify-start"
+            >
+              Logout
+            </Button>
           </div>
-        </div>
-      </aside>
+        }
+      />
+    </div>
+  );
+
+  // Mobile Navigation Rail
+  const MobileNavigation = () => (
+    <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-out ${
+      sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+    }`}>
+      <NavigationRailExpanded
+        items={NAVIGATION_ITEMS.map(item => ({
+          ...item,
+          badge: item.key === 'new-order' && itemCount > 0 ? itemCount : undefined
+        }))}
+        activeKey={getActiveKey()}
+        width={280}
+        header={
+          <div className="flex items-center justify-between">
+            <Image 
+              src={colorScheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
+              alt="Athletic Labs" 
+              width={160} 
+              height={44}
+              className="h-10 w-auto"
+            />
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => setSidebarOpen(false)}
+              className="p-1 lg:hidden"
+            >
+              ×
+            </Button>
+          </div>
+        }
+        fabAction={{
+          icon: <Plus className="w-6 h-6" />,
+          label: 'New Order',
+          onClick: () => {
+            router.push('/new-order');
+            setSidebarOpen(false);
+          }
+        }}
+        footer={
+          <div className="space-y-2">
+            <Button
+              variant="text"
+              fullWidth
+              leftIcon={<ShoppingCart className="w-5 h-5" />}
+              rightIcon={itemCount > 0 ? (
+                <div className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] text-xs rounded-full px-2 py-0.5 font-medium min-w-[20px] text-center">
+                  {itemCount}
+                </div>
+              ) : undefined}
+              onClick={() => {
+                openCart();
+                setSidebarOpen(false);
+              }}
+              className="justify-start"
+            >
+              Cart
+            </Button>
+            
+            <Button
+              variant="text"
+              fullWidth
+              leftIcon={colorScheme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              onClick={toggleTheme}
+              className="justify-start"
+            >
+              {colorScheme === 'light' ? 'Dark Mode' : 'Light Mode'}
+            </Button>
+            
+            <Button
+              variant="text"
+              fullWidth
+              leftIcon={<LogOut className="w-5 h-5" />}
+              onClick={() => {
+                handleLogout();
+                setSidebarOpen(false);
+              }}
+              className="justify-start"
+            >
+              Logout
+            </Button>
+          </div>
+        }
+        onItemClick={() => setSidebarOpen(false)}
+      />
+    </div>
+  );
+
+  return (
+    <div className="flex h-screen bg-[var(--md-sys-color-surface)]">
+      <MobileOverlay />
+      <DesktopNavigation />
+      <MobileNavigation />
 
       <div className="flex-1 flex flex-col">
-        <header className="lg:hidden bg-white dark:bg-gray-900 shadow-md p-4">
-          <div className="flex items-center justify-between">
-            <button onClick={() => setSidebarOpen(true)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
-              <Menu className="w-6 h-6" />
-            </button>
-            <Image 
-              src={resolvedTheme === 'light' ? "/athletic-labs-logo.png" : "/athletic-labs-logo-white.png"}
-              alt="Athletic Labs" 
-              width={150} 
-              height={40}
-              className="h-8 w-auto"
-            />
-            <CartButton />
-          </div>
-        </header>
-
-        <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900">
+        <MobileHeader />
+        
+        <main className="flex-1 overflow-y-auto bg-[var(--md-sys-color-surface-container-lowest)]">
           <div className="p-6">{children}</div>
         </main>
       </div>

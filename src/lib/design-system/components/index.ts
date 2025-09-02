@@ -26,3 +26,6 @@ export type {
   NavigationRailExpandedProps, 
   NavigationItem 
 } from './NavigationRail';
+
+export { ThemeSelector, QuickThemeSwitcher } from './ThemeSelector';
+export type { Material3Theme } from '../theme/ThemeProvider';

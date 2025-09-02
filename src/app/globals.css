@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-@import '../lib/design-system/material3.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import '../lib/design-system/material3.css';
 
 @layer base {
   body {
@@ -22,7 +23,9 @@
   
   /* Focus-visible for better accessibility */
   *:focus-visible {
-    @apply md-focus-ring;
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+    border-radius: var(--md-sys-shape-corner-small);
   }
 }
 
@@ -66,7 +69,10 @@
   
   /* Material 3 Button Components */
   .md3-button-filled {
-    @apply md-state-layer md-motion-emphasized;
+    position: relative;
+    overflow: hidden;
+    transition-timing-function: var(--md-sys-motion-easing-emphasized);
+    transition-duration: var(--md-sys-motion-duration-medium2);
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
     border-radius: var(--md-sys-shape-corner-full);
@@ -98,7 +104,10 @@
   }
   
   .md3-button-outlined {
-    @apply md-state-layer md-motion-emphasized;
+    position: relative;
+    overflow: hidden;
+    transition-timing-function: var(--md-sys-motion-easing-emphasized);
+    transition-duration: var(--md-sys-motion-duration-medium2);
     background-color: transparent;
     color: var(--md-sys-color-primary);
     border: 1px solid var(--md-sys-color-outline);
@@ -124,7 +133,10 @@
   }
   
   .md3-button-text {
-    @apply md-state-layer md-motion-emphasized;
+    position: relative;
+    overflow: hidden;
+    transition-timing-function: var(--md-sys-motion-easing-emphasized);
+    transition-duration: var(--md-sys-motion-duration-medium2);
     background-color: transparent;
     color: var(--md-sys-color-primary);
     border: none;
@@ -151,7 +163,9 @@
   
   /* Material 3 Card Components */
   .md3-card {
-    @apply md-elevation-1 md-motion-emphasized;
+    box-shadow: var(--md-sys-elevation-level1);
+    transition-timing-function: var(--md-sys-motion-easing-emphasized);
+    transition-duration: var(--md-sys-motion-duration-medium2);
     background-color: var(--md-sys-color-surface-container-low);
     color: var(--md-sys-color-on-surface);
     border-radius: var(--md-sys-shape-corner-medium);
@@ -161,7 +175,7 @@
   }
   
   .md3-card-elevated {
-    @apply md-elevation-1;
+    box-shadow: var(--md-sys-elevation-level1);
     background-color: var(--md-sys-color-surface-container-low);
   }
   
@@ -350,22 +364,64 @@
   
   /* Legacy compatibility - gradually remove these */
   .md-filled-button {
-    @apply md3-button-filled;
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-radius: var(--md-sys-shape-corner-full);
+    min-height: 40px;
+    padding: 10px 24px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
   
   .md-outlined-button {
-    @apply md3-button-outlined;
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-full);
+    min-height: 40px;
+    padding: 10px 24px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
   
   .md-text-button {
-    @apply md3-button-text;
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    min-height: 40px;
+    padding: 10px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
   
   .md-card {
-    @apply md3-card;
+    box-shadow: var(--md-sys-elevation-level1);
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+    padding: 16px;
   }
   
   .md-text-field {
-    @apply md3-text-field-filled;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small) 0 0;
+    border-bottom: 1px solid var(--md-sys-color-outline);
+    padding: 8px 16px;
+    color: var(--md-sys-color-on-surface);
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    outline: none;
   }
 }

@@ -1,5 +1,5 @@
 import './globals.css';
-import { ThemeProvider } from '@/lib/theme/theme-provider';
+import { Material3ThemeProvider } from '@/lib/design-system/theme';
 import { ErrorBoundary } from '@/lib/error/error-boundary';
 import { Toaster } from 'sonner';
 
@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ErrorBoundary>
-          <ThemeProvider>
+          <Material3ThemeProvider>
             {children}
             <Toaster 
               position="top-right"
@@ -30,7 +30,7 @@ export default function RootLayout({
                 className: 'dark:bg-navy dark:text-white dark:border-smoke/30',
               }}
             />
-          </ThemeProvider>
+          </Material3ThemeProvider>
         </ErrorBoundary>
       </body>
     </html>
