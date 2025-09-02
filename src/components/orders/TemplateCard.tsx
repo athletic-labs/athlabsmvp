@@ -44,18 +44,9 @@ export default function TemplateCard({ template }: TemplateCardProps) {
     setIsQuickAdding(false);
   };
   
-  const getCuisineVariant = (type: string) => {
-    const variants: Record<string, 'assist' | 'filter' | 'input' | 'suggestion'> = {
-      'Mediterranean': 'assist',
-      'Mexican': 'filter', 
-      'Asian': 'suggestion',
-      'Italian': 'assist',
-      'Latin': 'filter',
-      'American': 'assist',
-      'Premium': 'suggestion',
-      'Breakfast': 'filter'
-    };
-    return variants[type] || 'assist';
+  const getCuisineVariant = (type: string): 'assist' | 'filter' | 'input' | 'suggestion' => {
+    // Use consistent 'assist' variant for all cuisine types for visual consistency
+    return 'assist';
   };
 
   return (
