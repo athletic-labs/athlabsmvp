@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useEffect } from 'react';
-import { AlertTriangle, Package, Clock, MapPin, Activity, ArrowRight, Calendar } from 'lucide-react';
+import { AlertTriangle, Package, Clock, MapPin, Activity, Zap, ArrowRight, Calendar } from 'lucide-react';
 import { Card, CardContent, Button } from '@/lib/design-system/components';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -192,7 +192,7 @@ const SmartBudgetAlert = memo(function SmartBudgetAlert({ budgetData }: { budget
 });
 
 // MINIMALIST DASHBOARD - Maximum signal, zero noise
-export default function DashboardPage() {
+export default function MinimalDashboardPage() {
   const { markStart, markEnd } = usePerformanceMonitor('MinimalDashboard');
   const layout = useResponsiveLayout();
   
