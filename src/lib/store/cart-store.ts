@@ -117,7 +117,12 @@ export const useCartStore = create<CartState>()(
       },
       
       get subtotal() {
-        return get().items.reduce((total, item) => total + (item.unitPrice * item.quantity), 0);
+        const state = get();
+        return state.items.reduce((total, item) => {
+          const itemTotal = item.unitPrice * item.quantity;
+          const addOnsTotal = item.addOns?.reduce((sum, addon) => sum + (addon.price * addon.quantity), 0) || 0;
+          return total + itemTotal + addOnsTotal;
+        }, 0);
       },
       
       get tax() {
