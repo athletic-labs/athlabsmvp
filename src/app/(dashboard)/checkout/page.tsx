@@ -206,6 +206,9 @@ export default function CheckoutPage() {
               <label className="block text-sm font-medium mb-2">
                 <Clock className="w-4 h-4 inline mr-1" />
                 Delivery Time
+                <span className="ml-2 text-xs text-gray-500 font-normal">
+                  ({Intl.DateTimeFormat().resolvedOptions().timeZone.replace('_', ' ')})
+                </span>
               </label>
               <select
                 value={deliveryTime}
@@ -245,6 +248,9 @@ export default function CheckoutPage() {
                 <option value="20:30">8:30 PM</option>
                 <option value="21:00">9:00 PM</option>
               </select>
+              <p className="text-xs text-gray-500 mt-1">
+                All times are in your local timezone ({new Date().toLocaleString('en-US', { timeZoneName: 'short' }).split(', ')[1]})
+              </p>
             </div>
             
             <div>
