@@ -17,6 +17,19 @@ interface GameEvent {
   time: string;
   location: string;
   isHome: boolean;
+  seriesId?: string; // Links multiple games in a series
+}
+
+interface TripSeries {
+  id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+  type: 'road-trip' | 'home-series' | 'tournament' | 'camp';
+  color: string; // hex color for the bar
+  games: GameEvent[];
+  description?: string;
 }
 
 interface MealSchedule {
@@ -32,17 +45,65 @@ interface MealSchedule {
 export default function TeamCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [games, setGames] = useState<GameEvent[]>([]);
+  const [series, setSeries] = useState<TripSeries[]>([]);
   const [meals, setMeals] = useState<Map<string, MealSchedule[]>>(new Map());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [selectedGame, setSelectedGame] = useState<GameEvent | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
 
   useEffect(() => {
-    // Load saved games and meals
+    // Load saved games, series, and meals
     const savedGames = localStorage.getItem('team-games');
+    const savedSeries = localStorage.getItem('team-series');
     const savedMeals = localStorage.getItem('team-meals');
     
-    if (savedGames) setGames(JSON.parse(savedGames));
+    if (savedGames) {
+      setGames(JSON.parse(savedGames));
+    }
+    
+    if (savedSeries) {
+      setSeries(JSON.parse(savedSeries));
+    } else {
+      // Add example series data
+      const exampleSeries: TripSeries[] = [
+        {
+          id: 'series-1',
+          title: 'California Road Trip',
+          startDate: '2025-01-15',
+          endDate: '2025-01-18',
+          location: 'California',
+          type: 'road-trip',
+          color: '#3B82F6', // blue
+          games: [],
+          description: '4-day road trip to California - USC and UCLA games'
+        },
+        {
+          id: 'series-2',
+          title: 'Big Ten Tournament',
+          startDate: '2025-02-08',
+          endDate: '2025-02-12',
+          location: 'Chicago, IL',
+          type: 'tournament',
+          color: '#10B981', // green
+          games: [],
+          description: 'Big Ten Conference Tournament in Chicago'
+        },
+        {
+          id: 'series-3',
+          title: 'Florida Series',
+          startDate: '2025-03-05',
+          endDate: '2025-03-07',
+          location: 'Gainesville, FL',
+          type: 'road-trip',
+          color: '#8B5CF6', // purple
+          games: [],
+          description: 'Weekend series against Florida Gators'
+        }
+      ];
+      setSeries(exampleSeries);
+      localStorage.setItem('team-series', JSON.stringify(exampleSeries));
+    }
+    
     if (savedMeals) {
       const mealsData = JSON.parse(savedMeals);
       setMeals(new Map(mealsData));
@@ -106,6 +167,28 @@ export default function TeamCalendar() {
     saveMeals(updatedMeals);
   };
 
+  const getSeriesForDay = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return series.filter(s => dateStr >= s.startDate && dateStr <= s.endDate);
+  };
+
+  const isSeriesStartDate = (date: Date, seriesItem: TripSeries) => {
+    return format(date, 'yyyy-MM-dd') === seriesItem.startDate;
+  };
+
+  const isSeriesEndDate = (date: Date, seriesItem: TripSeries) => {
+    return format(date, 'yyyy-MM-dd') === seriesItem.endDate;
+  };
+
+  const getSeriesSpanInfo = (date: Date, seriesItem: TripSeries) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const isStart = dateStr === seriesItem.startDate;
+    const isEnd = dateStr === seriesItem.endDate;
+    const isMiddle = dateStr > seriesItem.startDate && dateStr < seriesItem.endDate;
+    
+    return { isStart, isEnd, isMiddle, isInSeries: isStart || isEnd || isMiddle };
+  };
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -125,29 +208,58 @@ export default function TeamCalendar() {
         </div>
       </div>
 
-      {/* Meal Timing Legend */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <p className="text-sm font-medium mb-3">Meal Timing Options:</p>
-        <div className="flex flex-wrap gap-3">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-purple-500" />
-            <span className="text-sm">✈️ Arrival</span>
+      {/* Legend */}
+      <div className="mb-6 space-y-4">
+        {/* Series Legend */}
+        {series.length > 0 && (
+          <div className="p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm font-medium mb-3">Current Series & Road Trips:</p>
+            <div className="space-y-2">
+              {series.map(s => (
+                <div key={s.id} className="flex items-center gap-3">
+                  <div 
+                    className="w-4 h-3 rounded-sm"
+                    style={{ backgroundColor: s.color }}
+                  />
+                  <span className="text-sm">
+                    <span className="font-medium">{s.title}</span> - {s.location} 
+                    <span className="text-gray-600 ml-1">
+                      ({format(new Date(s.startDate), 'MMM d')} - {format(new Date(s.endDate), 'MMM d')})
+                    </span>
+                  </span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-white/70 capitalize">
+                    {s.type.replace('-', ' ')}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-orange-500" />
-            <span className="text-sm">🍽️ Pre-Game</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-green-500" />
-            <span className="text-sm">🥤 Post-Game</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-blue-500" />
-            <span className="text-sm">✈️ Flight Out</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-yellow-500" />
-            <span className="text-sm">⏸️ Intermission</span>
+        )}
+
+        {/* Meal Timing Legend */}
+        <div className="p-4 bg-gray-50 rounded-lg">
+          <p className="text-sm font-medium mb-3">Meal Timing Options:</p>
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-purple-500" />
+              <span className="text-sm">✈️ Arrival</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-orange-500" />
+              <span className="text-sm">🍽️ Pre-Game</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-green-500" />
+              <span className="text-sm">🥤 Post-Game</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-blue-500" />
+              <span className="text-sm">✈️ Flight Out</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-yellow-500" />
+              <span className="text-sm">⏸️ Intermission</span>
+            </div>
           </div>
         </div>
       </div>
@@ -193,6 +305,7 @@ export default function TeamCalendar() {
           {getDaysInMonth().map((day, idx) => {
             const dayGames = getGamesForDay(day);
             const dayMeals = getMealsForDay(day);
+            const daySeries = getSeriesForDay(day);
             const mealStatus = getMealStatusForDay(day);
             const isCurrentMonth = isSameMonth(day, currentDate);
             const isPastDay = isPast(day) && !isToday(day);
@@ -201,7 +314,7 @@ export default function TeamCalendar() {
               <div
                 key={idx}
                 onClick={() => !isPastDay && handleDayClick(day)}
-                className={`min-h-[120px] p-2 border-r border-b transition-colors ${
+                className={`min-h-[120px] p-2 border-r border-b transition-colors relative ${
                   !isCurrentMonth ? 'bg-gray-50' : ''
                 } ${isToday(day) ? 'bg-blue-50' : ''} ${
                   isPastDay ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'
@@ -222,6 +335,34 @@ export default function TeamCalendar() {
                     </span>
                   )}
                 </div>
+
+                {/* Series bars spanning multiple days */}
+                {daySeries.map((seriesItem, seriesIdx) => {
+                  const spanInfo = getSeriesSpanInfo(day, seriesItem);
+                  if (!spanInfo.isInSeries) return null;
+                  
+                  return (
+                    <div
+                      key={`series-${seriesItem.id}-${seriesIdx}`}
+                      className="absolute left-0 right-0 h-2 z-10"
+                      style={{ 
+                        backgroundColor: seriesItem.color,
+                        top: `${26 + seriesIdx * 10}px`,
+                        borderTopLeftRadius: spanInfo.isStart ? '4px' : '0',
+                        borderBottomLeftRadius: spanInfo.isStart ? '4px' : '0',
+                        borderTopRightRadius: spanInfo.isEnd ? '4px' : '0',
+                        borderBottomRightRadius: spanInfo.isEnd ? '4px' : '0',
+                      }}
+                      title={`${seriesItem.title} - ${seriesItem.location}`}
+                    >
+                      {spanInfo.isStart && (
+                        <div className="absolute left-1 -top-4 text-xs font-medium text-white bg-black/60 px-1 rounded truncate max-w-[100px]">
+                          {seriesItem.title}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 
                 {/* Games for this day */}
                 {dayGames.map((game, i) => (
