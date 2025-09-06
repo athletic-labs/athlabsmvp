@@ -196,7 +196,7 @@ export const MEAL_TEMPLATES: MealTemplate[] = [
   },
   {
     id: 'template-10',
-    name: 'BREAKFAST ESSENTIALS',
+    name: 'BREAKFAST SPECIALS',
     description: 'Elevated brunch experience',
     cuisine_type: 'Breakfast',
     bundle_price: 2200.00,
