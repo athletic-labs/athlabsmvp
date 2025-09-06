@@ -100,16 +100,16 @@ function CheckoutSuccessContent() {
               <Calendar className="w-5 h-5 text-gray-500" />
               <div>
                 <p className="text-sm text-gray-600">Delivery Date</p>
-                <p className="font-medium">{order.deliveryDate}</p>
+                <p className="font-medium">{order.delivery_date}</p>
               </div>
             </div>
             
-            {order.deliveryTime && (
+            {order.delivery_time && (
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-gray-500" />
                 <div>
                   <p className="text-sm text-gray-600">Delivery Time</p>
-                  <p className="font-medium">{order.deliveryTime}</p>
+                  <p className="font-medium">{order.delivery_time}</p>
                 </div>
               </div>
             )}
@@ -118,16 +118,16 @@ function CheckoutSuccessContent() {
               <Package className="w-5 h-5 text-gray-500" />
               <div>
                 <p className="text-sm text-gray-600">Meal Context</p>
-                <p className="font-medium capitalize">{order.deliveryTiming?.replace('-', ' ')}</p>
+                <p className="font-medium capitalize">{order.delivery_timing?.replace('-', ' ')}</p>
               </div>
             </div>
             
-            {order.deliveryLocation && (
+            {order.delivery_location && (
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-gray-500" />
                 <div>
                   <p className="text-sm text-gray-600">Location</p>
-                  <p className="font-medium">{order.deliveryLocation}</p>
+                  <p className="font-medium">{order.delivery_location}</p>
                 </div>
               </div>
             )}
