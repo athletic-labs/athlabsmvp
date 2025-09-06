@@ -21,12 +21,20 @@ export default function CheckoutPage() {
   
   // Search for addresses using address service
   const searchAddresses = async (query: string) => {
+    console.log('searchAddresses called with query:', query);
     try {
       const suggestions = await AddressService.searchAddresses(query);
+      console.log('Received suggestions:', suggestions);
       setAddressSuggestions(suggestions);
+      // Only show suggestions if we have results
+      if (suggestions.length > 0) {
+        setShowSuggestions(true);
+      }
+      console.log('Set addressSuggestions state');
     } catch (error) {
       console.error('Address search failed:', error);
       setAddressSuggestions([]);
+      setShowSuggestions(false);
     }
   };
 
@@ -289,7 +297,6 @@ export default function CheckoutPage() {
                   if (value.length >= 3) {
                     const timeout = setTimeout(() => {
                       searchAddresses(value);
-                      setShowSuggestions(true);
                     }, 300);
                     setSearchTimeout(timeout);
                   } else {
@@ -308,6 +315,7 @@ export default function CheckoutPage() {
               />
               
               {/* Address Suggestions Dropdown */}
+              {console.log('Render check:', { showSuggestions, addressSuggestionsLength: addressSuggestions.length, addressSuggestions })}
               {showSuggestions && addressSuggestions.length > 0 && (
                 <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
                   {addressSuggestions.map((suggestion) => (

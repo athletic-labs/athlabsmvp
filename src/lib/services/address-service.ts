@@ -13,6 +13,12 @@ export class AddressService {
       return [];
     }
     
+    console.log('AddressService.searchAddresses called with:', query);
+    
+    // TEMP: Always use mock data for debugging
+    console.log('Using mock data for debugging...');
+    return this.getMockSuggestions(query);
+    
     try {
       // Use server-side Google Places API endpoint
       const response = await fetch(
