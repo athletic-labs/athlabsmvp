@@ -473,7 +473,8 @@ const TopPerformanceFoods = memo(function TopPerformanceFoods({ analytics }: { a
         </div>
       </CardContent>
     </Card>
-  );\n});
+  );
+});
 
 // Smart budget alert - only shows when action needed
 const SmartBudgetAlert = memo(function SmartBudgetAlert({ budgetData }: { budgetData: any }) {
