@@ -23,8 +23,10 @@ export default function CheckoutPage() {
   }, [items.length, router]);
 
   const handleSubmitOrder = async () => {
+    console.log('Form values:', { deliveryDate, deliveryTiming, deliveryTime });
+    
     if (!deliveryDate || !deliveryTiming) {
-      alert('Please select delivery date and timing');
+      alert('Please select delivery date and meal context');
       return;
     }
 
@@ -45,14 +47,20 @@ export default function CheckoutPage() {
     };
 
     try {
+      // Create unique order ID
+      const orderId = `order-${Date.now()}`;
+      const orderWithId = { ...orderData, id: orderId };
+      
       // Save order to localStorage (replace with API call)
       const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-      orders.push({ ...orderData, id: `order-${Date.now()}` });
+      orders.push(orderWithId);
       localStorage.setItem('orders', JSON.stringify(orders));
 
-      // Clear cart and redirect
+      console.log('Order saved successfully:', orderWithId);
+
+      // Clear cart and redirect to success page
       clearCart();
-      router.push('/order-history?status=success');
+      router.push(`/checkout/success?orderId=${orderId}`);
     } catch (error) {
       console.error('Order submission failed:', error);
       alert('Failed to submit order. Please try again.');
