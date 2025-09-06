@@ -13,34 +13,46 @@ export class AddressService {
       return [];
     }
     
+    console.log('Searching for:', query);
+    
     try {
       // Use server-side Google Places API endpoint
       const response = await fetch(
         `/api/places/autocomplete?input=${encodeURIComponent(query)}`
       );
       
+      console.log('API Response status:', response.status);
+      
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log('API Response data:', data);
       
-      // Check if API returned an error (likely missing API key)
+      // Check if API returned an error (likely missing API key or API not enabled)
       if (data.error) {
-        console.warn('Google Places API error:', data.error);
+        console.warn('Google Places API error:', data.error, '- falling back to mock data');
         return this.getMockSuggestions(query);
       }
       
-      return data.predictions?.map((prediction: any) => ({
-        id: prediction.place_id,
-        description: prediction.description,
-        main_text: prediction.structured_formatting?.main_text || prediction.description,
-        secondary_text: prediction.structured_formatting?.secondary_text || ''
-      })) || [];
+      if (data.predictions && data.predictions.length > 0) {
+        console.log('Using Google Places results');
+        return data.predictions.map((prediction: any) => ({
+          id: prediction.place_id,
+          description: prediction.description,
+          main_text: prediction.structured_formatting?.main_text || prediction.description,
+          secondary_text: prediction.structured_formatting?.secondary_text || ''
+        }));
+      } else {
+        console.log('No Google Places results, using mock data');
+        return this.getMockSuggestions(query);
+      }
       
     } catch (error) {
       console.error('Address search error:', error);
       // Fall back to mock data on error
+      console.log('Using mock data due to error');
       return this.getMockSuggestions(query);
     }
   }
