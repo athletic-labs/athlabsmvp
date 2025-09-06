@@ -419,22 +419,61 @@ const TopPerformanceFoods = memo(function TopPerformanceFoods({ analytics }: { a
   ];
 
   return (
-    <Card variant=\"elevated\">
-      <CardContent className=\"p-6\">
-        <div className=\"flex items-center justify-between mb-4\">
-          <h2 className=\"md3-title-medium font-semibold text-[var(--md-sys-color-on-surface)]\">
+    <Card variant="elevated">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="md3-title-medium font-semibold text-[var(--md-sys-color-on-surface)]">
             Top Performance Foods
           </h2>
-          <Button variant=\"text\" size=\"small\" asChild>
-            <Link href=\"/analytics/foods\">View All</Link>
+          <Button variant="text" size="small" asChild>
+            <Link href="/analytics/foods">View All</Link>
           </Button>
         </div>
-        <div className=\"space-y-4\">
+        <div className="space-y-4">
           {performanceFoods.map((food) => (
-            <Card key={food.id} variant=\"outlined\" className=\"p-4 hover:shadow-sm transition-shadow cursor-pointer\" onClick={() => window.location.href = `/foods/${food.id}`}>
-              <div className=\"space-y-3\">
-                <div className=\"flex items-center justify-between\">
-                  <h3 className=\"md3-body-large font-medium text-[var(--md-sys-color-on-surface)]\">\n                    {food.name}\n                  </h3>\n                  <div className=\"text-right\">\n                    <p className=\"md3-body-small font-medium text-[var(--md-sys-color-on-surface)]\">\n                      {food.orderCount} orders\n                    </p>\n                    <p className={`md3-body-small ${food.adoptionRate.startsWith('+') ? 'text-[var(--md-saas-color-success)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>\n                      {food.adoptionRate}\n                    </p>\n                  </div>\n                </div>\n                \n                <div className=\"grid grid-cols-2 gap-3 text-sm\">\n                  <div>\n                    <p className=\"text-[var(--md-sys-color-on-surface-variant)]\">Macros</p>\n                    <p className=\"font-medium text-[var(--md-sys-color-on-surface)]\">{food.macros}</p>\n                  </div>\n                  <div>\n                    <p className=\"text-[var(--md-sys-color-on-surface-variant)]\">Consumption</p>\n                    <p className=\"font-medium text-[var(--md-sys-color-on-surface)]\">{food.consumptionRate}%</p>\n                  </div>\n                </div>\n                \n                <div className=\"flex items-center justify-between pt-2 border-t border-[var(--md-sys-color-outline-variant)]\">\n                  <span className=\"md3-body-small text-[var(--md-sys-color-on-surface-variant)]\">\n                    {food.category}\n                  </span>\n                  <div className=\"flex items-center gap-1\">\n                    <span className=\"md3-body-small font-medium text-[var(--md-sys-color-on-surface)]\">{food.athleteFeedback}</span>\n                    <span className=\"text-yellow-500\">★</span>\n                  </div>\n                </div>\n              </div>\n            </Card>\n          ))}\n        </div>\n      </CardContent>\n    </Card>\n  );\n});
+            <Card key={food.id} variant="outlined" className="p-4 hover:shadow-sm transition-shadow cursor-pointer" onClick={() => window.location.href = `/foods/${food.id}`}>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="md3-body-large font-medium text-[var(--md-sys-color-on-surface)]">
+                    {food.name}
+                  </h3>
+                  <div className="text-right">
+                    <p className="md3-body-small font-medium text-[var(--md-sys-color-on-surface)]">
+                      {food.orderCount} orders
+                    </p>
+                    <p className={`md3-body-small ${food.adoptionRate.startsWith('+') ? 'text-[var(--md-saas-color-success)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>
+                      {food.adoptionRate}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-[var(--md-sys-color-on-surface-variant)]">Macros</p>
+                    <p className="font-medium text-[var(--md-sys-color-on-surface)]">{food.macros}</p>
+                  </div>
+                  <div>
+                    <p className="text-[var(--md-sys-color-on-surface-variant)]">Consumption</p>
+                    <p className="font-medium text-[var(--md-sys-color-on-surface)]">{food.consumptionRate}%</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between pt-2 border-t border-[var(--md-sys-color-outline-variant)]">
+                  <span className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
+                    {food.category}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="md3-body-small font-medium text-[var(--md-sys-color-on-surface)]">{food.athleteFeedback}</span>
+                    <span className="text-yellow-500">★</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );\n});
 
 // Smart budget alert - only shows when action needed
 const SmartBudgetAlert = memo(function SmartBudgetAlert({ budgetData }: { budgetData: any }) {
