@@ -40,7 +40,6 @@ export default function CheckoutPage() {
     // Add a small delay to prevent interference with order submission redirect
     if (items.length === 0 && !submitting) {
       const timeout = setTimeout(() => {
-        console.log('No items in cart, redirecting to new-order');
         router.push('/new-order');
       }, 200);
       
@@ -49,24 +48,15 @@ export default function CheckoutPage() {
   }, [items.length, router, submitting]);
 
   const handleSubmitOrder = async () => {
-    console.log('=== CHECKOUT DEBUG ===');
-    console.log('Form values:', { deliveryDate, deliveryTiming, deliveryTime });
-    console.log('Items in cart:', items);
-    console.log('Cart length:', items.length);
-    
     if (!deliveryDate) {
-      console.log('Missing delivery date');
       alert('Please select delivery date');
       return;
     }
     
     if (!deliveryTiming) {
-      console.log('Missing delivery timing');
       alert('Please select meal context');
       return;
     }
-    
-    console.log('Validation passed, proceeding with order submission...');
 
     setSubmitting(true);
 
@@ -89,21 +79,23 @@ export default function CheckoutPage() {
       const orderId = `order-${Date.now()}`;
       const orderWithId = { ...orderData, id: orderId };
       
-      // Save order to localStorage (replace with API call)
+      // TODO: Replace with Stripe payment processing
+      // For production, this should:
+      // 1. Create Stripe checkout session
+      // 2. Process payment
+      // 3. Save order to database after successful payment
+      // 4. Send confirmation email
+      
+      // Temporary: Save order to localStorage (REMOVE FOR PRODUCTION)
       const orders = JSON.parse(localStorage.getItem('orders') || '[]');
       orders.push(orderWithId);
       localStorage.setItem('orders', JSON.stringify(orders));
 
-      console.log('Order saved successfully:', orderWithId);
-      console.log('About to clear cart and redirect...');
-
       // Redirect first, then clear cart to avoid useEffect interference
-      console.log('Redirecting to:', `/checkout/success?orderId=${orderId}`);
       router.push(`/checkout/success?orderId=${orderId}`);
       
       // Clear cart after a short delay to prevent useEffect redirect
       setTimeout(() => {
-        console.log('Clearing cart after redirect');
         clearCart();
       }, 100);
     } catch (error) {
