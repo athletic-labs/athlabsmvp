@@ -12,8 +12,31 @@ export default function CheckoutPage() {
   const [deliveryTiming, setDeliveryTiming] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [deliveryLocation, setDeliveryLocation] = useState('');
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  
+  // Common delivery locations for sports teams
+  const commonLocations = [
+    'Athletic Training Center',
+    'Main Stadium',
+    'Practice Facility', 
+    'Team Locker Room',
+    'Athletic Dining Hall',
+    'Strength & Conditioning Center',
+    'Sports Medicine Clinic',
+    'Team Hotel - Conference Room',
+    'Travel Bus Loading Area',
+    'Visiting Team Locker Room',
+    'Press Box',
+    'Athletic Academic Center'
+  ];
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  
+  // Filter locations based on input
+  const filteredLocations = commonLocations.filter(location =>
+    location.toLowerCase().includes(deliveryLocation.toLowerCase()) && 
+    location.toLowerCase() !== deliveryLocation.toLowerCase()
+  );
 
   useEffect(() => {
     // If no items in cart, redirect back (but not during submission)
@@ -253,7 +276,7 @@ export default function CheckoutPage() {
               </p>
             </div>
             
-            <div>
+            <div className="relative">
               <label className="block text-sm font-medium mb-2">
                 <MapPin className="w-4 h-4 inline mr-1" />
                 Delivery Location
@@ -261,10 +284,49 @@ export default function CheckoutPage() {
               <input
                 type="text"
                 value={deliveryLocation}
-                onChange={(e) => setDeliveryLocation(e.target.value)}
-                placeholder="e.g., Team Facility, Training Complex"
+                onChange={(e) => {
+                  setDeliveryLocation(e.target.value);
+                  setShowAddressSuggestions(e.target.value.length > 0);
+                }}
+                onFocus={() => setShowAddressSuggestions(deliveryLocation.length > 0)}
+                onBlur={() => setTimeout(() => setShowAddressSuggestions(false), 200)}
+                placeholder="Start typing location name..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-electric-blue"
               />
+              
+              {/* Address Suggestions Dropdown */}
+              {showAddressSuggestions && filteredLocations.length > 0 && (
+                <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
+                  {filteredLocations.slice(0, 8).map((location, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+                        setDeliveryLocation(location);
+                        setShowAddressSuggestions(false);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none first:rounded-t-lg last:rounded-b-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm">{location}</span>
+                      </div>
+                    </button>
+                  ))}
+                  
+                  {/* Custom location option */}
+                  {deliveryLocation && !commonLocations.some(loc => 
+                    loc.toLowerCase() === deliveryLocation.toLowerCase()
+                  ) && (
+                    <div className="px-3 py-2 border-t border-gray-200 bg-gray-50">
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <MapPin className="w-3 h-3" />
+                        <span>Use "{deliveryLocation}" as custom location</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             
             <div>
