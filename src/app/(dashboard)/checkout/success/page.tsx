@@ -4,27 +4,68 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle, Calendar, Clock, MapPin, Package } from 'lucide-react';
 import Link from 'next/link';
+import { OrderService, Order } from '@/lib/services/order-service';
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
-  const [order, setOrder] = useState<any>(null);
+  const orderNumber = searchParams.get('orderNumber');
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (orderId) {
-      // Get order from localStorage
-      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-      const foundOrder = orders.find((o: any) => o.id === orderId);
-      setOrder(foundOrder);
+    async function fetchOrder() {
+      if (!orderId) {
+        setError('No order ID provided');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { order: fetchedOrder, error: fetchError } = await OrderService.getOrder(orderId);
+        
+        if (fetchError || !fetchedOrder) {
+          setError(fetchError || 'Order not found');
+        } else {
+          setOrder(fetchedOrder);
+        }
+      } catch (err) {
+        setError('Failed to load order details');
+      } finally {
+        setLoading(false);
+      }
     }
+
+    fetchOrder();
   }, [orderId]);
 
-  if (!order) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-4 border-electric-blue border-t-transparent rounded-full mx-auto mb-4"></div>
           <p>Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Package className="w-8 h-8 text-red-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Order Not Found</h1>
+          <p className="text-gray-600 mb-6">{error || 'Unable to load order details'}</p>
+          <Link 
+            href="/new-order"
+            className="inline-flex items-center px-4 py-2 bg-electric-blue text-white rounded-lg hover:bg-electric-blue/90"
+          >
+            Place New Order
+          </Link>
         </div>
       </div>
     );

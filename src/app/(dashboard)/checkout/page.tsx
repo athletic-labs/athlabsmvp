@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart-store';
 import { ShoppingCart, Calendar, Clock, MapPin, FileText } from 'lucide-react';
 import { AddressService, AddressSuggestion } from '@/lib/services/address-service';
+import { OrderService } from '@/lib/services/order-service';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -75,24 +76,46 @@ export default function CheckoutPage() {
     };
 
     try {
-      // Create unique order ID
-      const orderId = `order-${Date.now()}`;
-      const orderWithId = { ...orderData, id: orderId };
+      // Generate unique order number
+      const orderNumber = OrderService.generateOrderNumber();
       
+      // Create order in Supabase database
+      const { order, error } = await OrderService.createOrder({
+        order_number: orderNumber,
+        items: items.map(item => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          servings: item.servings,
+          category: item.category,
+          description: item.description
+        })),
+        subtotal: calculateSubtotal(),
+        tax: calculateTax(),
+        total: calculateTotal(),
+        delivery_date: deliveryDate,
+        delivery_timing: deliveryTiming,
+        delivery_time: deliveryTime,
+        delivery_location: deliveryLocation,
+        notes: notes,
+        status: 'pending',
+        payment_status: 'pending'
+      });
+
+      if (error || !order) {
+        throw new Error(error || 'Failed to create order');
+      }
+
       // TODO: Replace with Stripe payment processing
       // For production, this should:
       // 1. Create Stripe checkout session
       // 2. Process payment
-      // 3. Save order to database after successful payment
+      // 3. Update payment status after successful payment
       // 4. Send confirmation email
-      
-      // Temporary: Save order to localStorage (REMOVE FOR PRODUCTION)
-      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-      orders.push(orderWithId);
-      localStorage.setItem('orders', JSON.stringify(orders));
 
       // Redirect first, then clear cart to avoid useEffect interference
-      router.push(`/checkout/success?orderId=${orderId}`);
+      router.push(`/checkout/success?orderId=${order.id}&orderNumber=${orderNumber}`);
       
       // Clear cart after a short delay to prevent useEffect redirect
       setTimeout(() => {
