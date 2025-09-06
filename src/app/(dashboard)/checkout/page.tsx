@@ -16,19 +16,32 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    // If no items in cart, redirect back
-    if (items.length === 0) {
+    // If no items in cart, redirect back (but not during submission)
+    if (items.length === 0 && !submitting) {
+      console.log('No items in cart, redirecting to new-order');
       router.push('/new-order');
     }
-  }, [items.length, router]);
+  }, [items.length, router, submitting]);
 
   const handleSubmitOrder = async () => {
+    console.log('=== CHECKOUT DEBUG ===');
     console.log('Form values:', { deliveryDate, deliveryTiming, deliveryTime });
+    console.log('Items in cart:', items);
+    console.log('Cart length:', items.length);
     
-    if (!deliveryDate || !deliveryTiming) {
-      alert('Please select delivery date and meal context');
+    if (!deliveryDate) {
+      console.log('Missing delivery date');
+      alert('Please select delivery date');
       return;
     }
+    
+    if (!deliveryTiming) {
+      console.log('Missing delivery timing');
+      alert('Please select meal context');
+      return;
+    }
+    
+    console.log('Validation passed, proceeding with order submission...');
 
     setSubmitting(true);
 
@@ -57,10 +70,17 @@ export default function CheckoutPage() {
       localStorage.setItem('orders', JSON.stringify(orders));
 
       console.log('Order saved successfully:', orderWithId);
+      console.log('About to clear cart and redirect...');
 
-      // Clear cart and redirect to success page
-      clearCart();
+      // Redirect first, then clear cart to avoid useEffect interference
+      console.log('Redirecting to:', `/checkout/success?orderId=${orderId}`);
       router.push(`/checkout/success?orderId=${orderId}`);
+      
+      // Clear cart after a short delay to prevent useEffect redirect
+      setTimeout(() => {
+        console.log('Clearing cart after redirect');
+        clearCart();
+      }, 100);
     } catch (error) {
       console.error('Order submission failed:', error);
       alert('Failed to submit order. Please try again.');
