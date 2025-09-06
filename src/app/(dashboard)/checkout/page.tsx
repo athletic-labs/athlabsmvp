@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart-store';
 import { ShoppingCart, Calendar, Clock, MapPin, FileText } from 'lucide-react';
+import { AddressService } from '@/lib/services/address-service';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -12,31 +13,22 @@ export default function CheckoutPage() {
   const [deliveryTiming, setDeliveryTiming] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [deliveryLocation, setDeliveryLocation] = useState('');
-  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
-  
-  // Common delivery locations for sports teams
-  const commonLocations = [
-    'Athletic Training Center',
-    'Main Stadium',
-    'Practice Facility', 
-    'Team Locker Room',
-    'Athletic Dining Hall',
-    'Strength & Conditioning Center',
-    'Sports Medicine Clinic',
-    'Team Hotel - Conference Room',
-    'Travel Bus Loading Area',
-    'Visiting Team Locker Room',
-    'Press Box',
-    'Athletic Academic Center'
-  ];
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   
-  // Filter locations based on input
-  const filteredLocations = commonLocations.filter(location =>
-    location.toLowerCase().includes(deliveryLocation.toLowerCase()) && 
-    location.toLowerCase() !== deliveryLocation.toLowerCase()
-  );
+  // Search for addresses using address service
+  const searchAddresses = async (query: string) => {
+    try {
+      const suggestions = await AddressService.searchAddresses(query);
+      setAddressSuggestions(suggestions);
+    } catch (error) {
+      console.error('Address search failed:', error);
+      setAddressSuggestions([]);
+    }
+  };
 
   useEffect(() => {
     // If no items in cart, redirect back (but not during submission)
@@ -279,54 +271,75 @@ export default function CheckoutPage() {
             <div className="relative">
               <label className="block text-sm font-medium mb-2">
                 <MapPin className="w-4 h-4 inline mr-1" />
-                Delivery Location
+                Delivery Address
               </label>
               <input
                 type="text"
                 value={deliveryLocation}
                 onChange={(e) => {
-                  setDeliveryLocation(e.target.value);
-                  setShowAddressSuggestions(e.target.value.length > 0);
+                  const value = e.target.value;
+                  setDeliveryLocation(value);
+                  
+                  // Clear previous timeout
+                  if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                  }
+                  
+                  // Set new timeout for address search
+                  if (value.length >= 3) {
+                    const timeout = setTimeout(() => {
+                      searchAddresses(value);
+                      setShowSuggestions(true);
+                    }, 300);
+                    setSearchTimeout(timeout);
+                  } else {
+                    setAddressSuggestions([]);
+                    setShowSuggestions(false);
+                  }
                 }}
-                onFocus={() => setShowAddressSuggestions(deliveryLocation.length > 0)}
-                onBlur={() => setTimeout(() => setShowAddressSuggestions(false), 200)}
-                placeholder="Start typing location name..."
+                onFocus={() => {
+                  if (addressSuggestions.length > 0) {
+                    setShowSuggestions(true);
+                  }
+                }}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="Enter full address (e.g., 1234 Stadium Drive, City, State)"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-electric-blue"
               />
               
               {/* Address Suggestions Dropdown */}
-              {showAddressSuggestions && filteredLocations.length > 0 && (
+              {showSuggestions && addressSuggestions.length > 0 && (
                 <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
-                  {filteredLocations.slice(0, 8).map((location, index) => (
+                  {addressSuggestions.map((suggestion: any) => (
                     <button
-                      key={index}
+                      key={suggestion.id}
                       type="button"
                       onClick={() => {
-                        setDeliveryLocation(location);
-                        setShowAddressSuggestions(false);
+                        setDeliveryLocation(suggestion.description);
+                        setShowSuggestions(false);
+                        setAddressSuggestions([]);
                       }}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none first:rounded-t-lg last:rounded-b-lg"
+                      className="w-full text-left px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none first:rounded-t-lg last:rounded-b-lg border-b border-gray-100 last:border-0"
                     >
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm">{location}</span>
+                      <div className="flex items-start gap-2">
+                        <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {suggestion.main_text}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {suggestion.secondary_text}
+                          </div>
+                        </div>
                       </div>
                     </button>
                   ))}
-                  
-                  {/* Custom location option */}
-                  {deliveryLocation && !commonLocations.some(loc => 
-                    loc.toLowerCase() === deliveryLocation.toLowerCase()
-                  ) && (
-                    <div className="px-3 py-2 border-t border-gray-200 bg-gray-50">
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <MapPin className="w-3 h-3" />
-                        <span>Use "{deliveryLocation}" as custom location</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
+              
+              <p className="text-xs text-gray-500 mt-1">
+                Start typing to search for addresses, stadiums, and venues
+              </p>
             </div>
             
             <div>
