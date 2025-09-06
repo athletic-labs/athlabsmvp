@@ -9,6 +9,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, clearCart } = useCartStore();
   const [deliveryDate, setDeliveryDate] = useState('');
+  const [deliveryTiming, setDeliveryTiming] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [deliveryLocation, setDeliveryLocation] = useState('');
   const [notes, setNotes] = useState('');
@@ -22,8 +23,8 @@ export default function CheckoutPage() {
   }, [items.length, router]);
 
   const handleSubmitOrder = async () => {
-    if (!deliveryDate || !deliveryTime) {
-      alert('Please select delivery date and time');
+    if (!deliveryDate || !deliveryTiming) {
+      alert('Please select delivery date and timing');
       return;
     }
 
@@ -32,6 +33,7 @@ export default function CheckoutPage() {
     const orderData = {
       items,
       deliveryDate,
+      deliveryTiming,
       deliveryTime,
       deliveryLocation,
       notes,
@@ -154,21 +156,66 @@ export default function CheckoutPage() {
             <div>
               <label className="block text-sm font-medium mb-2">
                 <Clock className="w-4 h-4 inline mr-1" />
-                Delivery Timing *
+                Meal Context *
               </label>
               <select
-                value={deliveryTime}
-                onChange={(e) => setDeliveryTime(e.target.value)}
+                value={deliveryTiming}
+                onChange={(e) => setDeliveryTiming(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-electric-blue"
                 required
               >
-                <option value="">Select delivery timing</option>
+                <option value="">Select meal context</option>
                 <option value="arrival">Arrival (Team arrival meals)</option>
                 <option value="pre-game">Pre-Game (3-4 hours before)</option>
                 <option value="post-game">Post-Game (After game/training)</option>
                 <option value="flight-out">Flight Out (Before departure)</option>
                 <option value="intermission">Meeting/Event (During breaks)</option>
-                <option value="custom">Custom Time</option>
+                <option value="custom">Custom Context</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                <Clock className="w-4 h-4 inline mr-1" />
+                Delivery Time
+              </label>
+              <select
+                value={deliveryTime}
+                onChange={(e) => setDeliveryTime(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-electric-blue"
+              >
+                <option value="">Select specific time</option>
+                <option value="06:00">6:00 AM</option>
+                <option value="06:30">6:30 AM</option>
+                <option value="07:00">7:00 AM</option>
+                <option value="07:30">7:30 AM</option>
+                <option value="08:00">8:00 AM</option>
+                <option value="08:30">8:30 AM</option>
+                <option value="09:00">9:00 AM</option>
+                <option value="09:30">9:30 AM</option>
+                <option value="10:00">10:00 AM</option>
+                <option value="10:30">10:30 AM</option>
+                <option value="11:00">11:00 AM</option>
+                <option value="11:30">11:30 AM</option>
+                <option value="12:00">12:00 PM</option>
+                <option value="12:30">12:30 PM</option>
+                <option value="13:00">1:00 PM</option>
+                <option value="13:30">1:30 PM</option>
+                <option value="14:00">2:00 PM</option>
+                <option value="14:30">2:30 PM</option>
+                <option value="15:00">3:00 PM</option>
+                <option value="15:30">3:30 PM</option>
+                <option value="16:00">4:00 PM</option>
+                <option value="16:30">4:30 PM</option>
+                <option value="17:00">5:00 PM</option>
+                <option value="17:30">5:30 PM</option>
+                <option value="18:00">6:00 PM</option>
+                <option value="18:30">6:30 PM</option>
+                <option value="19:00">7:00 PM</option>
+                <option value="19:30">7:30 PM</option>
+                <option value="20:00">8:00 PM</option>
+                <option value="20:30">8:30 PM</option>
+                <option value="21:00">9:00 PM</option>
               </select>
             </div>
             
