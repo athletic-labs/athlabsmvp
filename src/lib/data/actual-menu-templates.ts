@@ -235,7 +235,7 @@ export const ACTUAL_MENU_TEMPLATES: MealTemplate[] = [
   },
   {
     id: 'breakfast-specials',
-    name: 'BREAKFAST SPECIALS / GO-TO BRUNCH',
+    name: 'BREAKFAST ESSENTIALS',
     bundlePrice: 309000, // $3,090
     servesCount: 60,
     minOrderHours: 72,
