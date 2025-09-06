@@ -37,9 +37,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     // If no items in cart, redirect back (but not during submission)
+    // Add a small delay to prevent interference with order submission redirect
     if (items.length === 0 && !submitting) {
-      console.log('No items in cart, redirecting to new-order');
-      router.push('/new-order');
+      const timeout = setTimeout(() => {
+        console.log('No items in cart, redirecting to new-order');
+        router.push('/new-order');
+      }, 200);
+      
+      return () => clearTimeout(timeout);
     }
   }, [items.length, router, submitting]);
 
@@ -367,7 +372,7 @@ export default function CheckoutPage() {
       <div className="mt-6">
         <button
           onClick={handleSubmitOrder}
-          disabled={!deliveryDate || !deliveryTime || submitting}
+          disabled={!deliveryDate || !deliveryTiming || submitting}
           className="w-full py-3 bg-electric-blue text-white rounded-lg font-medium hover:bg-electric-blue/90 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           {submitting ? (
