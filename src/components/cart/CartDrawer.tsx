@@ -107,11 +107,6 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <h4 className="font-medium">{item.name}</h4>
-                          {item.type === 'template' && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                              Serves {item.servings} people
-                            </p>
-                          )}
                           {item.type === 'individual' && (
                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                               {item.panSize === 'half' ? 'Half Pan (12 servings)' : 'Full Pan (24 servings)'}

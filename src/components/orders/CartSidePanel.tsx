@@ -99,9 +99,6 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
                     <h4 className="font-semibold text-sm">{item.name}</h4>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Serves {item.servings || 60} people
-                    </p>
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
