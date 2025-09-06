@@ -11,6 +11,7 @@ import { TemplateService } from '@/lib/services/template-service';
 interface SelectedItem extends MenuItem {
   panSize: 'half' | 'full';
   quantity: number;
+  uniqueId: string; // Allow multiple instances of same item
 }
 
 interface CreateTemplateModalProps {
@@ -70,31 +71,24 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
   }, [selectedItems]);
 
   const addMenuItem = (item: MenuItem) => {
-    const existing = selectedItems.find(selected => selected.id === item.id);
-    if (existing) {
-      setSelectedItems(prev => prev.map(selected =>
-        selected.id === item.id
-          ? { ...selected, quantity: selected.quantity + 1 }
-          : selected
-      ));
-    } else {
-      setSelectedItems(prev => [...prev, { ...item, quantity: 1, panSize: 'full' }]);
-    }
+    // Always create a new instance, even if the item already exists
+    const uniqueId = `${item.id}-${Date.now()}-${Math.random()}`;
+    setSelectedItems(prev => [...prev, { ...item, quantity: 1, panSize: 'full', uniqueId }]);
   };
 
-  const updateItemQuantity = (id: string, quantity: number) => {
+  const updateItemQuantity = (uniqueId: string, quantity: number) => {
     if (quantity <= 0) {
-      setSelectedItems(prev => prev.filter(item => item.id !== id));
+      setSelectedItems(prev => prev.filter(item => item.uniqueId !== uniqueId));
     } else {
       setSelectedItems(prev => prev.map(item =>
-        item.id === id ? { ...item, quantity } : item
+        item.uniqueId === uniqueId ? { ...item, quantity } : item
       ));
     }
   };
 
-  const updatePanSize = (id: string, panSize: 'half' | 'full') => {
+  const updatePanSize = (uniqueId: string, panSize: 'half' | 'full') => {
     setSelectedItems(prev => prev.map(item =>
-      item.id === id ? { ...item, panSize } : item
+      item.uniqueId === uniqueId ? { ...item, panSize } : item
     ));
   };
 
@@ -235,8 +229,8 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                       <h3 className="font-medium mb-2">Selected Items ({selectedItems.length})</h3>
                       <div className="flex flex-wrap gap-2">
                         {selectedItems.map(item => (
-                          <span key={item.id} className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full text-sm">
-                            {item.name} ({item.quantity})
+                          <span key={item.uniqueId} className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                            {item.name} ({item.quantity} {item.panSize})
                           </span>
                         ))}
                       </div>
@@ -285,15 +279,23 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Configure Portions & Details</h3>
                     <div className="space-y-4">
-                      {selectedItems.map(item => (
-                        <div key={item.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                      {selectedItems.map((item, index) => (
+                        <div key={item.uniqueId} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                           <div className="flex items-start justify-between mb-3">
                             <div>
-                              <h4 className="font-medium">{item.name}</h4>
+                              <h4 className="font-medium flex items-center gap-2">
+                                {item.name}
+                                {/* Show instance number if there are multiple of the same item */}
+                                {selectedItems.filter(si => si.id === item.id).length > 1 && (
+                                  <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                                    #{selectedItems.filter(si => si.id === item.id && si.uniqueId <= item.uniqueId).length}
+                                  </span>
+                                )}
+                              </h4>
                               <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
                             </div>
                             <button
-                              onClick={() => updateItemQuantity(item.id, 0)}
+                              onClick={() => updateItemQuantity(item.uniqueId, 0)}
                               className="text-red-500 hover:text-red-700 p-1"
                             >
                               <X className="w-4 h-4" />
@@ -305,14 +307,14 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                               <label className="block text-sm font-medium mb-2">Quantity</label>
                               <div className="flex items-center gap-2">
                                 <button
-                                  onClick={() => updateItemQuantity(item.id, Math.max(1, item.quantity - 1))}
+                                  onClick={() => updateItemQuantity(item.uniqueId, Math.max(1, item.quantity - 1))}
                                   className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                                 >
                                   <Minus className="w-4 h-4" />
                                 </button>
                                 <span className="w-12 text-center font-medium">{item.quantity}</span>
                                 <button
-                                  onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                                  onClick={() => updateItemQuantity(item.uniqueId, item.quantity + 1)}
                                   className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                                 >
                                   <Plus className="w-4 h-4" />
@@ -324,7 +326,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                               <label className="block text-sm font-medium mb-2">Pan Size</label>
                               <div className="flex gap-2">
                                 <button
-                                  onClick={() => updatePanSize(item.id, 'half')}
+                                  onClick={() => updatePanSize(item.uniqueId, 'half')}
                                   className={`px-3 py-2 rounded text-sm ${
                                     item.panSize === 'half'
                                       ? 'bg-blue-600 text-white'
@@ -334,7 +336,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                                   Half (12 servings)
                                 </button>
                                 <button
-                                  onClick={() => updatePanSize(item.id, 'full')}
+                                  onClick={() => updatePanSize(item.uniqueId, 'full')}
                                   className={`px-3 py-2 rounded text-sm ${
                                     item.panSize === 'full'
                                       ? 'bg-blue-600 text-white'
@@ -403,8 +405,15 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                     <h4 className="font-medium mb-2">Included Items:</h4>
                     <div className="space-y-2">
                       {selectedItems.map(item => (
-                        <div key={item.id} className="flex justify-between text-sm">
-                          <span>{item.name}</span>
+                        <div key={item.uniqueId} className="flex justify-between text-sm">
+                          <span>
+                            {item.name}
+                            {selectedItems.filter(si => si.id === item.id).length > 1 && (
+                              <span className="text-xs text-gray-500 ml-1">
+                                (#{selectedItems.filter(si => si.id === item.id && si.uniqueId <= item.uniqueId).length})
+                              </span>
+                            )}
+                          </span>
                           <span>{item.quantity} {item.panSize} pan{item.quantity > 1 ? 's' : ''}</span>
                         </div>
                       ))}
