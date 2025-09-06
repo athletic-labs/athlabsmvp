@@ -8,7 +8,6 @@ export interface OrderItem {
   unitPrice: number; // in cents
   servings?: number;
   category?: string;
-  description?: string;
 }
 
 export interface Order {

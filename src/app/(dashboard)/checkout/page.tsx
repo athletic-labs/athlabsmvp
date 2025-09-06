@@ -88,8 +88,7 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           servings: item.servings,
-          category: item.category,
-          description: item.description
+          category: item.category
         })),
         subtotal: calculateSubtotal(),
         tax: calculateTax(),
