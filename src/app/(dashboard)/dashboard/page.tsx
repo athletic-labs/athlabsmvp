@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useEffect } from 'react';
-import { AlertTriangle, Package, Clock, MapPin, Activity, ArrowRight, Calendar, TrendingUp, DollarSign, Users, Utensils, DeliveryDining, Payments, Groups } from 'lucide-react';
+import { AlertTriangle, Package, Clock, MapPin, Activity, ArrowRight, Calendar, TrendingUp, DollarSign, Users, Utensils } from 'lucide-react';
 import { Card, CardContent, Button } from '@/lib/design-system/components';
 import { format } from 'date-fns';
 import Link from 'next/link';
