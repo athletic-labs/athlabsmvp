@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store/cart-store';
 import { ShoppingCart, Calendar, Clock, MapPin, FileText } from 'lucide-react';
-import { AddressService } from '@/lib/services/address-service';
+import { AddressService, AddressSuggestion } from '@/lib/services/address-service';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function CheckoutPage() {
   const [deliveryTiming, setDeliveryTiming] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [deliveryLocation, setDeliveryLocation] = useState('');
-  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const [notes, setNotes] = useState('');
@@ -310,7 +310,7 @@ export default function CheckoutPage() {
               {/* Address Suggestions Dropdown */}
               {showSuggestions && addressSuggestions.length > 0 && (
                 <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
-                  {addressSuggestions.map((suggestion: any) => (
+                  {addressSuggestions.map((suggestion) => (
                     <button
                       key={suggestion.id}
                       type="button"
