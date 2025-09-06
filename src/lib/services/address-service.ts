@@ -8,21 +8,13 @@ export interface AddressSuggestion {
 }
 
 export class AddressService {
-  private static apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
-  
   static async searchAddresses(query: string): Promise<AddressSuggestion[]> {
-    // If no API key, fall back to mock data for development
-    if (!this.apiKey) {
-      console.warn('Google Places API key not found, using mock data');
-      return this.getMockSuggestions(query);
-    }
-    
     if (query.length < 3) {
       return [];
     }
     
     try {
-      // Use Google Places API Autocomplete
+      // Use server-side Google Places API endpoint
       const response = await fetch(
         `/api/places/autocomplete?input=${encodeURIComponent(query)}`
       );
@@ -33,6 +25,12 @@ export class AddressService {
       
       const data = await response.json();
       
+      // Check if API returned an error (likely missing API key)
+      if (data.error) {
+        console.warn('Google Places API error:', data.error);
+        return this.getMockSuggestions(query);
+      }
+      
       return data.predictions?.map((prediction: any) => ({
         id: prediction.place_id,
         description: prediction.description,
@@ -41,7 +39,7 @@ export class AddressService {
       })) || [];
       
     } catch (error) {
-      console.error('Google Places API error:', error);
+      console.error('Address search error:', error);
       // Fall back to mock data on error
       return this.getMockSuggestions(query);
     }
