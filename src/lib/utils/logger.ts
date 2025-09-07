@@ -11,7 +11,7 @@ export const logger = {
    */
   info: (...args: any[]) => {
     if (isDevelopment) {
-      console.log(...args);
+      console.log(...args); // eslint-disable-line no-console
     }
   },
 
@@ -20,7 +20,7 @@ export const logger = {
    */
   error: (...args: any[]) => {
     if (isDevelopment) {
-      console.error(...args);
+      console.error(...args); // eslint-disable-line no-console
     }
   },
 
@@ -29,7 +29,7 @@ export const logger = {
    */
   warn: (...args: any[]) => {
     if (isDevelopment) {
-      console.warn(...args);
+      console.warn(...args); // eslint-disable-line no-console
     }
   },
 
@@ -38,7 +38,7 @@ export const logger = {
    */
   debug: (...args: any[]) => {
     if (isDevelopment) {
-      console.debug(...args);
+      console.debug(...args); // eslint-disable-line no-console
     }
   },
 
@@ -47,7 +47,7 @@ export const logger = {
    */
   log: (...args: any[]) => {
     if (isDevelopment) {
-      console.log(...args);
+      console.log(...args); // eslint-disable-line no-console
     }
   },
 };

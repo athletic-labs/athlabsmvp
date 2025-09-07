@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { appConfig } from '@/lib/config/env';
 
 export interface CorsOptions {
-  origin: string[] | string | boolean;
+  origin: string[] | string | boolean | ((origin: string | undefined) => boolean);
   methods: string[];
   allowedHeaders: string[];
   exposedHeaders: string[];
@@ -57,14 +57,24 @@ const PRODUCTION_CORS: CorsOptions = {
 
 // Development CORS configuration (more permissive)
 const DEVELOPMENT_CORS: CorsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
-    // Vercel preview deployments
-    /^https:\/\/.*\.vercel\.app$/,
-  ],
+  origin: (origin) => {
+    if (!origin) return true; // Allow requests with no origin (e.g., mobile apps)
+    
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+    ];
+    
+    // Allow local development
+    if (allowedOrigins.includes(origin)) return true;
+    
+    // Allow Vercel preview deployments
+    if (origin.endsWith('.vercel.app')) return true;
+    
+    return false;
+  },
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Accept',
@@ -103,7 +113,7 @@ export function getCorsConfig(): CorsOptions {
 /**
  * Check if origin is allowed
  */
-export function isOriginAllowed(origin: string, corsConfig: CorsOptions): boolean {
+export function isOriginAllowed(origin: string | undefined, corsConfig: CorsOptions): boolean {
   const { origin: allowedOrigins } = corsConfig;
 
   if (allowedOrigins === true) {
@@ -114,6 +124,10 @@ export function isOriginAllowed(origin: string, corsConfig: CorsOptions): boolea
     return false;
   }
 
+  if (typeof allowedOrigins === 'function') {
+    return allowedOrigins(origin);
+  }
+
   if (typeof allowedOrigins === 'string') {
     return origin === allowedOrigins;
   }
@@ -122,9 +136,6 @@ export function isOriginAllowed(origin: string, corsConfig: CorsOptions): boolea
     return allowedOrigins.some(allowedOrigin => {
       if (typeof allowedOrigin === 'string') {
         return origin === allowedOrigin;
-      }
-      if (allowedOrigin instanceof RegExp) {
-        return allowedOrigin.test(origin);
       }
       return false;
     });
@@ -313,7 +324,7 @@ export function validateCorsConfig(config: CorsOptions): {
 /**
  * CORS configuration for specific API routes
  */
-export const API_CORS_CONFIGS = {
+export const API_CORS_CONFIGS: Record<string, CorsOptions> = {
   // Public APIs (more restrictive)
   public: {
     ...getCorsConfig(),
@@ -344,4 +355,4 @@ export const API_CORS_CONFIGS = {
     preflightContinue: false,
     optionsSuccessStatus: 405, // Method Not Allowed
   },
-} as const;
+};

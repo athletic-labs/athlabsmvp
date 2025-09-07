@@ -127,11 +127,11 @@ export function validateEnvironment(): void {
   try {
     parseEnv();
     if (typeof console !== 'undefined') {
-      console.log('✅ Environment validation passed');
+      console.log('✅ Environment validation passed'); // eslint-disable-line no-console
     }
   } catch (error) {
     if (typeof console !== 'undefined') {
-      console.error('❌ Environment validation failed:', error);
+      console.error('❌ Environment validation failed:', error); // eslint-disable-line no-console
     }
     if (appConfig.isProduction && typeof process !== 'undefined' && process.exit) {
       process.exit(1); // Exit in production to prevent misconfigured deployments
