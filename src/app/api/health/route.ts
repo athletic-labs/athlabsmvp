@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { generalApiRateLimit, withRateLimit } from '@/lib/middleware/rate-limit';
+import { createSuccessResponse, createErrorResponse } from '@/lib/validation/api-middleware';
 
-export async function GET() {
+export const GET = withRateLimit(generalApiRateLimit)(async (request: NextRequest) => {
   try {
     const startTime = Date.now();
     
@@ -16,23 +18,26 @@ export async function GET() {
     const dbLatency = Date.now() - startTime;
 
     if (error) {
-      return NextResponse.json({
-        status: 'unhealthy',
-        timestamp: new Date().toISOString(),
-        checks: {
-          database: {
-            status: 'fail',
-            latency: dbLatency,
-            error: error.message,
+      return createErrorResponse(
+        'Health check failed',
+        'HEALTH_CHECK_FAILED',
+        503,
+        {
+          checks: {
+            database: {
+              status: 'fail',
+              latency: dbLatency,
+              error: error.message,
+            },
           },
-        },
-      }, { status: 503 });
+        }
+      );
     }
 
     // Check if response time is acceptable
     const isHealthy = dbLatency < 1000; // 1 second threshold
 
-    return NextResponse.json({
+    const healthData = {
       status: isHealthy ? 'healthy' : 'degraded',
       timestamp: new Date().toISOString(),
       version: process.env.npm_package_version || '1.0.0',
@@ -47,18 +52,26 @@ export async function GET() {
           usage: process.memoryUsage(),
         },
       },
-    }, { 
-      status: isHealthy ? 200 : 503,
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-    });
+    };
+
+    const response = isHealthy 
+      ? createSuccessResponse(healthData, 200)
+      : createErrorResponse('System degraded', 'DEGRADED_PERFORMANCE', 503, healthData);
+
+    // Add cache control headers
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return response;
 
   } catch (error) {
-    return NextResponse.json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }, { status: 503 });
+    return createErrorResponse(
+      'Health check failed',
+      'HEALTH_CHECK_ERROR',
+      503,
+      {
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    );
   }
-}
+});

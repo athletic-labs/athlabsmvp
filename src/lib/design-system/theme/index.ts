@@ -8,11 +8,12 @@ export {
 } from './ThemeProvider';
 
 export type { 
-  ColorScheme,
   ThemeMode,
   Material3Theme,
   ThemeContextType
 } from './ThemeProvider';
+
+export type { ColorScheme } from './apply-material3-theme';
 
 export { generateMaterial3Colors } from './colorGenerator';
 export type { Material3Colors } from './colorGenerator';
