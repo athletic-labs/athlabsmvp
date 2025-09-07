@@ -4,6 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { Eye, EyeOff, RefreshCw, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/utils/logger';
 import { TextField } from './TextField';
 import { IconButton } from './IconButton';
 import { Button } from './Button';
@@ -69,7 +70,8 @@ export function PasswordField({
   const currentPassword = externalValue !== undefined ? externalValue : password;
   
   // Handle password change
-  const handlePasswordChange = useCallback((newValue: string) => {
+  const handlePasswordChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
     if (externalOnChange) {
       externalOnChange(newValue);
     } else {
@@ -97,7 +99,7 @@ export function PasswordField({
       setCopiedToClipboard(true);
       setTimeout(() => setCopiedToClipboard(false), 2000);
     } catch (error) {
-      console.warn('Failed to copy password to clipboard:', error);
+      logger.warn('Failed to copy password to clipboard:', error);
     }
   }, [generateSecurePassword, externalOnChange]);
 
@@ -127,7 +129,8 @@ export function PasswordField({
           onChange={handlePasswordChange}
           disabled={disabled}
           required={required}
-          error={errorMessage}
+          error={!!errorMessage}
+          errorMessage={errorMessage || undefined}
           endAdornment={
             <div className="flex items-center gap-1">
               {/* Copy button (when password is generated) */}
@@ -209,7 +212,8 @@ export function PasswordField({
               onChange={updateConfirmPassword}
               disabled={disabled}
               required={required}
-              error={confirmationValidation.error || ''}
+              error={!!confirmationValidation.error}
+              errorMessage={confirmationValidation.error || ''}
               endAdornment={
                 <IconButton
                   onClick={toggleConfirmPasswordVisibility}
@@ -269,7 +273,8 @@ export function SimplePasswordField({
       onChange={onChange}
       disabled={disabled}
       required={required}
-      error={error}
+      error={!!error}
+      errorMessage={error}
       className={className}
       endAdornment={
         <IconButton

@@ -126,11 +126,17 @@ export const monitoringConfig = {
 export function validateEnvironment(): void {
   try {
     parseEnv();
-    console.log('✅ Environment validation passed');
+    if (typeof console !== 'undefined') {
+      console.log('✅ Environment validation passed');
+    }
   } catch (error) {
-    console.error('❌ Environment validation failed:', error);
-    if (appConfig.isProduction) {
+    if (typeof console !== 'undefined') {
+      console.error('❌ Environment validation failed:', error);
+    }
+    if (appConfig.isProduction && typeof process !== 'undefined' && process.exit) {
       process.exit(1); // Exit in production to prevent misconfigured deployments
+    } else if (appConfig.isProduction) {
+      throw new Error('Critical environment configuration error - deployment cannot continue');
     }
   }
 }
