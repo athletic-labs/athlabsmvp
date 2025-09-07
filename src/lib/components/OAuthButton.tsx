@@ -271,7 +271,7 @@ export function OAuthAccountManager({
 
               <Button
                 variant={isLinked ? 'outlined' : 'filled'}
-                size="sm"
+                size="small"
                 onClick={() => isLinked ? handleUnlink(providerName) : handleLink(providerName)}
                 disabled={isLoading}
                 leftIcon={isLoading ? <Loader2 className="animate-spin h-4 w-4" /> : undefined}
