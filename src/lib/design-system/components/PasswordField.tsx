@@ -112,6 +112,12 @@ export function PasswordField({
     setShowConfirmPassword(prev => !prev);
   }, []);
 
+  // Handle confirm password change with proper event handling
+  const handleConfirmPasswordChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    updateConfirmPassword(newValue);
+  }, [updateConfirmPassword]);
+
   // Determine error message
   const errorMessage = externalError || 
     (validation.errors.length > 0 ? validation.errors[0] : '') ||
@@ -131,7 +137,7 @@ export function PasswordField({
           required={required}
           error={!!errorMessage}
           errorMessage={errorMessage || undefined}
-          endAdornment={
+          trailingIcon={
             <div className="flex items-center gap-1">
               {/* Copy button (when password is generated) */}
               <AnimatePresence>
@@ -153,10 +159,9 @@ export function PasswordField({
                   onClick={handleGeneratePassword}
                   size="small"
                   variant="standard"
-                  title="Generate secure password"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </IconButton>
+                  icon={<RefreshCw className="w-4 h-4" />}
+                  aria-label="Generate secure password"
+                />
               )}
 
               {/* Toggle visibility button */}
@@ -164,14 +169,9 @@ export function PasswordField({
                 onClick={togglePasswordVisibility}
                 size="small"
                 variant="standard"
-                title={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </IconButton>
+                icon={showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              />
             </div>
           }
         />
@@ -209,24 +209,19 @@ export function PasswordField({
               label={confirmationLabel}
               placeholder="Confirm your password"
               value={confirmPassword}
-              onChange={updateConfirmPassword}
+              onChange={handleConfirmPasswordChange}
               disabled={disabled}
               required={required}
               error={!!confirmationValidation.error}
               errorMessage={confirmationValidation.error || ''}
-              endAdornment={
+              trailingIcon={
                 <IconButton
                   onClick={toggleConfirmPasswordVisibility}
                   size="small"
                   variant="standard"
-                  title={showConfirmPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </IconButton>
+                  icon={showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                />
               }
             />
           </motion.div>
@@ -276,19 +271,14 @@ export function SimplePasswordField({
       error={!!error}
       errorMessage={error}
       className={className}
-      endAdornment={
+      trailingIcon={
         <IconButton
           onClick={togglePasswordVisibility}
           size="small"
           variant="standard"
-          title={showPassword ? 'Hide password' : 'Show password'}
-        >
-          {showPassword ? (
-            <EyeOff className="w-4 h-4" />
-          ) : (
-            <Eye className="w-4 h-4" />
-          )}
-        </IconButton>
+          icon={showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+        />
       }
     />
   );
