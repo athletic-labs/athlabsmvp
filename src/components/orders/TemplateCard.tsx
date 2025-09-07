@@ -86,12 +86,12 @@ export default function TemplateCard({ template }: TemplateCardProps) {
           </div>
           
           {/* Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-auto">
             <Button
               onClick={() => setShowDetails(true)}
               variant="outlined"
               size="small"
-              className="flex-1"
+              className="flex-1 min-w-0"
             >
               View Details
             </Button>
@@ -100,7 +100,7 @@ export default function TemplateCard({ template }: TemplateCardProps) {
               disabled={isQuickAdding}
               variant="filled"
               size="small"
-              className="flex-1"
+              className="flex-1 min-w-0"
             >
               {isQuickAdding ? 'Adding...' : 'Quick Add'}
             </Button>

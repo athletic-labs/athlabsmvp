@@ -1,16 +1,13 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { supabaseConfig } from '@/lib/config/env';
 
-let client: ReturnType<typeof createClientComponentClient> | null = null;
-
 export const createSupabaseClient = () => {
-  if (!client) {
-    client = createClientComponentClient({
-      supabaseUrl: supabaseConfig.url,
-      supabaseKey: supabaseConfig.anonKey,
-    });
-  }
-  return client;
+  // Don't use singleton - create fresh client each time to avoid stale connections
+  // This helps with the "failed to fetch" issue after logout/login cycles
+  return createClientComponentClient({
+    supabaseUrl: supabaseConfig.url,
+    supabaseKey: supabaseConfig.anonKey,
+  });
 };
 
 export function useSupabase() {

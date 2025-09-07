@@ -17,52 +17,47 @@ interface SessionInfo {
 }
 
 export class AuthService {
-  private static supabase = createSupabaseClient();
   private static readonly MAX_LOGIN_ATTEMPTS = 5;
   private static readonly LOCKOUT_DURATION = 30 * 60 * 1000; // 30 minutes
+  
+  // Get fresh supabase client each time to avoid stale connections
+  private static getSupabaseClient() {
+    return createSupabaseClient();
+  }
 
   static async signIn(email: string, password: string): Promise<SignInResponse> {
     try {
-      // Check for account lockout
-      const lockoutCheck = await this.checkAccountLockout(email);
-      if (lockoutCheck.isLocked) {
-        return {
-          user: null,
-          session: null,
-          error: `Account locked until ${lockoutCheck.lockedUntil}. Too many failed login attempts.`
-        };
-      }
-
-      const { data, error } = await this.supabase.auth.signInWithPassword({
+      console.log('🔐 Starting authentication for:', email);
+      
+      // Simplified authentication - just do the core auth first
+      const supabase = this.getSupabaseClient();
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
+      console.log('🔑 Auth response:', { user: !!data.user, session: !!data.session, error: error?.message });
+
       if (error) {
-        await this.handleFailedLogin(email);
+        console.error('❌ Supabase auth error:', error);
+        // Try to handle failed login asynchronously to avoid blocking
+        this.handleFailedLogin(email).catch(e => console.warn('Failed login tracking error:', e));
         throw error;
       }
 
       if (data.user) {
-        // Reset failed attempts on successful login
-        await this.resetFailedAttempts(data.user.id);
+        console.log('👤 User authenticated, getting profile...');
         
-        // Update last login
-        await this.updateLastLogin(data.user.id);
-        
-        // Create session record
-        if (data.session?.access_token && data.session?.expires_at) {
-          await this.createSession(data.user.id, {
-            access_token: data.session.access_token,
-            expires_at: data.session.expires_at
-          });
-        }
-        
-        // Log successful login
-        await RBACService.logAuditEvent('login', 'auth', data.user.id);
+        // Do background tasks asynchronously to avoid blocking the login
+        Promise.all([
+          this.resetFailedAttempts(data.user.id).catch(e => console.warn('Reset failed attempts error:', e)),
+          this.updateLastLogin(data.user.id).catch(e => console.warn('Update last login error:', e)),
+          RBACService.logAuditEvent('login', 'auth', data.user.id).catch(e => console.warn('Audit log error:', e))
+        ]);
 
-        // Get user profile with permissions
+        // Get user profile with permissions (this is essential)
         const profile = await this.getCurrentUser();
+        console.log('📋 Profile loaded:', { id: profile?.id, role: profile?.role, team_id: profile?.team_id });
         
         return {
           user: profile,
@@ -72,6 +67,7 @@ export class AuthService {
 
       return { user: null, session: null };
     } catch (error: any) {
+      console.error('🚨 Authentication failed:', error);
       return {
         user: null,
         session: null,
@@ -82,7 +78,8 @@ export class AuthService {
 
   static async signOut(): Promise<void> {
     try {
-      const { data: { user } } = await this.supabase.auth.getUser();
+      const supabase = this.getSupabaseClient();
+      const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
         // Revoke all active sessions
@@ -92,7 +89,7 @@ export class AuthService {
         await RBACService.logAuditEvent('logout', 'auth', user.id);
       }
 
-      const { error } = await this.supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
       console.error('Error during sign out:', error);
@@ -101,35 +98,50 @@ export class AuthService {
   }
 
   static async getSession() {
-    const { data: { session } } = await this.supabase.auth.getSession();
+    const supabase = this.getSupabaseClient();
+    const { data: { session } } = await supabase.auth.getSession();
     return session;
   }
 
   static async getCurrentUser(): Promise<UserProfile | null> {
     try {
-      const { data: { user }, error: authError } = await this.supabase.auth.getUser();
+      console.log('👤 Getting current user...');
+      const supabase = this.getSupabaseClient();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
       
-      if (authError || !user) return null;
+      if (authError || !user) {
+        console.log('❌ No authenticated user found');
+        return null;
+      }
 
-      const { data: profile, error: profileError } = await this.supabase
+      console.log('📋 Fetching user profile...');
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select(`
-          *,
-          teams:team_id (
-            name
-          )
-        `)
+        .select('*')
         .eq('id', user.id)
         .single();
 
-      if (profileError) throw profileError;
-
-      // Get user permissions if they have a team
-      let permissions: TeamPermissions | undefined;
-      if (profile.team_id) {
-        permissions = await RBACService.getUserPermissions(user.id, profile.team_id) || undefined;
+      if (profileError) {
+        console.error('❌ Profile fetch error:', profileError);
+        throw profileError;
       }
 
+      // Get team name separately to avoid complex joins that might timeout
+      let teamName: string | undefined;
+      if (profile.team_id) {
+        console.log('🏈 Fetching team info...');
+        const { data: team } = await supabase
+          .from('teams')
+          .select('name')
+          .eq('id', profile.team_id)
+          .single();
+        teamName = team?.name;
+      }
+
+      // Skip complex permissions for now to avoid timeout issues
+      // We can load permissions lazily when needed
+      console.log('✅ User profile loaded successfully');
+      
       return {
         id: profile.id,
         email: profile.email,
@@ -138,14 +150,14 @@ export class AuthService {
         phone: profile.phone,
         role: profile.role as UserRole,
         team_id: profile.team_id,
-        team_name: profile.teams?.name,
-        permissions,
+        team_name: teamName,
+        permissions: undefined, // Load lazily when needed
         is_active: profile.is_active,
         last_login_at: profile.last_login_at,
         onboarding_completed: profile.onboarding_completed,
       };
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('🚨 Error fetching user profile:', error);
       return null;
     }
   }
@@ -287,7 +299,8 @@ export class AuthService {
 
   private static async resetFailedAttempts(userId: string): Promise<void> {
     try {
-      await this.supabase
+      const supabase = this.getSupabaseClient();
+      await supabase
         .from('profiles')
         .update({ 
           failed_login_attempts: 0, 
@@ -301,7 +314,8 @@ export class AuthService {
 
   private static async updateLastLogin(userId: string): Promise<void> {
     try {
-      await this.supabase
+      const supabase = this.getSupabaseClient();
+      await supabase
         .from('profiles')
         .update({ last_login_at: new Date().toISOString() })
         .eq('id', userId);

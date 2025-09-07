@@ -96,14 +96,14 @@ export default function OptimalTemplateCard({ template }: TemplateCardProps) {
           <div className="flex gap-2">
             <button
               onClick={() => setShowDetails(true)}
-              className="flex-1 px-3 py-2 border border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] rounded-lg text-sm font-medium hover:bg-[var(--md-sys-color-primary)]/5 transition-colors"
+              className="flex-1 px-3 py-2 border border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] rounded-lg text-sm font-medium hover:bg-[var(--md-sys-color-primary)]/5 transition-colors whitespace-nowrap"
             >
               View Details
             </button>
             <button
               onClick={handleQuickAdd}
               disabled={isQuickAdding}
-              className="flex-1 px-3 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg text-sm font-medium hover:bg-[var(--md-sys-color-primary)]/90 transition-colors disabled:opacity-70"
+              className="flex-1 px-3 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg text-sm font-medium hover:bg-[var(--md-sys-color-primary)]/90 transition-colors disabled:opacity-70 whitespace-nowrap"
             >
               {isQuickAdding ? 'Adding...' : 'Quick Add'}
             </button>
