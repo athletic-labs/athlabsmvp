@@ -18,30 +18,42 @@ export default function NewOrderPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4 sticky top-0 z-20">
+      <div className="bg-white border-b p-lg sticky top-0 z-20">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">New Order</h1>
-            <p className="text-gray-600 text-sm">12 templates available • Minimum order $500</p>
+            <h1 className="md3-headline-large text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>New Order</h1>
+            <p className="md3-body-medium text-[var(--md-sys-color-on-surface-variant)]">12 templates available • Minimum order $500</p>
           </div>
           
           {/* Cart Toggle Button with Indicator */}
           <button
             onClick={() => setIsCartOpen(!isCartOpen)}
-            className={`relative p-3 rounded-lg transition-all ${
+            className={`relative p-md rounded-lg transition-standard ${
               itemCount > 0 
-                ? 'bg-electric-blue text-white hover:bg-electric-blue/90' 
+                ? 'text-white hover:opacity-90' 
                 : 'hover:bg-gray-100'
             }`}
+            style={{
+              backgroundColor: itemCount > 0 ? 'var(--md-sys-color-primary)' : 'transparent'
+            }}
           >
             <ShoppingCart className="w-5 h-5" />
             {itemCount > 0 && (
               <>
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                <span 
+                  className="absolute -top-2 -right-2 text-white md3-label-small rounded-full w-6 h-6 flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: 'var(--md-sys-color-error)',
+                    fontWeight: 600 
+                  }}
+                >
                   {itemCount}
                 </span>
                 {/* Pulse animation for new items */}
-                <span className="absolute -top-2 -right-2 bg-red-500 rounded-full w-6 h-6 animate-ping opacity-75"></span>
+                <span 
+                  className="absolute -top-2 -right-2 rounded-full w-6 h-6 animate-ping opacity-75"
+                  style={{ backgroundColor: 'var(--md-sys-color-error)' }}
+                ></span>
               </>
             )}
           </button>

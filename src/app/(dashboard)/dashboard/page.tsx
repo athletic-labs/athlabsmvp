@@ -19,15 +19,15 @@ const TopMetricsRow = memo(function TopMetricsRow({ metrics, analytics }: { metr
   const perAthleteCost = Math.round(analytics.monthlySpend / 28);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md component-spacing">
       {/* Active Nutrition Deliveries */}
-      <Card variant="elevated" className="p-5">
-        <div className="flex items-center gap-3 mb-2">
+      <Card variant="elevated" className="p-lg">
+        <div className="flex items-center gap-md element-spacing">
           <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-primary)] flex items-center justify-center">
             <Package className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <div className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]">
+            <div className="md3-headline-small text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>
               {metrics.activeOrdersCount}
             </div>
             <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
@@ -41,13 +41,13 @@ const TopMetricsRow = memo(function TopMetricsRow({ metrics, analytics }: { metr
       </Card>
 
       {/* Monthly Spend */}
-      <Card variant="elevated" className="p-5">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-full bg-[var(--md-saas-color-success)] flex items-center justify-center">
+      <Card variant="elevated" className="p-lg">
+        <div className="flex items-center gap-md element-spacing">
+          <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-secondary)] flex items-center justify-center">
             <DollarSign className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <div className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]">
+            <div className="md3-headline-small text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>
               ${analytics.monthlySpend.toLocaleString()}
             </div>
             <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
@@ -61,13 +61,13 @@ const TopMetricsRow = memo(function TopMetricsRow({ metrics, analytics }: { metr
       </Card>
 
       {/* Team Macro Distribution */}
-      <Card variant="elevated" className="p-5 md:col-span-2 lg:col-span-1 cursor-pointer hover:shadow-md transition-shadow" onClick={() => window.location.href = '/team/macros'}>
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-secondary)] flex items-center justify-center">
+      <Card variant="elevated" className="p-lg md:col-span-2 lg:col-span-1 cursor-pointer hover:shadow-md transition-standard" onClick={() => window.location.href = '/team/macros'}>
+        <div className="flex items-center gap-md element-spacing">
+          <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-tertiary)] flex items-center justify-center">
             <Utensils className="w-5 h-5 text-white" />
           </div>
           <div>
-            <div className="md3-title-small font-semibold text-[var(--md-sys-color-on-surface)]">
+            <div className="md3-title-small text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>
               Team Macros
             </div>
             <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
@@ -75,14 +75,14 @@ const TopMetricsRow = memo(function TopMetricsRow({ metrics, analytics }: { metr
             </div>
           </div>
         </div>
-        <div className="flex h-6 rounded-full overflow-hidden mb-2">
-          <div className="flex items-center justify-center text-white text-xs font-medium" style={{ width: '35%', backgroundColor: '#E57373' }}>
+        <div className="flex h-6 rounded-full overflow-hidden mb-sm">
+          <div className="flex items-center justify-center text-white md3-label-small" style={{ width: '35%', backgroundColor: 'var(--md-sys-color-error)' }}>
             35%
           </div>
-          <div className="flex items-center justify-center text-white text-xs font-medium" style={{ width: '45%', backgroundColor: '#FFB74D' }}>
+          <div className="flex items-center justify-center text-white md3-label-small" style={{ width: '45%', backgroundColor: 'var(--md-sys-color-tertiary)' }}>
             45%
           </div>
-          <div className="flex items-center justify-center text-white text-xs font-medium" style={{ width: '20%', backgroundColor: '#81C784' }}>
+          <div className="flex items-center justify-center text-white md3-label-small" style={{ width: '20%', backgroundColor: 'var(--md-sys-color-secondary)' }}>
             20%
           </div>
         </div>
@@ -92,13 +92,13 @@ const TopMetricsRow = memo(function TopMetricsRow({ metrics, analytics }: { metr
       </Card>
 
       {/* Athlete Roster Status */}
-      <Card variant="elevated" className="p-5">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-tertiary)] flex items-center justify-center">
+      <Card variant="elevated" className="p-lg">
+        <div className="flex items-center gap-md element-spacing">
+          <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-primary)] flex items-center justify-center">
             <Users className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <div className="md3-headline-small font-bold text-[var(--md-sys-color-on-surface)]">
+            <div className="md3-headline-small text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>
               28
             </div>
             <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
@@ -110,7 +110,7 @@ const TopMetricsRow = memo(function TopMetricsRow({ metrics, analytics }: { metr
           26 Training • 2 Modified Diet
         </div>
         {metrics.criticalAlerts.some(alert => alert.message.includes('diet')) && (
-          <div className="mt-2 text-xs text-[var(--md-saas-color-warning)] font-medium">
+          <div className="m-sm md3-label-small" style={{ color: 'var(--md-sys-color-error)', fontWeight: 500 }}>
             ⚠️ 2 athletes need diet adjustments
           </div>
         )}
@@ -236,10 +236,10 @@ const StatusHero = memo(function StatusHero({ metrics }: { metrics: CriticalMetr
             )}
           </div>
           <div>
-            <h1 className="md3-headline-large font-bold text-[var(--md-sys-color-on-surface)]">
+            <h1 className="md3-headline-large text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>
               {getStatusMessage(metrics.teamReadinessScore, metrics.criticalAlerts.length)}
             </h1>
-            <p className="md3-body-large text-[var(--md-sys-color-on-surface-variant)] mt-1">
+            <p className="md3-body-large text-[var(--md-sys-color-on-surface-variant)] m-sm">
               {metrics.activeOrdersCount} active orders • {metrics.todayDeliveries} deliveries today
               {metrics.nextGameHours && ` • Game in ${Math.round(metrics.nextGameHours/24)} days`}
             </p>

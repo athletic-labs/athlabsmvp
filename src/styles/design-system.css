@@ -1,0 +1,496 @@
+/**
+ * Athletic Labs Design System CSS
+ * Material Design 3 Implementation - SINGLE SOURCE OF TRUTH
+ * 
+ * This file enforces 100% design consistency across the application.
+ * ALL components must use these classes - NO custom styling allowed.
+ */
+
+/* ========================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ======================================== */
+
+:root {
+  /* Typography Scale - Material Design 3 */
+  --typography-display-large-size: 57px;
+  --typography-display-large-line-height: 64px;
+  --typography-display-large-weight: 400;
+  --typography-display-large-tracking: -0.25px;
+  
+  --typography-display-medium-size: 45px;
+  --typography-display-medium-line-height: 52px;
+  --typography-display-medium-weight: 400;
+  --typography-display-medium-tracking: 0px;
+  
+  --typography-display-small-size: 36px;
+  --typography-display-small-line-height: 44px;
+  --typography-display-small-weight: 400;
+  --typography-display-small-tracking: 0px;
+  
+  --typography-headline-large-size: 32px;
+  --typography-headline-large-line-height: 40px;
+  --typography-headline-large-weight: 400;
+  --typography-headline-large-tracking: 0px;
+  
+  --typography-headline-medium-size: 28px;
+  --typography-headline-medium-line-height: 36px;
+  --typography-headline-medium-weight: 400;
+  --typography-headline-medium-tracking: 0px;
+  
+  --typography-headline-small-size: 24px;
+  --typography-headline-small-line-height: 32px;
+  --typography-headline-small-weight: 400;
+  --typography-headline-small-tracking: 0px;
+  
+  --typography-title-large-size: 22px;
+  --typography-title-large-line-height: 28px;
+  --typography-title-large-weight: 500;
+  --typography-title-large-tracking: 0px;
+  
+  --typography-title-medium-size: 16px;
+  --typography-title-medium-line-height: 24px;
+  --typography-title-medium-weight: 500;
+  --typography-title-medium-tracking: 0.15px;
+  
+  --typography-title-small-size: 14px;
+  --typography-title-small-line-height: 20px;
+  --typography-title-small-weight: 500;
+  --typography-title-small-tracking: 0.1px;
+  
+  --typography-body-large-size: 16px;
+  --typography-body-large-line-height: 24px;
+  --typography-body-large-weight: 400;
+  --typography-body-large-tracking: 0.5px;
+  
+  --typography-body-medium-size: 14px;
+  --typography-body-medium-line-height: 20px;
+  --typography-body-medium-weight: 400;
+  --typography-body-medium-tracking: 0.25px;
+  
+  --typography-body-small-size: 12px;
+  --typography-body-small-line-height: 16px;
+  --typography-body-small-weight: 400;
+  --typography-body-small-tracking: 0.4px;
+  
+  --typography-label-large-size: 14px;
+  --typography-label-large-line-height: 20px;
+  --typography-label-large-weight: 500;
+  --typography-label-large-tracking: 0.1px;
+  
+  --typography-label-medium-size: 12px;
+  --typography-label-medium-line-height: 16px;
+  --typography-label-medium-weight: 500;
+  --typography-label-medium-tracking: 0.5px;
+  
+  --typography-label-small-size: 11px;
+  --typography-label-small-line-height: 16px;
+  --typography-label-small-weight: 500;
+  --typography-label-small-tracking: 0.5px;
+  
+  /* Spacing Scale - 4dp Grid System (STRICTLY ENFORCED) */
+  --spacing-xs: 4px;    /* 1 × 4dp */
+  --spacing-sm: 8px;    /* 2 × 4dp */
+  --spacing-md: 16px;   /* 4 × 4dp */
+  --spacing-lg: 24px;   /* 6 × 4dp */
+  --spacing-xl: 32px;   /* 8 × 4dp */
+  --spacing-2xl: 48px;  /* 12 × 4dp */
+  --spacing-3xl: 64px;  /* 16 × 4dp */
+  --spacing-4xl: 80px;  /* 20 × 4dp */
+  
+  /* Page Layout Spacing */
+  --page-padding-mobile: 16px;
+  --page-padding-tablet: 24px;
+  --page-padding-desktop: 32px;
+  --page-max-width-mobile: 100%;
+  --page-max-width-tablet: 840px;
+  --page-max-width-desktop: 1280px;
+  
+  /* Section & Component Spacing */
+  --section-gap: 48px;
+  --section-padding: 32px;
+  --section-margin-bottom: 32px;
+  --component-gap: 16px;
+  --component-padding: 16px;
+  --component-margin-bottom: 16px;
+  --element-gap: 8px;
+  --element-padding: 8px;
+  --element-margin-bottom: 8px;
+  
+  /* Component Standards */
+  --button-height-small: 32px;
+  --button-height-medium: 40px;
+  --button-height-large: 48px;
+  --button-padding-small: 0 12px;
+  --button-padding-medium: 0 16px;
+  --button-padding-large: 0 24px;
+  --button-border-radius: 20px;
+  --button-font-weight: 500;
+  
+  --card-border-radius: 12px;
+  --card-padding-small: 16px;
+  --card-padding-medium: 20px;
+  --card-padding-large: 24px;
+  --card-gap: 16px;
+  
+  --input-height: 56px;
+  --input-padding: 16px;
+  --input-border-radius: 4px 4px 0 0;
+  --input-font-size: 16px;
+  --input-border-width: 1px 1px 2px 1px;
+  
+  --modal-border-radius: 28px;
+  --modal-padding: 24px;
+  --modal-max-width: 560px;
+  --modal-min-width: 280px;
+  
+  /* Elevation Shadows */
+  --elevation-0: none;
+  --elevation-1: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --elevation-2: 0 2px 4px -1px rgba(0,0,0,0.06), 0 4px 6px -1px rgba(0,0,0,0.1);
+  --elevation-3: 0 4px 6px -2px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1);
+  --elevation-4: 0 10px 25px -5px rgba(0,0,0,0.1), 0 20px 25px -5px rgba(0,0,0,0.04);
+  --elevation-5: 0 20px 25px -5px rgba(0,0,0,0.1), 0 25px 50px -12px rgba(0,0,0,0.25);
+  
+  /* Motion Tokens */
+  --motion-duration-short1: 50ms;
+  --motion-duration-short2: 100ms;
+  --motion-duration-short3: 150ms;
+  --motion-duration-short4: 200ms;
+  --motion-duration-medium1: 250ms;
+  --motion-duration-medium2: 300ms;
+  --motion-duration-medium3: 350ms;
+  --motion-duration-medium4: 400ms;
+  --motion-duration-long1: 450ms;
+  --motion-duration-long2: 500ms;
+  --motion-duration-long3: 550ms;
+  --motion-duration-long4: 600ms;
+  
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --motion-easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --motion-easing-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+  
+  /* Breakpoints */
+  --breakpoint-compact: 0px;
+  --breakpoint-medium: 600px;
+  --breakpoint-expanded: 840px;
+  --breakpoint-large: 1240px;
+  --breakpoint-extra-large: 1600px;
+}
+
+/* ========================================
+   TYPOGRAPHY CLASSES (Material Design 3)
+   ======================================== */
+
+.md3-display-large {
+  font-size: var(--typography-display-large-size);
+  line-height: var(--typography-display-large-line-height);
+  font-weight: var(--typography-display-large-weight);
+  letter-spacing: var(--typography-display-large-tracking);
+  margin: 0;
+}
+
+.md3-display-medium {
+  font-size: var(--typography-display-medium-size);
+  line-height: var(--typography-display-medium-line-height);
+  font-weight: var(--typography-display-medium-weight);
+  letter-spacing: var(--typography-display-medium-tracking);
+  margin: 0;
+}
+
+.md3-display-small {
+  font-size: var(--typography-display-small-size);
+  line-height: var(--typography-display-small-line-height);
+  font-weight: var(--typography-display-small-weight);
+  letter-spacing: var(--typography-display-small-tracking);
+  margin: 0;
+}
+
+.md3-headline-large {
+  font-size: var(--typography-headline-large-size);
+  line-height: var(--typography-headline-large-line-height);
+  font-weight: var(--typography-headline-large-weight);
+  letter-spacing: var(--typography-headline-large-tracking);
+  margin: 0;
+}
+
+.md3-headline-medium {
+  font-size: var(--typography-headline-medium-size);
+  line-height: var(--typography-headline-medium-line-height);
+  font-weight: var(--typography-headline-medium-weight);
+  letter-spacing: var(--typography-headline-medium-tracking);
+  margin: 0;
+}
+
+.md3-headline-small {
+  font-size: var(--typography-headline-small-size);
+  line-height: var(--typography-headline-small-line-height);
+  font-weight: var(--typography-headline-small-weight);
+  letter-spacing: var(--typography-headline-small-tracking);
+  margin: 0;
+}
+
+.md3-title-large {
+  font-size: var(--typography-title-large-size);
+  line-height: var(--typography-title-large-line-height);
+  font-weight: var(--typography-title-large-weight);
+  letter-spacing: var(--typography-title-large-tracking);
+  margin: 0;
+}
+
+.md3-title-medium {
+  font-size: var(--typography-title-medium-size);
+  line-height: var(--typography-title-medium-line-height);
+  font-weight: var(--typography-title-medium-weight);
+  letter-spacing: var(--typography-title-medium-tracking);
+  margin: 0;
+}
+
+.md3-title-small {
+  font-size: var(--typography-title-small-size);
+  line-height: var(--typography-title-small-line-height);
+  font-weight: var(--typography-title-small-weight);
+  letter-spacing: var(--typography-title-small-tracking);
+  margin: 0;
+}
+
+.md3-body-large {
+  font-size: var(--typography-body-large-size);
+  line-height: var(--typography-body-large-line-height);
+  font-weight: var(--typography-body-large-weight);
+  letter-spacing: var(--typography-body-large-tracking);
+  margin: 0;
+}
+
+.md3-body-medium {
+  font-size: var(--typography-body-medium-size);
+  line-height: var(--typography-body-medium-line-height);
+  font-weight: var(--typography-body-medium-weight);
+  letter-spacing: var(--typography-body-medium-tracking);
+  margin: 0;
+}
+
+.md3-body-small {
+  font-size: var(--typography-body-small-size);
+  line-height: var(--typography-body-small-line-height);
+  font-weight: var(--typography-body-small-weight);
+  letter-spacing: var(--typography-body-small-tracking);
+  margin: 0;
+}
+
+.md3-label-large {
+  font-size: var(--typography-label-large-size);
+  line-height: var(--typography-label-large-line-height);
+  font-weight: var(--typography-label-large-weight);
+  letter-spacing: var(--typography-label-large-tracking);
+  margin: 0;
+}
+
+.md3-label-medium {
+  font-size: var(--typography-label-medium-size);
+  line-height: var(--typography-label-medium-line-height);
+  font-weight: var(--typography-label-medium-weight);
+  letter-spacing: var(--typography-label-medium-tracking);
+  margin: 0;
+}
+
+.md3-label-small {
+  font-size: var(--typography-label-small-size);
+  line-height: var(--typography-label-small-line-height);
+  font-weight: var(--typography-label-small-weight);
+  letter-spacing: var(--typography-label-small-tracking);
+  margin: 0;
+}
+
+/* ========================================
+   SPACING UTILITIES (4dp Grid System)
+   ======================================== */
+
+/* Padding Classes */
+.p-xs { padding: var(--spacing-xs) !important; }
+.p-sm { padding: var(--spacing-sm) !important; }
+.p-md { padding: var(--spacing-md) !important; }
+.p-lg { padding: var(--spacing-lg) !important; }
+.p-xl { padding: var(--spacing-xl) !important; }
+.p-2xl { padding: var(--spacing-2xl) !important; }
+.p-3xl { padding: var(--spacing-3xl) !important; }
+.p-4xl { padding: var(--spacing-4xl) !important; }
+
+/* Margin Classes */
+.m-xs { margin: var(--spacing-xs) !important; }
+.m-sm { margin: var(--spacing-sm) !important; }
+.m-md { margin: var(--spacing-md) !important; }
+.m-lg { margin: var(--spacing-lg) !important; }
+.m-xl { margin: var(--spacing-xl) !important; }
+.m-2xl { margin: var(--spacing-2xl) !important; }
+.m-3xl { margin: var(--spacing-3xl) !important; }
+.m-4xl { margin: var(--spacing-4xl) !important; }
+
+/* Gap Classes */
+.gap-xs { gap: var(--spacing-xs) !important; }
+.gap-sm { gap: var(--spacing-sm) !important; }
+.gap-md { gap: var(--spacing-md) !important; }
+.gap-lg { gap: var(--spacing-lg) !important; }
+.gap-xl { gap: var(--spacing-xl) !important; }
+.gap-2xl { gap: var(--spacing-2xl) !important; }
+.gap-3xl { gap: var(--spacing-3xl) !important; }
+.gap-4xl { gap: var(--spacing-4xl) !important; }
+
+/* ========================================
+   PAGE LAYOUT STANDARDS
+   ======================================== */
+
+.page-container {
+  width: 100%;
+  max-width: var(--page-max-width-mobile);
+  padding: var(--page-padding-mobile);
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--section-margin-bottom);
+}
+
+.page-content {
+  width: 100%;
+}
+
+.page-content.contained {
+  max-width: var(--page-max-width-desktop);
+  margin: 0 auto;
+}
+
+.page-content.full-width {
+  max-width: none;
+}
+
+/* Section Spacing */
+.section-spacing {
+  margin-bottom: var(--section-margin-bottom);
+}
+
+.component-spacing {
+  margin-bottom: var(--component-margin-bottom);
+}
+
+.element-spacing {
+  margin-bottom: var(--element-margin-bottom);
+}
+
+/* ========================================
+   ELEVATION CLASSES
+   ======================================== */
+
+.elevation-0 { box-shadow: var(--elevation-0); }
+.elevation-1 { box-shadow: var(--elevation-1); }
+.elevation-2 { box-shadow: var(--elevation-2); }
+.elevation-3 { box-shadow: var(--elevation-3); }
+.elevation-4 { box-shadow: var(--elevation-4); }
+.elevation-5 { box-shadow: var(--elevation-5); }
+
+/* ========================================
+   COMPONENT STANDARDS
+   ======================================== */
+
+/* Standard Button Heights (ENFORCED) */
+.button-small { height: var(--button-height-small); }
+.button-medium { height: var(--button-height-medium); }
+.button-large { height: var(--button-height-large); }
+
+/* Standard Card Styling */
+.card-standard {
+  border-radius: var(--card-border-radius);
+  padding: var(--card-padding-medium);
+  gap: var(--card-gap);
+}
+
+/* Standard Input Styling */
+.input-standard {
+  height: var(--input-height);
+  padding: var(--input-padding);
+  border-radius: var(--input-border-radius);
+  font-size: var(--input-font-size);
+  border-width: var(--input-border-width);
+}
+
+/* Standard Modal Styling */
+.modal-standard {
+  border-radius: var(--modal-border-radius);
+  padding: var(--modal-padding);
+  max-width: var(--modal-max-width);
+  min-width: var(--modal-min-width);
+}
+
+/* ========================================
+   MOTION & TRANSITIONS
+   ======================================== */
+
+.transition-standard {
+  transition: all var(--motion-duration-short4) var(--motion-easing-standard);
+}
+
+.transition-decelerate {
+  transition: all var(--motion-duration-medium2) var(--motion-easing-decelerate);
+}
+
+.transition-accelerate {
+  transition: all var(--motion-duration-short4) var(--motion-easing-accelerate);
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+/* Tablet (Medium) */
+@media (min-width: 600px) {
+  .page-container {
+    max-width: var(--page-max-width-tablet);
+    padding: var(--page-padding-tablet);
+  }
+}
+
+/* Desktop (Expanded) */
+@media (min-width: 840px) {
+  .page-container {
+    max-width: var(--page-max-width-desktop);
+    padding: var(--page-padding-desktop);
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1240px) {
+  .page-container {
+    max-width: 1240px;
+  }
+}
+
+/* Extra Large Desktop */
+@media (min-width: 1600px) {
+  .page-container {
+    max-width: 1440px;
+  }
+}
+
+/* ========================================
+   LEGACY CLASS OVERRIDES (Temporary)
+   These will be removed once all components are migrated
+   ======================================== */
+
+/* Disable problematic Tailwind classes */
+.text-2xl,
+.text-xl,
+.text-lg,
+.text-3xl,
+.font-bold,
+.font-semibold {
+  /* Override with design system classes instead */
+}
+
+/* Disable non-4dp spacing */
+.p-3, .p-5, .p-7,
+.m-3, .m-5, .m-7,
+.px-3, .px-5, .px-7,
+.py-3, .py-5, .py-7,
+.gap-3, .gap-5, .gap-7 {
+  /* Use design system spacing instead */
+}

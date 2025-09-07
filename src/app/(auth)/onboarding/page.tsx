@@ -106,9 +106,14 @@ export default function OnboardingPage() {
           <div className="flex items-center justify-between mb-4">
             {ONBOARDING_STEPS.map((step, idx) => (
               <div key={step.id} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-all duration-300
-                  ${idx < currentStep ? 'bg-electric-blue text-white' : 
-                    idx === currentStep ? 'bg-electric-blue text-white ring-4 ring-electric-blue/30' :
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                  ${idx < currentStep ? 'text-white ring-4 ring-opacity-30' : 
+                    idx === currentStep ? 'text-white ring-4 ring-opacity-30' :`
+                  style={{
+                    backgroundColor: idx <= currentStep ? 'var(--md-sys-color-primary)' : 'transparent',
+                    ringColor: idx <= currentStep ? 'var(--md-sys-color-primary)' : 'transparent',
+                    fontWeight: 500
+                  }}
                     'bg-smoke dark:bg-smoke/30 text-navy/50 dark:text-white/50'}`}>
                   {idx < currentStep ? <Check className="w-5 h-5" /> : idx + 1}
                 </div>
@@ -120,7 +125,7 @@ export default function OnboardingPage() {
             ))}
           </div>
           <div className="text-center">
-            <h2 className="text-2xl font-medium mb-2">{ONBOARDING_STEPS[currentStep].title}</h2>
+            <h2 className="md3-headline-medium mb-sm text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>{ONBOARDING_STEPS[currentStep].title}</h2>
             <p className="text-navy/60 dark:text-white/60">Step {currentStep + 1} of {ONBOARDING_STEPS.length}</p>
           </div>
         </div>
@@ -144,7 +149,7 @@ export default function OnboardingPage() {
                         ${formData.league === league.id
                           ? 'border-electric-blue bg-electric-blue/10 dark:bg-electric-blue/20'
                           : 'border-smoke dark:border-smoke/30 hover:border-electric-blue/50'}`}>
-                      <div className="text-2xl font-bold mb-2">{league.name}</div>
+                      <div className="md3-headline-medium mb-sm text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>{league.name}</div>
                       <div className="text-sm text-navy/60 dark:text-white/60">{league.sport}</div>
                     </button>
                   ))}
@@ -181,7 +186,7 @@ export default function OnboardingPage() {
                         onChange={(e) => setFormData({...formData, role: e.target.value})}
                         className="sr-only"
                       />
-                      <span className="text-sm font-medium">{role.label}</span>
+                      <span className="md3-body-medium text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>{role.label}</span>
                     </label>
                   ))}
                 </div>
@@ -235,7 +240,7 @@ export default function OnboardingPage() {
                         ${formData.nutritionPreset === preset.id
                           ? 'border-electric-blue bg-electric-blue/10 dark:bg-electric-blue/20'
                           : 'border-smoke dark:border-smoke/30 hover:border-electric-blue/50'}`}>
-                      <div className="font-medium">{preset.name}</div>
+                      <div className="md3-body-large text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>{preset.name}</div>
                       {preset.macros && (
                         <div className="text-xs mt-2">
                           P: {preset.macros.protein}% | C: {preset.macros.carbs}% | F: {preset.macros.fats}%
@@ -250,8 +255,8 @@ export default function OnboardingPage() {
                     {['protein', 'carbs', 'fats'].map((macro) => (
                       <div key={macro}>
                         <div className="flex justify-between mb-2">
-                          <label className="text-sm font-medium capitalize">{macro}</label>
-                          <span className="text-sm font-bold">
+                          <label className="md3-body-small text-[var(--md-sys-color-on-surface)] capitalize" style={{ fontWeight: 500 }}>{macro}</label>
+                          <span className="md3-body-small text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 600 }}>
                             {formData.customMacros[macro as keyof typeof formData.customMacros]}%
                           </span>
                         </div>

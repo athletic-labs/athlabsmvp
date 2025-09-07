@@ -24,8 +24,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="md3-display-small font-bold text-[var(--md-sys-color-on-surface)]">Settings</h1>
-        <p className="md3-body-large text-[var(--md-sys-color-on-surface-variant)] mt-1">
+        <h1 className="md3-headline-large text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>Settings</h1>
+        <p className="md3-body-large text-[var(--md-sys-color-on-surface-variant)] m-sm">
           Manage your account and preferences
         </p>
       </div>

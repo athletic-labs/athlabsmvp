@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Athletic Labs Unified Design System - SINGLE SOURCE OF TRUTH */
+@import '../styles/design-system.css';
+
 /* Athletic Labs Material Design 3 System */
 @import '../lib/design-system/theme/material3-base.css';
 
