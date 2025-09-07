@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,15 +25,22 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema)
   });
+  
+  // Debug form state
+  React.useEffect(() => {
+    console.log('📋 Form state:', { errors, isValid, errorKeys: Object.keys(errors) });
+  }, [errors, isValid]);
 
   const onSubmit = async (data: LoginFormData) => {
+    console.log('🚀 Form submitted!', { email: data.email, password: data.password?.length + ' chars' });
     try {
       setLoading(true);
       setError(null);
       
+      console.log('📞 Calling SimpleAuthService.signIn...');
       const result = await SimpleAuthService.signIn(data.email, data.password);
       
       if (result.error) {
@@ -132,6 +139,10 @@ export default function LoginPage() {
               variant="filled"
               fullWidth
               leftIcon={loading ? <Loader2 className="animate-spin h-4 w-4" /> : undefined}
+              onClick={(e) => {
+                console.log('🖱️ Button clicked!', { disabled: loading, errors: Object.keys(errors) });
+                // Don't prevent default - let form submit handle it
+              }}
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
