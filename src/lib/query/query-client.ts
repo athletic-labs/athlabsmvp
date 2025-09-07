@@ -131,7 +131,7 @@ export const queryMetrics = {
     const cache = queryClient.getQueryCache();
     const all = cache.getAll();
     const stale = all.filter(query => query.isStale());
-    const fetching = all.filter(query => query.state.status === 'loading');
+    const fetching = all.filter(query => query.state.status === 'pending');
     
     return {
       total: all.length,

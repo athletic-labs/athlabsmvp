@@ -245,7 +245,7 @@ export class RLSPolicyCache {
     const regex = new RegExp(pattern);
     const keysToDelete: string[] = [];
 
-    for (const key of this.cache.keys()) {
+    for (const key of Array.from(this.cache.keys())) {
       if (regex.test(key)) {
         keysToDelete.push(key);
       }
