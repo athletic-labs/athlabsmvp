@@ -286,16 +286,20 @@ export class OAuthService {
       const supabase = createSupabaseClient();
 
       // Check if user is authenticated
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return { success: false, error: 'User must be logged in to unlink OAuth account' };
       }
 
-      console.log('🔓 Unlinking OAuth account:', { provider, userId: session.user.id });
+      console.log('🔓 Unlinking OAuth account:', { provider, userId: user.id });
 
-      const { error } = await supabase.auth.unlinkIdentity({
-        identity_id: `${provider}_${session.user.id}`, // This may need adjustment based on actual identity ID format
-      });
+      // Find the identity to unlink
+      const identity = user.identities?.find(identity => identity.provider === provider);
+      if (!identity) {
+        return { success: false, error: `No ${provider} account found to unlink` };
+      }
+
+      const { error } = await supabase.auth.unlinkIdentity(identity);
 
       if (error) {
         console.error('❌ OAuth unlinking error:', error);
