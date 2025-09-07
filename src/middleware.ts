@@ -1,6 +1,11 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { createSupabaseServerClientOptimized } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+
+import { middlewareCacheManager, type CachedUserData } from '@/lib/middleware/cache-manager';
+import { corsMiddleware } from '@/lib/middleware/cors-middleware';
+import { inputSanitizer } from '@/lib/security/input-sanitizer';
 
 // Define protected routes and their required permissions
 const PROTECTED_ROUTES = {
@@ -35,9 +40,128 @@ const PUBLIC_ROUTES = [
   '/api/health',
 ];
 
+// Optimized function to get user data with caching
+async function getCachedUserData(userId: string, supabase: any): Promise<CachedUserData | null> {
+  // Check cache first
+  const cached = middlewareCacheManager.get(userId);
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    // Single optimized query with JOIN for better performance
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(`
+        id,
+        role,
+        team_id,
+        is_active,
+        teams!inner (
+          is_active
+        )
+      `)
+      .eq('id', userId)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    // Cache the result
+    const userData: CachedUserData = {
+      profile: {
+        id: data.id,
+        role: data.role,
+        team_id: data.team_id,
+        is_active: data.is_active,
+      },
+      team: data.teams ? { is_active: data.teams.is_active } : undefined,
+      expires: Date.now() + (5 * 60 * 1000), // 5 minutes
+    };
+
+    middlewareCacheManager.set(userId, userData);
+    return userData;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    return null;
+  }
+}
+
+// Helper function to perform basic threat detection on request data
+async function performThreatDetection(request: NextRequest): Promise<{ threats: string[]; severity: 'low' | 'medium' | 'high' | 'critical'; isClean: boolean } | null> {
+  try {
+    // Check URL parameters
+    const searchParams = request.nextUrl.searchParams;
+    const entries = Array.from(searchParams.entries());
+    for (const [key, value] of entries) {
+      const threatResult = inputSanitizer.detectThreats(value);
+      if (!threatResult.isClean) {
+        return threatResult;
+      }
+    }
+
+    // Check request body for POST/PUT/PATCH requests
+    if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
+      try {
+        const body = await request.clone().text();
+        if (body) {
+          const threatResult = inputSanitizer.detectThreats(body);
+          if (!threatResult.isClean) {
+            return threatResult;
+          }
+        }
+      } catch {
+        // If body parsing fails, continue without checking
+      }
+    }
+
+    return { threats: [], severity: 'low', isClean: true };
+  } catch (error) {
+    console.error('Error in threat detection:', error);
+    return null;
+  }
+}
+
 export async function middleware(request: NextRequest) {
   try {
+    // Handle CORS for API routes first
+    const corsResponse = corsMiddleware(request);
+    if (corsResponse) {
+      return corsResponse;
+    }
+
+    // Apply input sanitization for API routes with potential threats
     const { pathname } = request.nextUrl;
+    if (pathname.startsWith('/api/') && request.method !== 'GET') {
+      const threatCheck = await performThreatDetection(request);
+      if (threatCheck && !threatCheck.isClean) {
+        console.warn('[Security] Threat detected in middleware:', {
+          path: pathname,
+          method: request.method,
+          threats: threatCheck.threats,
+          severity: threatCheck.severity,
+          ip: getClientIP(request),
+        });
+        
+        if (threatCheck.severity === 'critical' || threatCheck.severity === 'high') {
+          return new NextResponse(
+            JSON.stringify({
+              error: 'Request blocked due to security concerns',
+              code: 'THREAT_DETECTED',
+              timestamp: new Date().toISOString(),
+            }),
+            {
+              status: 400,
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Security-Block': 'threat-detected',
+              },
+            }
+          );
+        }
+      }
+    }
 
     // Skip middleware for static files and Next.js internals
     if (
@@ -54,8 +178,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Create Supabase client
-    const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
+    // Create optimized Supabase client with connection pooling
+    const supabase = createSupabaseServerClientOptimized();
 
     // Get session
     const {
@@ -77,28 +201,15 @@ export async function middleware(request: NextRequest) {
 
     console.log(`Middleware: authenticated user ${session.user.id} accessing ${pathname}`);
 
-    // Get user profile with role and team information (simplified query to reduce failure points)
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id, role, team_id, is_active')
-      .eq('id', session.user.id)
-      .single();
-
-    if (profileError || !profile) {
-      console.error('Profile error in middleware:', profileError);
+    // Get cached user data (single optimized query)
+    const userData = await getCachedUserData(session.user.id, supabase);
+    
+    if (!userData) {
+      console.error('Could not fetch user profile');
       return redirectToLogin(request);
     }
 
-    // Get team info separately if needed (avoid complex joins that might timeout)
-    let teamActive = true;
-    if (profile.team_id) {
-      const { data: team } = await supabase
-        .from('teams')
-        .select('is_active')
-        .eq('id', profile.team_id)
-        .single();
-      teamActive = team?.is_active ?? true;
-    }
+    const { profile, team } = userData;
 
     // Check if user account is active
     if (!profile.is_active) {
@@ -106,7 +217,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check if user's team is active (if they have a team)
-    if (profile.team_id && !teamActive) {
+    if (profile.team_id && team && !team.is_active) {
       return redirectToError(request, 'team-suspended');
     }
 
@@ -121,11 +232,12 @@ export async function middleware(request: NextRequest) {
       // Check specific permissions if required
       const permissions = (routeConfig as any).permissions;
       if (permissions && profile.team_id) {
-        const hasPermission = await checkUserPermissions(
+        const hasPermission = await checkUserPermissionsOptimized(
           supabase,
           session.user.id,
           profile.team_id,
-          permissions
+          permissions,
+          userData
         );
 
         if (!hasPermission) {
@@ -134,14 +246,17 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Log access for audit purposes
-    await logAccess(supabase, {
+    // Log access asynchronously (don't block the request)
+    logAccessAsync(supabase, {
       userId: session.user.id,
       teamId: profile.team_id,
       path: pathname,
       method: request.method,
       ip: getClientIP(request),
       userAgent: request.headers.get('user-agent'),
+    }).catch(error => {
+      // Log but don't block
+      console.error('Async audit log failed:', error);
     });
 
     // Add user context to headers for downstream consumption
@@ -188,13 +303,22 @@ function getRouteConfig(pathname: string) {
   return null;
 }
 
-async function checkUserPermissions(
+async function checkUserPermissionsOptimized(
   supabase: any,
   userId: string,
   teamId: string,
-  requiredPermissions: string[]
+  requiredPermissions: string[],
+  userData: CachedUserData
 ): Promise<boolean> {
   try {
+    // Check if permissions are already cached
+    if (userData.permissions) {
+      return requiredPermissions.every(permission => {
+        return userData.permissions![permission] === true;
+      });
+    }
+
+    // Fetch permissions if not cached
     const { data: permissions, error } = await supabase
       .from('team_permissions')
       .select('*')
@@ -206,6 +330,10 @@ async function checkUserPermissions(
       return false;
     }
 
+    // Cache permissions for future use
+    userData.permissions = permissions;
+    middlewareCacheManager.set(userId, userData);
+
     // Check if user has all required permissions
     return requiredPermissions.every(permission => {
       return permissions[permission] === true;
@@ -216,7 +344,8 @@ async function checkUserPermissions(
   }
 }
 
-async function logAccess(
+// Async function for non-blocking audit logging
+async function logAccessAsync(
   supabase: any,
   accessLog: {
     userId: string;
@@ -227,8 +356,11 @@ async function logAccess(
     userAgent: string | null;
   }
 ): Promise<void> {
+  // Use a separate connection for audit logging to avoid blocking main request
+  const auditSupabase = createSupabaseServerClientOptimized();
+  
   try {
-    await supabase
+    await auditSupabase
       .from('audit_logs')
       .insert({
         user_id: accessLog.userId,

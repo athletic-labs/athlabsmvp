@@ -88,7 +88,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Roboto', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        inter: ['var(--font-inter)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         // Material 3 Typography Scale

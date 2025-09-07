@@ -27,6 +27,9 @@ export type {
   NavigationItem 
 } from './NavigationRail';
 
+export { NavigationResponsive } from './NavigationResponsive';
+export type { NavigationConfig } from './NavigationResponsive';
+
 export { ThemeSelector, QuickThemeSwitcher } from './ThemeSelector';
 export type { Material3Theme } from '../theme/ThemeProvider';
 
@@ -66,6 +69,23 @@ export type { FloatingActionButtonProps } from './FloatingActionButton';
 
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
+
+export { PasswordField, SimplePasswordField } from './PasswordField';
+
+export { PasswordStrengthIndicator, PasswordStrengthBadge } from './PasswordStrengthIndicator';
+
+// Surface components with Material Design 3 tinting
+export { 
+  Surface, 
+  Card as SurfaceCard, 
+  AppBar as SurfaceAppBar, 
+  NavigationRail as SurfaceNavigationRail,
+  Dialog as SurfaceDialog,
+  BottomSheet as SurfaceBottomSheet,
+  useSurfaceTint,
+  getSurfaceTintTokens
+} from './Surface';
+export type { SurfaceProps, SurfaceComponent, SurfaceElevation } from './Surface';
 
 // Accessibility components
 export { ScreenReaderOnly, FocusTrap, LiveRegion, GlobalLiveAnnouncer } from '../accessibility';

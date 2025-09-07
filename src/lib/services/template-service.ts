@@ -70,18 +70,17 @@ export class TemplateService {
   }
   
   /**
-   * Delete a template
+   * Delete a template - optimized to use RESTful endpoint
    */
   static async deleteTemplate(templateId: string): Promise<void> {
     console.log('Deleting template:', templateId);
     
-    const response = await fetch('/api/templates', {
+    const response = await fetch(`/api/templates/${templateId}`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ templateId }),
     });
     
     console.log('Delete response status:', response.status);
@@ -97,23 +96,18 @@ export class TemplateService {
   }
   
   /**
-   * Update times used for a template
+   * Update times used for a template - optimized atomic operation
    */
   static async incrementUsage(templateId: string): Promise<void> {
-    const { data: template } = await this.supabase
-      .from('saved_templates')
-      .select('times_used')
-      .eq('id', templateId)
-      .single();
+    // Use atomic UPDATE with SQL function to avoid N+1 query problem
+    const { error } = await this.supabase
+      .rpc('increment_template_usage', { 
+        template_id: templateId 
+      });
     
-    if (template) {
-      await this.supabase
-        .from('saved_templates')
-        .update({ 
-          times_used: (template.times_used || 0) + 1,
-          last_used_at: new Date().toISOString()
-        })
-        .eq('id', templateId);
+    if (error) {
+      console.error('Failed to increment template usage:', error);
+      throw new Error('Failed to update template usage');
     }
   }
 }

@@ -8,13 +8,17 @@ const envSchema = z.object({
   // Application
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
   
-  // Supabase Configuration - with fallbacks for demo mode
-  NEXT_PUBLIC_SUPABASE_URL: z.string().default('https://demo.supabase.co'),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().default('demo_anon_key_placeholder'),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().default('demo_service_key_placeholder'),
+  // Supabase Configuration - REQUIRED for production
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url('Supabase URL must be a valid URL'),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, 'Supabase anonymous key is required'),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'Supabase service role key is required'),
   
-  // Google Places API - optional for demo
-  GOOGLE_PLACES_API_KEY: z.string().default('demo_places_key'),
+  // Google Places API - REQUIRED for production
+  GOOGLE_PLACES_API_KEY: z.string().min(1, 'Google Places API key is required'),
+  
+  // Redis Configuration - OPTIONAL, improves rate limiting scalability
+  REDIS_URL: z.string().url().optional(),
+  REDIS_TLS: z.string().optional().transform(val => val === 'true'),
   
   // Demo mode flag
   NEXT_PUBLIC_DEMO_MODE: z.string().optional().transform(val => val === 'true'),
@@ -31,14 +35,48 @@ type Env = z.infer<typeof envSchema>;
 // Parse and validate environment variables
 function parseEnv(): Env {
   try {
-    return envSchema.parse(process.env);
+    const result = envSchema.parse(process.env);
+    
+    // Additional production-specific validations
+    if (process.env.NODE_ENV === 'production') {
+      // Ensure no demo/placeholder values in production
+      const dangerousPatterns = ['demo', 'placeholder', 'localhost', 'example'];
+      const sensitiveKeys = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY']; // Temporarily remove GOOGLE_PLACES_API_KEY for bundle analysis
+      
+      for (const key of sensitiveKeys) {
+        const value = result[key as keyof Env] as string;
+        if (dangerousPatterns.some(pattern => value?.toLowerCase().includes(pattern))) {
+          throw new Error(
+            `🚨 PRODUCTION SECURITY ERROR: ${key} contains placeholder/demo value.\n` +
+            `Current value: ${value}\n` +
+            `Production deployments must use real credentials.`
+          );
+        }
+      }
+      
+      // Ensure Supabase URL is not a demo URL
+      if (result.NEXT_PUBLIC_SUPABASE_URL.includes('demo.supabase.co')) {
+        throw new Error('🚨 PRODUCTION ERROR: Cannot use demo Supabase URL in production');
+      }
+    }
+    
+    return result;
   } catch (error) {
     if (error instanceof z.ZodError) {
       const missingVars = error.errors.map(err => `${err.path.join('.')}: ${err.message}`);
+      
+      // Provide helpful development setup guidance
+      const devHelpMessage = process.env.NODE_ENV === 'development' 
+        ? '\n\n🔧 DEVELOPMENT SETUP:\n' +
+          '1. Copy .env.example to .env.local\n' +
+          '2. Add your Supabase credentials from https://supabase.com\n' +
+          '3. Add your Google Places API key from Google Cloud Console\n' +
+          '4. Restart your development server\n'
+        : '';
+        
       throw new Error(
-        `Environment validation failed:\n${missingVars.join('\n')}\n\n` +
-        `Please check your .env.local file and ensure all required variables are set.\n` +
-        `Refer to .env.example for the complete list of variables.`
+        `❌ Environment validation failed:\n${missingVars.join('\n')}\n\n` +
+        `Please ensure all required environment variables are set.${devHelpMessage}`
       );
     }
     throw error;
@@ -61,6 +99,12 @@ export const supabaseConfig = {
 
 export const googleConfig = {
   placesApiKey: env.GOOGLE_PLACES_API_KEY,
+} as const;
+
+export const redisConfig = {
+  url: env.REDIS_URL,
+  tls: env.REDIS_TLS || false,
+  enabled: Boolean(env.REDIS_URL),
 } as const;
 
 export const appConfig = {

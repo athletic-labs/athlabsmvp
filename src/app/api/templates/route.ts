@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createSupabaseServerClientOptimized } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { createTemplateSchema, getTemplatesQuerySchema } from '@/lib/validation/api-schemas';
 import { z } from 'zod';
@@ -13,7 +12,8 @@ import {
   generateRequestId
 } from '@/lib/validation/api-middleware';
 import { withGlobalErrorHandler, DatabaseError } from '@/lib/middleware/global-error-handler';
-import { generalApiRateLimit, withRateLimit } from '@/lib/middleware/rate-limit';
+import { withAdaptiveRateLimit, adaptivePresets } from '@/lib/middleware/adaptive-rate-limit';
+import { withTemplateSanitization } from '@/lib/middleware/sanitization-middleware';
 
 // DELETE template validation schema
 const deleteTemplateSchema = z.object({
@@ -38,18 +38,21 @@ const deleteTemplateSchema = z.object({
  *       201:
  *         description: Template created successfully
  */
-export const POST = withRateLimit(generalApiRateLimit)(
-  withGlobalErrorHandler(
-    withBodyValidation(
-      createTemplateSchema,
-      async (request: NextRequest, templateData) => {
+export const POST = withTemplateSanitization(
+  withAdaptiveRateLimit(adaptivePresets.api)(
+    withGlobalErrorHandler(
+      withBodyValidation(
+        createTemplateSchema,
+        async (request: NextRequest, templateData) => {
         const requestId = generateRequestId();
         
         try {
-          const supabase = createRouteHandlerClient({ cookies });
+          // Create initial client to get session
+          const initialSupabase = createSupabaseServerClientOptimized();
+          const { data: { session } } = await initialSupabase.auth.getSession();
           
-          // Check authentication
-          const { data: { session } } = await supabase.auth.getSession();
+          // Now create optimized client with user ID
+          const supabase = createSupabaseServerClientOptimized(session?.user?.id);
           if (!session) {
             throw new AuthenticationError('Authentication required');
           }
@@ -108,6 +111,7 @@ export const POST = withRateLimit(generalApiRateLimit)(
         }
       }
     )
+    )
   )
 );
 
@@ -137,7 +141,7 @@ export const POST = withRateLimit(generalApiRateLimit)(
  *       200:
  *         description: Templates retrieved successfully
  */
-export const GET = withRateLimit(generalApiRateLimit)(
+export const GET = withAdaptiveRateLimit(adaptivePresets.api)(
   withGlobalErrorHandler(
     withQueryValidation(
       getTemplatesQuerySchema,
@@ -145,10 +149,12 @@ export const GET = withRateLimit(generalApiRateLimit)(
         const requestId = generateRequestId();
         
         try {
-          const supabase = createRouteHandlerClient({ cookies });
+          // Create initial client to get session
+          const initialSupabase = createSupabaseServerClientOptimized();
+          const { data: { session } } = await initialSupabase.auth.getSession();
           
-          // Check authentication
-          const { data: { session } } = await supabase.auth.getSession();
+          // Now create optimized client with user ID
+          const supabase = createSupabaseServerClientOptimized(session?.user?.id);
           if (!session) {
             throw new AuthenticationError('Authentication required');
           }
@@ -255,18 +261,21 @@ export const GET = withRateLimit(generalApiRateLimit)(
  *       200:
  *         description: Template deleted successfully
  */
-export const DELETE = withRateLimit(generalApiRateLimit)(
-  withGlobalErrorHandler(
-    withBodyValidation(
-      deleteTemplateSchema,
-      async (request: NextRequest, { templateId }) => {
+export const DELETE = withTemplateSanitization(
+  withAdaptiveRateLimit(adaptivePresets.api)(
+    withGlobalErrorHandler(
+      withBodyValidation(
+        deleteTemplateSchema,
+        async (request: NextRequest, { templateId }) => {
         const requestId = generateRequestId();
         
         try {
-          const supabase = createRouteHandlerClient({ cookies });
+          // Create initial client to get session
+          const initialSupabase = createSupabaseServerClientOptimized();
+          const { data: { session } } = await initialSupabase.auth.getSession();
           
-          // Check authentication
-          const { data: { session } } = await supabase.auth.getSession();
+          // Now create optimized client with user ID
+          const supabase = createSupabaseServerClientOptimized(session?.user?.id);
           if (!session) {
             throw new AuthenticationError('Authentication required');
           }
@@ -329,6 +338,7 @@ export const DELETE = withRateLimit(generalApiRateLimit)(
           throw error;
         }
       }
+    )
     )
   )
 );

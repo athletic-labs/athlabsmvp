@@ -11,6 +11,11 @@ import {
   typographyTokens,
   semanticColors 
 } from './material3-colors';
+import { 
+  generateSurfaceTintTokens,
+  generateSurfaceTintClasses,
+  SurfaceTintUtils 
+} from './surface-tinting';
 
 export type ColorScheme = 'light' | 'dark';
 
@@ -34,6 +39,9 @@ export function applyMaterial3Theme(scheme: ColorScheme = 'light'): void {
   
   // Apply semantic colors
   applySemanticColors(root, scheme);
+  
+  // Apply surface tinting tokens
+  applySurfaceTintTokens(root, theme, scheme);
   
   // Set color scheme class
   root.classList.remove('light', 'dark');
@@ -136,6 +144,17 @@ function applyTypographyTokens(root: HTMLElement): void {
 function applySemanticColors(root: HTMLElement, scheme: ColorScheme): void {
   Object.entries(semanticColors).forEach(([name, colors]) => {
     root.style.setProperty(`--color-${name}`, colors[scheme]);
+  });
+}
+
+/**
+ * Apply surface tinting tokens
+ */
+function applySurfaceTintTokens(root: HTMLElement, theme: Material3ColorScheme, scheme: ColorScheme): void {
+  const surfaceTintTokens = generateSurfaceTintTokens(theme, scheme);
+  
+  Object.entries(surfaceTintTokens).forEach(([property, value]) => {
+    root.style.setProperty(property, value);
   });
 }
 

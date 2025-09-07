@@ -106,15 +106,17 @@ export default function OnboardingPage() {
           <div className="flex items-center justify-between mb-4">
             {ONBOARDING_STEPS.map((step, idx) => (
               <div key={step.id} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
-                  ${idx < currentStep ? 'text-white ring-4 ring-opacity-30' : 
-                    idx === currentStep ? 'text-white ring-4 ring-opacity-30' :`
+                <div 
+                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    idx <= currentStep 
+                      ? 'text-white ring-4 ring-opacity-30' 
+                      : 'bg-smoke dark:bg-smoke/30 text-navy/50 dark:text-white/50'
+                  }`}
                   style={{
                     backgroundColor: idx <= currentStep ? 'var(--md-sys-color-primary)' : 'transparent',
-                    ringColor: idx <= currentStep ? 'var(--md-sys-color-primary)' : 'transparent',
                     fontWeight: 500
                   }}
-                    'bg-smoke dark:bg-smoke/30 text-navy/50 dark:text-white/50'}`}>
+                >
                   {idx < currentStep ? <Check className="w-5 h-5" /> : idx + 1}
                 </div>
                 {idx < ONBOARDING_STEPS.length - 1 && (

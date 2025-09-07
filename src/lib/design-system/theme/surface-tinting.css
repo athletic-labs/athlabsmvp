@@ -1,0 +1,257 @@
+/**
+ * Material Design 3 Surface Tinting CSS Classes
+ * Auto-generated utility classes for elevation and surface tinting
+ */
+
+/* Elevation utility classes with surface tinting */
+.md-elevation-0 {
+  background-color: var(--md-sys-color-surface-tint-0);
+  box-shadow: var(--md-elevation-0);
+  position: relative;
+}
+
+.md-elevation-1 {
+  background-color: var(--md-sys-color-surface-tint-1);
+  box-shadow: var(--md-elevation-1);
+  position: relative;
+}
+
+.md-elevation-2 {
+  background-color: var(--md-sys-color-surface-tint-2);
+  box-shadow: var(--md-elevation-2);
+  position: relative;
+}
+
+.md-elevation-3 {
+  background-color: var(--md-sys-color-surface-tint-3);
+  box-shadow: var(--md-elevation-3);
+  position: relative;
+}
+
+.md-elevation-4 {
+  background-color: var(--md-sys-color-surface-tint-4);
+  box-shadow: var(--md-elevation-4);
+  position: relative;
+}
+
+.md-elevation-5 {
+  background-color: var(--md-sys-color-surface-tint-5);
+  box-shadow: var(--md-elevation-5);
+  position: relative;
+}
+
+/* Component-specific surface tinting */
+.md-comp-surface {
+  background-color: var(--md-comp-surface-container);
+  box-shadow: var(--md-comp-surface-elevation);
+}
+
+.md-comp-background {
+  background-color: var(--md-comp-background-container);
+  box-shadow: var(--md-comp-background-elevation);
+}
+
+.md-comp-card {
+  background-color: var(--md-comp-card-container);
+  box-shadow: var(--md-comp-card-elevation);
+}
+
+.md-comp-list-item {
+  background-color: var(--md-comp-list-item-container);
+  box-shadow: var(--md-comp-list-item-elevation);
+}
+
+.md-comp-switch {
+  background-color: var(--md-comp-switch-container);
+  box-shadow: var(--md-comp-switch-elevation);
+}
+
+.md-comp-button {
+  background-color: var(--md-comp-button-container);
+  box-shadow: var(--md-comp-button-elevation);
+}
+
+.md-comp-fab {
+  background-color: var(--md-comp-fab-container);
+  box-shadow: var(--md-comp-fab-elevation);
+}
+
+.md-comp-chip {
+  background-color: var(--md-comp-chip-container);
+  box-shadow: var(--md-comp-chip-elevation);
+}
+
+.md-comp-app-bar {
+  background-color: var(--md-comp-app-bar-container);
+  box-shadow: var(--md-comp-app-bar-elevation);
+}
+
+.md-comp-bottom-sheet {
+  background-color: var(--md-comp-bottom-sheet-container);
+  box-shadow: var(--md-comp-bottom-sheet-elevation);
+}
+
+.md-comp-navigation-rail {
+  background-color: var(--md-comp-navigation-rail-container);
+  box-shadow: var(--md-comp-navigation-rail-elevation);
+}
+
+.md-comp-dialog {
+  background-color: var(--md-comp-dialog-container);
+  box-shadow: var(--md-comp-dialog-elevation);
+}
+
+.md-comp-menu {
+  background-color: var(--md-comp-menu-container);
+  box-shadow: var(--md-comp-menu-elevation);
+}
+
+.md-comp-tooltip {
+  background-color: var(--md-comp-tooltip-container);
+  box-shadow: var(--md-comp-tooltip-elevation);
+}
+
+.md-comp-snackbar {
+  background-color: var(--md-comp-snackbar-container);
+  box-shadow: var(--md-comp-snackbar-elevation);
+}
+
+.md-comp-floating-action-button {
+  background-color: var(--md-comp-floating-action-button-container);
+  box-shadow: var(--md-comp-floating-action-button-elevation);
+}
+
+/* State layer system for interactive elements */
+.md-state-layer {
+  position: relative;
+  overflow: hidden;
+}
+
+.md-state-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: transparent;
+  transition: background-color 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.md-state-layer:hover::before {
+  background-color: var(--md-sys-color-on-surface-hover);
+}
+
+.md-state-layer:focus-visible::before {
+  background-color: var(--md-sys-color-on-surface-focus);
+}
+
+.md-state-layer:active::before {
+  background-color: var(--md-sys-color-on-surface-pressed);
+}
+
+/* Primary state layers */
+.md-state-layer-primary:hover::before {
+  background-color: var(--md-sys-color-primary-hover);
+}
+
+.md-state-layer-primary:focus-visible::before {
+  background-color: var(--md-sys-color-primary-focus);
+}
+
+.md-state-layer-primary:active::before {
+  background-color: var(--md-sys-color-primary-pressed);
+}
+
+/* Surface state layers for cards and containers */
+.md-state-layer-surface::before {
+  background-color: transparent;
+}
+
+.md-state-layer-surface:hover::before {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+}
+
+.md-state-layer-surface:focus-visible::before {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+}
+
+.md-state-layer-surface:active::before {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+}
+
+/* Utility classes for dynamic elevation changes */
+.md-elevation-transition {
+  transition: 
+    box-shadow 280ms cubic-bezier(0.4, 0.0, 0.2, 1),
+    background-color 280ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Hover elevation effects */
+.md-elevation-1:hover {
+  background-color: var(--md-sys-color-surface-tint-2);
+  box-shadow: var(--md-elevation-2);
+}
+
+.md-elevation-2:hover {
+  background-color: var(--md-sys-color-surface-tint-3);
+  box-shadow: var(--md-elevation-3);
+}
+
+.md-elevation-3:hover {
+  background-color: var(--md-sys-color-surface-tint-4);
+  box-shadow: var(--md-elevation-4);
+}
+
+/* Dragged state for elevated surfaces */
+.md-state-dragged {
+  background-color: var(--md-sys-color-surface-tint-4);
+  box-shadow: var(--md-elevation-4);
+}
+
+.md-state-dragged::before {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
+}
+
+/* Focus ring for accessibility */
+.md-focus-ring:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .md-elevation-1,
+  .md-elevation-2,
+  .md-elevation-3,
+  .md-elevation-4,
+  .md-elevation-5 {
+    border: 1px solid var(--md-sys-color-outline);
+  }
+  
+  .md-state-layer:hover::before,
+  .md-state-layer:focus-visible::before,
+  .md-state-layer:active::before {
+    background-color: var(--md-sys-color-outline);
+    opacity: 0.2;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .md-elevation-transition,
+  .md-state-layer::before {
+    transition-duration: 0ms;
+  }
+}
+
+/* Print styles - remove elevation in print */
+@media print {
+  .md-elevation-1,
+  .md-elevation-2,
+  .md-elevation-3,
+  .md-elevation-4,
+  .md-elevation-5 {
+    box-shadow: none !important;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+}

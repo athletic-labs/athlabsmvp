@@ -33,10 +33,15 @@ const customJestConfig = {
       statements: 70,
     },
   },
-  // Handle ESM modules that cause issues
+  // Handle ESM modules that cause issues  
   transformIgnorePatterns: [
-    'node_modules/(?!(jose|@supabase/.*)/)',
+    'node_modules/(?!(jose|@supabase/.*|uuid|nanoid|@next/.*)/)',
   ],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    // Mock problematic ESM modules
+    '^jose$': '<rootDir>/src/test/mocks/jose.js',
+  },
   // Better error reporting
   verbose: true,
   errorOnDeprecated: true,

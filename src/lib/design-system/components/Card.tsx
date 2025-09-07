@@ -32,9 +32,9 @@ const Card = memo(forwardRef<HTMLDivElement, CardProps>(
     const variantClasses = {
       elevated: [
         'md3-card-elevated',
-        'bg-[var(--md-sys-color-surface-container-low)]',
+        'md-comp-card', // Uses surface tinting system
         'text-[var(--md-sys-color-on-surface)]',
-        'md-elevation-1'
+        'md-elevation-transition'
       ],
       filled: [
         'md3-card-filled',
@@ -51,11 +51,9 @@ const Card = memo(forwardRef<HTMLDivElement, CardProps>(
 
     const interactiveClasses = interactive ? [
       'cursor-pointer',
-      'hover:md-elevation-2',
-      'focus-visible:outline-none',
-      'focus-visible:ring-2',
-      'focus-visible:ring-[var(--md-sys-color-primary)]',
-      'focus-visible:ring-offset-2'
+      'md-state-layer',
+      'md-state-layer-surface',
+      'md-focus-ring'
     ] : [];
 
     return (

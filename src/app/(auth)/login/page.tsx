@@ -12,6 +12,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, Button } from '@/lib/design-system/components';
 import { TextFieldV2 } from '@/lib/design-system/components/TextFieldV2';
+import { OAuthProviderList } from '@/lib/components/OAuthButton';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [oauthError, setOauthError] = useState<string | null>(null);
 
   const { register, handleSubmit, formState: { errors, isValid } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema)
@@ -34,11 +36,25 @@ export default function LoginPage() {
     console.log('📋 Form state:', { errors, isValid, errorKeys: Object.keys(errors) });
   }, [errors, isValid]);
 
+  // Handle OAuth errors from URL params
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const oauthErr = urlParams.get('error');
+    const provider = urlParams.get('provider');
+    const message = urlParams.get('message');
+    
+    if (oauthErr) {
+      const errorMessage = message || `OAuth authentication failed${provider ? ` with ${provider}` : ''}`;
+      setOauthError(errorMessage);
+    }
+  }, []);
+
   const onSubmit = async (data: LoginFormData) => {
     console.log('🚀 Form submitted!', { email: data.email, password: data.password?.length + ' chars' });
     try {
       setLoading(true);
       setError(null);
+      setOauthError(null);
       
       console.log('📞 Calling AuthService.signIn...');
       const result = await AuthService.signIn(data.email, data.password);
@@ -100,6 +116,22 @@ export default function LoginPage() {
             Sign in to your Athletic Labs account
           </p>
 
+
+          {/* OAuth Error Display */}
+          {oauthError && (
+            <div className="p-3 bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)] rounded-[var(--md-sys-shape-corner-small)] text-[var(--md-sys-color-on-error-container)] md3-body-small">
+              {oauthError}
+            </div>
+          )}
+
+          {/* OAuth Providers */}
+          <OAuthProviderList 
+            redirectTo="/auth/callback"
+            onError={(error, provider) => {
+              setOauthError(`${provider} authentication failed: ${error}`);
+            }}
+            className="mb-6"
+          />
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {error && (

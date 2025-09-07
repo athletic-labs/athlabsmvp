@@ -10,7 +10,8 @@ import {
   ValidationError,
   generateRequestId
 } from '@/lib/validation/api-middleware';
-import { strictApiRateLimit, generalApiRateLimit, withRateLimit } from '@/lib/middleware/rate-limit';
+import { withAdaptiveRateLimit, adaptivePresets } from '@/lib/middleware/adaptive-rate-limit';
+import { withOrderSanitization } from '@/lib/middleware/sanitization-middleware';
 
 /**
  * @swagger
@@ -52,10 +53,11 @@ import { strictApiRateLimit, generalApiRateLimit, withRateLimit } from '@/lib/mi
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-export const POST = withRateLimit(strictApiRateLimit)(
-  withBodyValidation(
-    createOrderSchema,
-    async (request: NextRequest, orderData) => {
+export const POST = withOrderSanitization(
+  withAdaptiveRateLimit(adaptivePresets.strict)(
+    withBodyValidation(
+      createOrderSchema,
+      async (request: NextRequest, orderData) => {
     const requestId = generateRequestId();
     
     try {
@@ -161,6 +163,7 @@ export const POST = withRateLimit(strictApiRateLimit)(
       throw error; // Re-throw for middleware to handle
     }
   })
+  )
 );
 
 /**
@@ -194,7 +197,7 @@ export const POST = withRateLimit(strictApiRateLimit)(
  *       200:
  *         description: Orders retrieved successfully
  */
-export const GET = withRateLimit(generalApiRateLimit)(
+export const GET = withAdaptiveRateLimit(adaptivePresets.api)(
   withQueryValidation(
     getOrdersQuerySchema,
     async (request: NextRequest, query) => {

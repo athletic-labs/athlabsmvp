@@ -7,11 +7,11 @@ import {
   createErrorResponse,
   generateRequestId 
 } from '@/lib/validation/api-middleware';
-import { placesApiRateLimit, withRateLimit } from '@/lib/middleware/rate-limit';
+import { withAdaptiveRateLimit, adaptivePresets } from '@/lib/middleware/adaptive-rate-limit';
 
 const GOOGLE_PLACES_API_KEY = googleConfig.placesApiKey;
 
-export const GET = withRateLimit(placesApiRateLimit)(
+export const GET = withAdaptiveRateLimit(adaptivePresets.places)(
   withQueryValidation(
     placesAutocompleteSchema,
     async (request: NextRequest, query) => {

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { withInputSanitization, sanitizationPresets } from '@/lib/middleware/sanitization-middleware';
 
-export async function POST(request: NextRequest) {
+const analyticsHandler = async (request: NextRequest) => {
   try {
     const supabase = createRouteHandlerClient({ cookies });
     const event = await request.json();
@@ -50,4 +51,17 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};
+
+export const POST = withInputSanitization(analyticsHandler, {
+  body: {
+    event_name: { type: 'text', options: { maxLength: 100, normalizeWhitespace: true } },
+    user_id: { type: 'sql' },
+    team_id: { type: 'sql' },
+    session_id: { type: 'text', options: { maxLength: 255 } },
+    properties: { type: 'json' },
+  },
+  logThreats: true,
+  blockThreats: true,
+  maxThreatSeverity: 'medium',
+});

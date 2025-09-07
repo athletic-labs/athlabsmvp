@@ -2,7 +2,10 @@ import './globals.css';
 import { Material3ThemeProvider } from '@/lib/design-system/theme';
 import { GlobalLiveAnnouncer } from '@/lib/design-system/accessibility';
 import { ErrorBoundary } from '@/lib/error/error-boundary';
+import { QueryProvider } from '@/lib/query/QueryProvider';
+import { CSSOptimizer, CSSLoadingIndicator } from '@/lib/components/CSSOptimizer';
 import { Toaster } from 'sonner';
+import { inter } from '@/lib/fonts';
 
 export const metadata = {
   title: 'Athletic Labs',
@@ -16,23 +19,30 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${inter.className} ${inter.variable} antialiased`}>
+        <CSSOptimizer 
+          enableMonitoring={true}
+          preloadFeatures={['dashboard', 'templates', 'orders']}
+        />
+        <CSSLoadingIndicator />
         <ErrorBoundary>
-          <Material3ThemeProvider>
-            <GlobalLiveAnnouncer />
-            {children}
-            <Toaster 
-              position="top-right"
-              toastOptions={{
-                style: {
-                  background: 'var(--md-sys-color-surface-container)',
-                  color: 'var(--md-sys-color-on-surface)',
-                  border: '1px solid var(--md-sys-color-outline-variant)',
-                },
-                className: 'md3-body-medium',
-              }}
-            />
-          </Material3ThemeProvider>
+          <QueryProvider>
+            <Material3ThemeProvider>
+              <GlobalLiveAnnouncer />
+              {children}
+              <Toaster 
+                position="top-right"
+                toastOptions={{
+                  style: {
+                    background: 'var(--md-sys-color-surface-container)',
+                    color: 'var(--md-sys-color-on-surface)',
+                    border: '1px solid var(--md-sys-color-outline-variant)',
+                  },
+                  className: 'md3-body-medium',
+                }}
+              />
+            </Material3ThemeProvider>
+          </QueryProvider>
         </ErrorBoundary>
       </body>
     </html>
