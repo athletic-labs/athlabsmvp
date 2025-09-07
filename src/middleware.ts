@@ -18,6 +18,7 @@ const PROTECTED_ROUTES = {
 // API routes that require authentication
 const PROTECTED_API_ROUTES = {
   '/api/orders': { requiresAuth: true, roles: ['team_staff', 'team_admin'] },
+  '/api/templates': { requiresAuth: true, roles: ['team_staff', 'team_admin'] },
   '/api/teams': { requiresAuth: true, roles: ['team_admin', 'athletic_labs_admin'] },
   '/api/analytics': { requiresAuth: true, roles: ['team_admin', 'athletic_labs_admin'] },
   '/api/admin': { requiresAuth: true, roles: ['athletic_labs_admin'] },

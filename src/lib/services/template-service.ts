@@ -29,6 +29,7 @@ export class TemplateService {
   static async saveTemplate(name: string, items: SavedTemplateItem[]): Promise<SavedTemplate> {
     const response = await fetch('/api/templates', {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -52,6 +53,7 @@ export class TemplateService {
     
     const response = await fetch('/api/templates', {
       cache: 'no-store',
+      credentials: 'include',
       headers: {
         'Cache-Control': 'no-cache'
       }
@@ -74,6 +76,7 @@ export class TemplateService {
     
     const response = await fetch('/api/templates', {
       method: 'DELETE',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
