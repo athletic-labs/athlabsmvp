@@ -1,9 +1,39 @@
 import { createSupabaseClient } from '@/lib/supabase/client';
+import { supabaseConfig } from '@/lib/config/env';
 
 export class SimpleAuthService {
   private static supabase = createSupabaseClient();
+  private static demoMode = supabaseConfig.isDemoMode;
 
   static async signIn(email: string, password: string) {
+    // Demo mode - simulate successful login for demo purposes
+    if (this.demoMode) {
+      console.log('🎭 Demo Mode: Simulating authentication...');
+      
+      // Simple demo credentials
+      if (email === 'demo@athleticlabs.com' && password === 'demo1234') {
+        return {
+          user: {
+            id: 'demo-user-id',
+            email: 'demo@athleticlabs.com',
+            full_name: 'Demo User',
+            organization: 'Athletic Labs Demo',
+            role: 'admin',
+            onboarding_completed: true,
+          },
+          session: { access_token: 'demo-token' },
+          error: null,
+        };
+      } else {
+        return { 
+          user: null, 
+          session: null, 
+          error: 'Demo Mode: Use demo@athleticlabs.com / demo1234' 
+        };
+      }
+    }
+
+    // Regular Supabase authentication
     try {
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email,

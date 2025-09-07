@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { SimpleAuthService } from '@/lib/auth/simple-auth';
-import { Loader2 } from 'lucide-react';
+import { supabaseConfig } from '@/lib/config/env';
+import { Loader2, Info } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, Button } from '@/lib/design-system/components';
@@ -77,6 +78,22 @@ export default function LoginPage() {
           <p className="md3-body-large text-center text-[var(--md-sys-color-on-surface-variant)] mb-8">
             Sign in to your Athletic Labs account
           </p>
+
+          {supabaseConfig.isDemoMode && (
+            <div className="mb-6 p-4 bg-[var(--md-sys-color-primary-container)] border border-[var(--md-sys-color-primary)] rounded-[var(--md-sys-shape-corner-medium)] text-[var(--md-sys-color-on-primary-container)]">
+              <div className="flex items-start gap-3">
+                <Info className="h-5 w-5 mt-0.5 text-[var(--md-sys-color-primary)]" />
+                <div>
+                  <h3 className="font-medium mb-2">Demo Mode Active</h3>
+                  <p className="text-sm mb-2">This is a demonstration version. Use these credentials:</p>
+                  <div className="bg-[var(--md-sys-color-surface)] p-2 rounded text-sm font-mono">
+                    <div><strong>Email:</strong> demo@athleticlabs.com</div>
+                    <div><strong>Password:</strong> demo1234</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {error && (

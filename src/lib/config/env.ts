@@ -8,21 +8,16 @@ const envSchema = z.object({
   // Application
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
   
-  // Supabase Configuration
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url({
-    message: 'NEXT_PUBLIC_SUPABASE_URL must be a valid URL'
-  }),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, {
-    message: 'NEXT_PUBLIC_SUPABASE_ANON_KEY is required'
-  }),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, {
-    message: 'SUPABASE_SERVICE_ROLE_KEY is required'
-  }),
+  // Supabase Configuration - with fallbacks for demo mode
+  NEXT_PUBLIC_SUPABASE_URL: z.string().default('https://demo.supabase.co'),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().default('demo_anon_key_placeholder'),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().default('demo_service_key_placeholder'),
   
-  // Google Places API
-  GOOGLE_PLACES_API_KEY: z.string().min(1, {
-    message: 'GOOGLE_PLACES_API_KEY is required'
-  }),
+  // Google Places API - optional for demo
+  GOOGLE_PLACES_API_KEY: z.string().default('demo_places_key'),
+  
+  // Demo mode flag
+  NEXT_PUBLIC_DEMO_MODE: z.string().optional().transform(val => val === 'true'),
   
   // Optional: Monitoring and Analytics
   NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
@@ -53,11 +48,17 @@ function parseEnv(): Env {
 // Export validated environment configuration
 export const env = parseEnv();
 
+// Detect if we're in demo mode (missing real credentials)
+export const isDemoMode = env.NEXT_PUBLIC_DEMO_MODE || 
+  env.NEXT_PUBLIC_SUPABASE_URL === 'https://demo.supabase.co' ||
+  env.NEXT_PUBLIC_SUPABASE_URL === 'https://your-project.supabase.co';
+
 // Export individual configs for easier importing
 export const supabaseConfig = {
   url: env.NEXT_PUBLIC_SUPABASE_URL,
   anonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
+  isDemoMode,
 } as const;
 
 export const googleConfig = {
