@@ -48,13 +48,8 @@ function parseEnv(): Env {
 // Export validated environment configuration
 export const env = parseEnv();
 
-// Detect if we're in demo mode (missing real credentials)
-export const isDemoMode = env.NEXT_PUBLIC_DEMO_MODE || 
-  env.NEXT_PUBLIC_SUPABASE_URL === 'https://demo.supabase.co' ||
-  env.NEXT_PUBLIC_SUPABASE_URL === 'https://your-project.supabase.co' ||
-  env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'demo_anon_key_placeholder' ||
-  env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('placeholder') ||
-  env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('development');
+// Demo mode disabled - using real Supabase credentials
+export const isDemoMode = false;
 
 // Export individual configs for easier importing
 export const supabaseConfig = {
