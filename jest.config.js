@@ -7,7 +7,7 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   testEnvironment: 'jsdom',
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testMatch: [
@@ -19,9 +19,29 @@ const customJestConfig = {
     '!src/**/*.d.ts',
     '!src/test/**',
     '!src/**/*.config.*',
+    '!src/**/*.stories.*',
+    '!src/**/*.types.ts',
+    '!src/types/**',
   ],
-  coverageReporters: ['text', 'lcov', 'html'],
+  coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
   coverageDirectory: 'coverage',
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70,
+    },
+  },
+  // Handle ESM modules that cause issues
+  transformIgnorePatterns: [
+    'node_modules/(?!(jose|@supabase/.*)/)',
+  ],
+  // Better error reporting
+  verbose: true,
+  errorOnDeprecated: true,
+  // Performance optimization
+  maxWorkers: '50%',
 };
 
 module.exports = createJestConfig(customJestConfig);
