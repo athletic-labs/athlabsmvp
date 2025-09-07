@@ -35,10 +35,11 @@ export default function SavedTemplatesPage() {
   const loadTemplates = async () => {
     try {
       const data = await TemplateService.getTemplates();
-      setTemplates(data);
+      setTemplates(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to load templates:', error);
       toast.error('Failed to load templates');
+      setTemplates([]);
     } finally {
       setLoading(false);
     }
@@ -100,8 +101,8 @@ export default function SavedTemplatesPage() {
     toast.success('Added to cart');
   };
   
-  const filteredTemplates = templates.filter(template =>
-    template.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTemplates = (templates || []).filter(template =>
+    template?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {

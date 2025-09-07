@@ -64,8 +64,9 @@ export class TemplateService {
     }
     
     const data = await response.json();
-    console.log('Retrieved templates:', data.templates?.length || 0, 'templates');
-    return data.templates;
+    const templates = data.templates || [];
+    console.log('Retrieved templates:', templates.length, 'templates');
+    return templates;
   }
   
   /**
