@@ -15,7 +15,7 @@ interface OAuthButtonProps {
   redirectTo?: string;
   disabled?: boolean;
   fullWidth?: boolean;
-  variant?: 'default' | 'outline' | 'ghost';
+  variant?: 'text' | 'elevated' | 'filled' | 'outlined' | 'tonal';
   onSuccess?: () => void;
   onError?: (error: string) => void;
   className?: string;
@@ -26,7 +26,7 @@ export function OAuthButton({
   redirectTo,
   disabled = false,
   fullWidth = false,
-  variant = 'outline',
+  variant = 'outlined',
   onSuccess,
   onError,
   className,
@@ -270,7 +270,7 @@ export function OAuthAccountManager({
               </div>
 
               <Button
-                variant={isLinked ? 'outline' : 'filled'}
+                variant={isLinked ? 'outlined' : 'filled'}
                 size="sm"
                 onClick={() => isLinked ? handleUnlink(providerName) : handleLink(providerName)}
                 disabled={isLoading}
