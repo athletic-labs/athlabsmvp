@@ -56,22 +56,17 @@ export default function LoginPage() {
         // Check if user needs onboarding
         if (!result.user.onboarding_completed) {
           console.log('🚀 Redirecting to onboarding...');
-          try {
-            await router.push('/onboarding');
-            console.log('✅ Router navigation to onboarding successful');
-          } catch (navError) {
-            console.log('⚠️ Router failed, using window.location fallback');
-            window.location.href = '/onboarding';
-          }
+          await new Promise(resolve => setTimeout(resolve, 200));
+          window.location.replace('/onboarding');
         } else {
           console.log('🚀 Redirecting to dashboard...');
-          try {
-            await router.push('/dashboard');
-            console.log('✅ Router navigation to dashboard successful');
-          } catch (navError) {
-            console.log('⚠️ Router failed, using window.location fallback');
-            window.location.href = '/dashboard';
-          }
+          
+          // Add a small delay to ensure session cookies are fully set
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          // Use window.location.replace for more reliable post-auth navigation
+          // This ensures a full page reload which helps with session synchronization
+          window.location.replace('/dashboard');
         }
       } else {
         console.log('❌ No user in result');

@@ -71,23 +71,16 @@ export async function middleware(request: NextRequest) {
 
     // Check if user is authenticated
     if (!session?.user) {
+      console.log(`No session for ${pathname}, redirecting to login`);
       return redirectToLogin(request);
     }
 
-    // Get user profile with role and team information
+    console.log(`Middleware: authenticated user ${session.user.id} accessing ${pathname}`);
+
+    // Get user profile with role and team information (simplified query to reduce failure points)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select(`
-        id,
-        role,
-        team_id,
-        is_active,
-        teams:team_id (
-          id,
-          name,
-          is_active
-        )
-      `)
+      .select('id, role, team_id, is_active')
       .eq('id', session.user.id)
       .single();
 
@@ -96,13 +89,24 @@ export async function middleware(request: NextRequest) {
       return redirectToLogin(request);
     }
 
+    // Get team info separately if needed (avoid complex joins that might timeout)
+    let teamActive = true;
+    if (profile.team_id) {
+      const { data: team } = await supabase
+        .from('teams')
+        .select('is_active')
+        .eq('id', profile.team_id)
+        .single();
+      teamActive = team?.is_active ?? true;
+    }
+
     // Check if user account is active
     if (!profile.is_active) {
       return redirectToError(request, 'account-suspended');
     }
 
     // Check if user's team is active (if they have a team)
-    if (profile.team_id && profile.teams && !profile.teams.is_active) {
+    if (profile.team_id && !teamActive) {
       return redirectToError(request, 'team-suspended');
     }
 
