@@ -65,7 +65,7 @@ export default function OptimalTemplateCard({ template }: TemplateCardProps) {
             <h3 className="font-semibold text-base leading-tight flex-1">
               {template.name}
             </h3>
-            <span className="text-xl font-bold text-[var(--md-sys-color-primary)] ml-2 whitespace-nowrap">
+            <span className="text-lg font-bold text-[var(--md-sys-color-primary)] ml-2 whitespace-nowrap">
               {formatPrice(template.bundlePrice)}
             </span>
           </div>

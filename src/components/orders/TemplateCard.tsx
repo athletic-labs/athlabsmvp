@@ -58,7 +58,7 @@ export default function TemplateCard({ template }: TemplateCardProps) {
             <h3 className="md3-title-medium font-semibold leading-tight flex-1 text-[var(--md-sys-color-on-surface)]">
               {template.name}
             </h3>
-            <span className="md3-headline-small font-bold text-[var(--md-sys-color-primary)] ml-2 whitespace-nowrap">
+            <span className="md3-title-large font-bold text-[var(--md-sys-color-primary)] ml-2 whitespace-nowrap">
               ${formatPrice(template.bundlePrice)}
             </span>
           </div>
