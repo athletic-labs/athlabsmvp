@@ -1,41 +1,40 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthService } from '../auth-service';
 
 // Mock Supabase client
-vi.mock('@/lib/supabase/client', () => ({
+jest.mock('@/lib/supabase/client', () => ({
   createSupabaseClient: () => ({
     auth: {
-      signInWithPassword: vi.fn(),
-      signOut: vi.fn(),
-      getUser: vi.fn(),
-      getSession: vi.fn(),
-      updateUser: vi.fn(),
+      signInWithPassword: jest.fn(),
+      signOut: jest.fn(),
+      getUser: jest.fn(),
+      getSession: jest.fn(),
+      updateUser: jest.fn(),
     },
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(),
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        eq: jest.fn(() => ({
+          single: jest.fn(),
         })),
       })),
-      update: vi.fn(() => ({
-        eq: vi.fn(),
+      update: jest.fn(() => ({
+        eq: jest.fn(),
       })),
-      insert: vi.fn(),
+      insert: jest.fn(),
     })),
   })
 }));
 
 // Mock RBACService
-vi.mock('../rbac', () => ({
+jest.mock('../rbac', () => ({
   RBACService: {
-    logAuditEvent: vi.fn(),
-    getUserPermissions: vi.fn(),
+    logAuditEvent: jest.fn(),
+    getUserPermissions: jest.fn(),
   },
 }));
 
 describe('AuthService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('signIn', () => {
@@ -50,18 +49,18 @@ describe('AuthService', () => {
       };
 
       // Mock successful auth
-      const authMock = vi.mocked(AuthService['supabase'].auth.signInWithPassword);
+      const authMock = jest.mocked(AuthService['supabase'].auth.signInWithPassword);
       authMock.mockResolvedValue({
         data: { user: mockUser, session: mockSession },
         error: null,
       });
 
       // Mock profile fetch
-      const profileMock = vi.mocked(AuthService['supabase'].from);
+      const profileMock = jest.mocked(AuthService['supabase'].from);
       profileMock.mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            single: vi.fn().mockResolvedValue({
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            single: jest.fn().mockResolvedValue({
               data: {
                 id: 'user-123',
                 email: 'test@example.com',
@@ -86,7 +85,7 @@ describe('AuthService', () => {
     });
 
     it('should handle invalid credentials', async () => {
-      const authMock = vi.mocked(AuthService['supabase'].auth.signInWithPassword);
+      const authMock = jest.mocked(AuthService['supabase'].auth.signInWithPassword);
       authMock.mockResolvedValue({
         data: { user: null, session: null },
         error: { message: 'Invalid credentials' },
@@ -101,11 +100,11 @@ describe('AuthService', () => {
 
     it('should handle account lockout', async () => {
       // Mock lockout check
-      const profileMock = vi.mocked(AuthService['supabase'].from);
+      const profileMock = jest.mocked(AuthService['supabase'].from);
       profileMock.mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            single: vi.fn().mockResolvedValue({
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            single: jest.fn().mockResolvedValue({
               data: {
                 failed_login_attempts: 5,
                 locked_until: new Date(Date.now() + 1800000).toISOString(), // 30 min future
@@ -131,18 +130,18 @@ describe('AuthService', () => {
       };
 
       // Mock getUser
-      const getUserMock = vi.mocked(AuthService['supabase'].auth.getUser);
+      const getUserMock = jest.mocked(AuthService['supabase'].auth.getUser);
       getUserMock.mockResolvedValue({
         data: { user: mockUser },
         error: null,
       });
 
       // Mock profile fetch
-      const profileMock = vi.mocked(AuthService['supabase'].from);
+      const profileMock = jest.mocked(AuthService['supabase'].from);
       profileMock.mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            single: vi.fn().mockResolvedValue({
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            single: jest.fn().mockResolvedValue({
               data: {
                 id: 'user-123',
                 email: 'test@example.com',
@@ -167,7 +166,7 @@ describe('AuthService', () => {
     });
 
     it('should return null for unauthenticated user', async () => {
-      const getUserMock = vi.mocked(AuthService['supabase'].auth.getUser);
+      const getUserMock = jest.mocked(AuthService['supabase'].auth.getUser);
       getUserMock.mockResolvedValue({
         data: { user: null },
         error: { message: 'Not authenticated' },

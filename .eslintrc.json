@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "next/core-web-vitals"
+  ],
+  "rules": {
+    // General code quality - only rules that work with current setup
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-debugger": "error",
+    "no-alert": "warn",
+    "no-var": "error",
+    "prefer-const": "error",
+    
+    // Security rules
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-script-url": "error",
+    
+    // Performance rules  
+    "no-loop-func": "error",
+    "no-unreachable": "error"
+  },
+  "env": {
+    "browser": true,
+    "es2020": true,
+    "node": true,
+    "jest": true
+  },
+  "ignorePatterns": [
+    ".next/**",
+    "node_modules/**", 
+    "coverage/**",
+    "*.config.js",
+    "*.config.ts"
+  ]
+}
