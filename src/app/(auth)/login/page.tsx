@@ -43,19 +43,38 @@ export default function LoginPage() {
       console.log('📞 Calling SimpleAuthService.signIn...');
       const result = await SimpleAuthService.signIn(data.email, data.password);
       
+      console.log('🔄 Auth result:', result);
+      
       if (result.error) {
+        console.log('❌ Auth error:', result.error);
         setError(result.error);
         return;
       }
 
       if (result.user) {
+        console.log('👤 User authenticated:', result.user);
         // Check if user needs onboarding
         if (!result.user.onboarding_completed) {
-          router.push('/onboarding');
+          console.log('🚀 Redirecting to onboarding...');
+          try {
+            await router.push('/onboarding');
+            console.log('✅ Router navigation to onboarding successful');
+          } catch (navError) {
+            console.log('⚠️ Router failed, using window.location fallback');
+            window.location.href = '/onboarding';
+          }
         } else {
-          router.push('/dashboard');
+          console.log('🚀 Redirecting to dashboard...');
+          try {
+            await router.push('/dashboard');
+            console.log('✅ Router navigation to dashboard successful');
+          } catch (navError) {
+            console.log('⚠️ Router failed, using window.location fallback');
+            window.location.href = '/dashboard';
+          }
         }
       } else {
+        console.log('❌ No user in result');
         setError('Login failed. Please try again.');
       }
     } catch (err: any) {
