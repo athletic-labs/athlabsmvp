@@ -167,7 +167,8 @@ export class AuthService {
     updates: Partial<Pick<UserProfile, 'first_name' | 'last_name' | 'phone'>>
   ): Promise<boolean> {
     try {
-      const { error } = await this.supabase
+      const supabase = this.getSupabaseClient();
+      const { error } = await supabase
         .from('profiles')
         .update(updates)
         .eq('id', userId);
@@ -184,7 +185,8 @@ export class AuthService {
 
   static async changePassword(currentPassword: string, newPassword: string): Promise<boolean> {
     try {
-      const { error } = await this.supabase.auth.updateUser({
+      const supabase = this.getSupabaseClient();
+      const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
 
@@ -200,7 +202,8 @@ export class AuthService {
 
   static async getUserSessions(userId: string): Promise<SessionInfo[]> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabaseClient();
+      const { data, error } = await supabase
         .from('user_sessions')
         .select('*')
         .eq('user_id', userId)
@@ -217,7 +220,8 @@ export class AuthService {
 
   static async revokeSession(sessionId: string): Promise<boolean> {
     try {
-      const { error } = await this.supabase
+      const supabase = this.getSupabaseClient();
+      const { error } = await supabase
         .from('user_sessions')
         .update({ status: 'revoked' })
         .eq('id', sessionId);
@@ -235,7 +239,8 @@ export class AuthService {
     lockedUntil?: string;
   }> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabaseClient();
+      const { data, error } = await supabase
         .from('profiles')
         .select('failed_login_attempts, locked_until')
         .eq('email', email)
@@ -255,7 +260,7 @@ export class AuthService {
 
       // Clear expired lockout
       if (lockedUntil && now >= lockedUntil) {
-        await this.supabase
+        await supabase
           .from('profiles')
           .update({ 
             failed_login_attempts: 0, 
@@ -273,7 +278,8 @@ export class AuthService {
 
   private static async handleFailedLogin(email: string): Promise<void> {
     try {
-      const { data: profile } = await this.supabase
+      const supabase = this.getSupabaseClient();
+      const { data: profile } = await supabase
         .from('profiles')
         .select('failed_login_attempts')
         .eq('email', email)
@@ -287,7 +293,7 @@ export class AuthService {
           updates.locked_until = new Date(Date.now() + this.LOCKOUT_DURATION).toISOString();
         }
 
-        await this.supabase
+        await supabase
           .from('profiles')
           .update(updates)
           .eq('email', email);
@@ -326,7 +332,8 @@ export class AuthService {
 
   private static async createSession(userId: string, session: { access_token: string; expires_at: number }): Promise<void> {
     try {
-      await this.supabase
+      const supabase = this.getSupabaseClient();
+      await supabase
         .from('user_sessions')
         .insert({
           user_id: userId,
@@ -346,7 +353,8 @@ export class AuthService {
 
   private static async revokeUserSessions(userId: string): Promise<void> {
     try {
-      await this.supabase
+      const supabase = this.getSupabaseClient();
+      await supabase
         .from('user_sessions')
         .update({ status: 'revoked' })
         .eq('user_id', userId)
