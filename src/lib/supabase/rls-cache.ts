@@ -314,7 +314,7 @@ export class RLSPolicyCache {
     const now = Date.now();
     const keysToDelete: string[] = [];
 
-    for (const [key, entry] of this.cache.entries()) {
+    for (const [key, entry] of Array.from(this.cache.entries())) {
       if (now > entry.timestamp + entry.ttl) {
         keysToDelete.push(key);
       }
