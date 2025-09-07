@@ -64,13 +64,17 @@ export default function TeamCalendar() {
     if (savedSeries) {
       setSeries(JSON.parse(savedSeries));
     } else {
-      // Add example series data
+      // Add example series data with current dates for visibility
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      
       const exampleSeries: TripSeries[] = [
         {
           id: 'series-1',
           title: 'California Road Trip',
-          startDate: '2025-01-15',
-          endDate: '2025-01-18',
+          startDate: format(new Date(currentYear, currentMonth, 15), 'yyyy-MM-dd'),
+          endDate: format(new Date(currentYear, currentMonth, 18), 'yyyy-MM-dd'),
           location: 'California',
           type: 'road-trip',
           color: '#3B82F6', // blue
@@ -80,8 +84,8 @@ export default function TeamCalendar() {
         {
           id: 'series-2',
           title: 'Big Ten Tournament',
-          startDate: '2025-02-08',
-          endDate: '2025-02-12',
+          startDate: format(new Date(currentYear, currentMonth, 22), 'yyyy-MM-dd'),
+          endDate: format(new Date(currentYear, currentMonth, 26), 'yyyy-MM-dd'),
           location: 'Chicago, IL',
           type: 'tournament',
           color: '#10B981', // green
@@ -91,8 +95,8 @@ export default function TeamCalendar() {
         {
           id: 'series-3',
           title: 'Florida Series',
-          startDate: '2025-03-05',
-          endDate: '2025-03-07',
+          startDate: format(new Date(currentYear, currentMonth + 1, 5), 'yyyy-MM-dd'),
+          endDate: format(new Date(currentYear, currentMonth + 1, 7), 'yyyy-MM-dd'),
           location: 'Gainesville, FL',
           type: 'road-trip',
           color: '#8B5CF6', // purple
@@ -169,7 +173,14 @@ export default function TeamCalendar() {
 
   const getSeriesForDay = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
-    return series.filter(s => dateStr >= s.startDate && dateStr <= s.endDate);
+    const matchingSeries = series.filter(s => dateStr >= s.startDate && dateStr <= s.endDate);
+    
+    // Debug logging
+    if (matchingSeries.length > 0) {
+      console.log(`Date ${dateStr} has series:`, matchingSeries.map(s => s.title));
+    }
+    
+    return matchingSeries;
   };
 
   const isSeriesStartDate = (date: Date, seriesItem: TripSeries) => {
@@ -204,6 +215,25 @@ export default function TeamCalendar() {
           >
             <Upload className="w-4 h-4" />
             Import Schedule
+          </button>
+          <button
+            onClick={() => {
+              // TODO: Add series creation modal
+              alert('Series creation coming soon! For now, edit the code to add custom series.');
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg hover:bg-[var(--md-sys-color-primary)]/90"
+          >
+            <Plus className="w-4 h-4" />
+            Add Series/Trip
+          </button>
+          <button
+            onClick={() => {
+              localStorage.removeItem('team-series');
+              window.location.reload();
+            }}
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+          >
+            Reset Demo Data
           </button>
         </div>
       </div>
@@ -314,7 +344,7 @@ export default function TeamCalendar() {
               <div
                 key={idx}
                 onClick={() => !isPastDay && handleDayClick(day)}
-                className={`min-h-[120px] p-2 border-r border-b transition-colors relative ${
+                className={`min-h-[140px] p-2 border-r border-b transition-colors relative overflow-visible ${
                   !isCurrentMonth ? 'bg-gray-50' : ''
                 } ${isToday(day) ? 'bg-blue-50' : ''} ${
                   isPastDay ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'
@@ -344,19 +374,19 @@ export default function TeamCalendar() {
                   return (
                     <div
                       key={`series-${seriesItem.id}-${seriesIdx}`}
-                      className="absolute left-0 right-0 h-2 z-10"
+                      className="absolute left-1 right-1 h-3 z-20 opacity-80 hover:opacity-100 transition-opacity"
                       style={{ 
                         backgroundColor: seriesItem.color,
-                        top: `${26 + seriesIdx * 10}px`,
-                        borderTopLeftRadius: spanInfo.isStart ? '4px' : '0',
-                        borderBottomLeftRadius: spanInfo.isStart ? '4px' : '0',
-                        borderTopRightRadius: spanInfo.isEnd ? '4px' : '0',
-                        borderBottomRightRadius: spanInfo.isEnd ? '4px' : '0',
+                        top: `${40 + seriesIdx * 12}px`,
+                        borderTopLeftRadius: spanInfo.isStart ? '6px' : '0',
+                        borderBottomLeftRadius: spanInfo.isStart ? '6px' : '0',
+                        borderTopRightRadius: spanInfo.isEnd ? '6px' : '0',
+                        borderBottomRightRadius: spanInfo.isEnd ? '6px' : '0',
                       }}
                       title={`${seriesItem.title} - ${seriesItem.location}`}
                     >
                       {spanInfo.isStart && (
-                        <div className="absolute left-1 -top-4 text-xs font-medium text-white bg-black/60 px-1 rounded truncate max-w-[100px]">
+                        <div className="absolute left-2 -top-5 text-xs font-medium text-white bg-gray-800/90 px-2 py-0.5 rounded-md whitespace-nowrap z-30">
                           {seriesItem.title}
                         </div>
                       )}
