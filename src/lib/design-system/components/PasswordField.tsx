@@ -259,13 +259,20 @@ export function SimplePasswordField({
     setShowPassword(prev => !prev);
   };
 
+  // Handle change event properly
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (onChange) {
+      onChange(event.target.value);
+    }
+  };
+
   return (
     <TextField
       type={showPassword ? 'text' : 'password'}
       label={label}
       placeholder={placeholder}
       value={value}
-      onChange={onChange}
+      onChange={handleChange}
       disabled={disabled}
       required={required}
       error={!!error}
