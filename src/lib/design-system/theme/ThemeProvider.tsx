@@ -1,10 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { generateMaterial3Colors } from './colorGenerator';
-import { applyThemeTokens } from './themeTokens';
+import { applyMaterial3Theme, ColorScheme, themeUtils } from './apply-material3-theme';
 
-export type ColorScheme = 'light' | 'dark';
 export type ThemeMode = 'system' | 'light' | 'dark';
 
 export interface Material3Theme {
@@ -89,8 +87,7 @@ export function Material3ThemeProvider({
 
   // Detect system color scheme
   const getSystemColorScheme = (): ColorScheme => {
-    if (typeof window === 'undefined') return 'light';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return themeUtils.getSystemColorScheme();
   };
 
   // Resolve actual color scheme based on mode
@@ -112,8 +109,8 @@ export function Material3ThemeProvider({
   const applyTheme = (theme: Material3Theme, scheme: ColorScheme) => {
     if (typeof window === 'undefined') return;
 
-    const colors = generateMaterial3Colors(theme.seedColor);
-    applyThemeTokens(colors, scheme);
+    // Apply the comprehensive Material 3 theme system
+    applyMaterial3Theme(scheme);
     
     // Store theme preference
     const themeData = {
@@ -121,6 +118,7 @@ export function Material3ThemeProvider({
       theme: theme,
       timestamp: Date.now()
     };
+    themeUtils.setStoredTheme(scheme, `${storageKey}-scheme`);
     localStorage.setItem(storageKey, JSON.stringify(themeData));
   };
 
@@ -159,17 +157,14 @@ export function Material3ThemeProvider({
     setColorScheme(initialScheme);
 
     // Listen for system color scheme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = () => {
+    const unwatch = themeUtils.watchSystemColorScheme((newScheme) => {
       if (themeMode === 'system') {
-        const newScheme = getSystemColorScheme();
         setColorScheme(newScheme);
         applyTheme(currentTheme, newScheme);
       }
-    };
+    });
 
-    mediaQuery.addListener(handleChange);
-    return () => mediaQuery.removeListener(handleChange);
+    return unwatch;
   }, []);
 
   // Apply theme when dependencies change
