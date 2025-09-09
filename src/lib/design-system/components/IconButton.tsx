@@ -40,9 +40,9 @@ const IconButton = memo(forwardRef<HTMLButtonElement, IconButtonProps>(
     ];
 
     const sizeClasses = {
-      small: ['w-8 h-8 text-sm'],
-      medium: ['w-10 h-10 text-base'],
-      large: ['w-12 h-12 text-lg']
+      small: ['w-8 h-8 md3-label-large'],
+      medium: ['w-10 h-10 md3-title-medium'],
+      large: ['w-12 h-12 md3-title-large']
     };
 
     const variantClasses = {

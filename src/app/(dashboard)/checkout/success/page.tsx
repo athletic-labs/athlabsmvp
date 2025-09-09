@@ -89,7 +89,7 @@ function CheckoutSuccessContent() {
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold">Order Details</h2>
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full md3-label-large font-medium">
               {order.id}
             </span>
           </div>
@@ -99,7 +99,7 @@ function CheckoutSuccessContent() {
             <div className="flex items-center gap-3">
               <Calendar className="w-5 h-5 text-gray-500" />
               <div>
-                <p className="text-sm text-gray-600">Delivery Date</p>
+                <p className="md3-body-small text-gray-600">Delivery Date</p>
                 <p className="font-medium">{order.delivery_date}</p>
               </div>
             </div>
@@ -108,7 +108,7 @@ function CheckoutSuccessContent() {
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-gray-500" />
                 <div>
-                  <p className="text-sm text-gray-600">Delivery Time</p>
+                  <p className="md3-body-small text-gray-600">Delivery Time</p>
                   <p className="font-medium">{order.delivery_time}</p>
                 </div>
               </div>
@@ -117,7 +117,7 @@ function CheckoutSuccessContent() {
             <div className="flex items-center gap-3">
               <Package className="w-5 h-5 text-gray-500" />
               <div>
-                <p className="text-sm text-gray-600">Meal Context</p>
+                <p className="md3-body-small text-gray-600">Meal Context</p>
                 <p className="font-medium capitalize">{order.delivery_timing?.replace('-', ' ')}</p>
               </div>
             </div>
@@ -126,7 +126,7 @@ function CheckoutSuccessContent() {
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-gray-500" />
                 <div>
-                  <p className="text-sm text-gray-600">Location</p>
+                  <p className="md3-body-small text-gray-600">Location</p>
                   <p className="font-medium">{order.delivery_location}</p>
                 </div>
               </div>
@@ -142,12 +142,12 @@ function CheckoutSuccessContent() {
                   <div>
                     <p className="font-medium">{item.name}</p>
                     {item.servings && (
-                      <p className="text-sm text-gray-600">Serves {item.servings} people</p>
+                      <p className="md3-body-small text-gray-600">Serves {item.servings} people</p>
                     )}
                   </div>
                   <div className="text-right">
                     <p className="font-medium">${(item.unitPrice * item.quantity).toFixed(2)}</p>
-                    <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                    <p className="md3-body-small text-gray-600">Qty: {item.quantity}</p>
                   </div>
                 </div>
               ))}

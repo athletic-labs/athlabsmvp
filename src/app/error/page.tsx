@@ -44,10 +44,10 @@ export default function ErrorPage({ searchParams }: ErrorPageProps) {
       <div className="max-w-md w-full space-y-8 text-center">
         <div>
           <Icon className="mx-auto h-16 w-16 text-red-500" />
-          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 className="mt-6 md3-headline-large text-[var(--md-sys-color-on-surface)]">
             {error.title}
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 md3-body-small text-gray-600 dark:text-gray-400">
             {error.message}
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function ErrorPage({ searchParams }: ErrorPageProps) {
         <div className="space-y-3">
           <Link
             href="/dashboard"
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent md3-label-large font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <Home className="w-4 h-4 mr-2" />
             Go to Dashboard
@@ -64,7 +64,7 @@ export default function ErrorPage({ searchParams }: ErrorPageProps) {
           {errorType === 'insufficient-permissions' && (
             <Link
               href="/login"
-              className="group relative w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="group relative w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 md3-label-large font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Login as Different User
@@ -73,7 +73,7 @@ export default function ErrorPage({ searchParams }: ErrorPageProps) {
           
           <Link
             href="/"
-            className="group relative w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="group relative w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 md3-label-large font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Go to Home
           </Link>

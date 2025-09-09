@@ -202,7 +202,7 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div>
                 <h2 className="text-2xl font-bold">Customize Template</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="md3-body-small text-gray-600 dark:text-gray-400 mt-1">
                   {currentTemplate.name} - Make substitutions to fit your team's needs
                 </p>
               </div>
@@ -223,7 +223,7 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
                   <h3 className="font-semibold text-blue-900 dark:text-blue-100">Adjust Serving Size</h3>
                 </div>
                 <div className="flex items-center gap-4">
-                  <label className="text-sm font-medium">People to serve:</label>
+                  <label className="md3-body-small font-medium">People to serve:</label>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setServingSize(Math.max(12, servingSize - 12))}
@@ -257,17 +257,17 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
+                              <span className="md3-label-small px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
                                 {item.category}
                               </span>
-                              <span className="text-xs text-gray-500">{item.quantity} {item.panSize} pan{parseInt(item.quantity) > 1 ? 's' : ''}</span>
+                              <span className="md3-label-small text-gray-500">{item.quantity} {item.panSize} pan{parseInt(item.quantity) > 1 ? 's' : ''}</span>
                             </div>
                             <h4 className="font-medium">{item.name}</h4>
                             
                             {hasSubstitution && (
                               <div className="mt-2 p-2 bg-orange-50 dark:bg-orange-900/20 rounded flex items-center gap-2">
                                 <Replace className="w-4 h-4 text-orange-600" />
-                                <span className="text-sm text-orange-700 dark:text-orange-300">
+                                <span className="md3-body-small text-orange-700 dark:text-orange-300">
                                   Will be replaced with: <strong>{hasSubstitution.substituteName}</strong>
                                   {hasSubstitution.priceAdjustment !== 0 && (
                                     <span className={`ml-1 ${hasSubstitution.priceAdjustment > 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -282,7 +282,7 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
                           {hasSubstitution && (
                             <button
                               onClick={() => removeSubstitution(item.id)}
-                              className="ml-3 px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                              className="ml-3 px-3 py-1 md3-body-small bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
                             >
                               Reset
                             </button>
@@ -292,7 +292,7 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
                         {/* Substitution Options */}
                         {item.canSubstitute && item.substitutes && (
                           <div>
-                            <h5 className="text-sm font-medium mb-2">Available Substitutions:</h5>
+                            <h5 className="md3-body-small font-medium mb-2">Available Substitutions:</h5>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                               {item.substitutes.map(substitute => (
                                 <button
@@ -306,13 +306,13 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
                                   }`}
                                 >
                                   <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">{substitute.name}</span>
+                                    <span className="md3-body-small font-medium">{substitute.name}</span>
                                     {hasSubstitution?.substituteItemId === substitute.id && (
                                       <Check className="w-4 h-4 text-blue-600" />
                                     )}
                                   </div>
                                   {substitute.priceAdjustment !== 0 && (
-                                    <span className={`text-xs ${
+                                    <span className={`md3-label-small ${
                                       substitute.priceAdjustment > 0 ? 'text-red-600' : 'text-green-600'
                                     }`}>
                                       {substitute.priceAdjustment > 0 ? '+' : ''}${substitute.priceAdjustment} per pan
@@ -331,7 +331,7 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
 
               {/* Special Notes */}
               <div>
-                <label className="block text-sm font-medium mb-2">Special Instructions (Optional)</label>
+                <label className="block md3-body-small font-medium mb-2">Special Instructions (Optional)</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -352,9 +352,9 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
                   
                   {substitutions.length > 0 && (
                     <div className="space-y-1">
-                      <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Substitution Adjustments:</div>
+                      <div className="md3-body-small font-medium text-gray-600 dark:text-gray-400">Substitution Adjustments:</div>
                       {substitutions.map(sub => (
-                        <div key={sub.originalItemId} className="flex justify-between text-sm pl-4">
+                        <div key={sub.originalItemId} className="flex justify-between md3-body-small pl-4">
                           <span>{sub.originalName} → {sub.substituteName}</span>
                           <span className={sub.priceAdjustment >= 0 ? 'text-red-600' : 'text-green-600'}>
                             {sub.priceAdjustment >= 0 ? '+' : ''}${sub.priceAdjustment}
@@ -365,7 +365,7 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
                   )}
                   
                   {servingSize !== currentTemplate.servings && (
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between md3-body-small">
                       <span>Serving Size Adjustment:</span>
                       <span className={servingSize > currentTemplate.servings ? 'text-red-600' : 'text-green-600'}>
                         {servingSize > currentTemplate.servings ? '+' : ''}${((servingSize / currentTemplate.servings - 1) * currentTemplate.price * 0.1).toFixed(2)}
@@ -378,7 +378,7 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
                       <span>Total Price:</span>
                       <span className="text-blue-600">${calculateAdjustedPrice().toFixed(2)}</span>
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="md3-body-small text-gray-600 dark:text-gray-400">
                       Serves {servingSize} people
                     </div>
                   </div>
@@ -389,7 +389,7 @@ export default function CustomizeTemplateModal({ open, onClose, template }: Cust
             {/* Footer */}
             <div className="p-6 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-2 md3-body-small text-gray-600 dark:text-gray-400">
                   <Utensils className="w-4 h-4" />
                   <span>
                     {substitutions.length} substitution{substitutions.length !== 1 ? 's' : ''} made

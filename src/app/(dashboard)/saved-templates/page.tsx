@@ -114,7 +114,7 @@ export default function SavedTemplatesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Saved Templates</h1>
-          <p className="text-sm text-navy/60 dark:text-white/60 mt-1">
+          <p className="md3-body-small text-navy/60 dark:text-white/60 mt-1">
             Your custom meal combinations ready to reorder
           </p>
         </div>
@@ -144,7 +144,7 @@ export default function SavedTemplatesPage() {
             <Plus className="w-8 h-8 text-electric-blue" />
           </div>
           <h3 className="text-lg font-semibold mb-2">No saved templates yet</h3>
-          <p className="text-sm text-navy/60 dark:text-white/60 mb-4">
+          <p className="md3-body-small text-navy/60 dark:text-white/60 mb-4">
             Create your first template to quickly reorder your favorite combinations
           </p>
           <Link href="/new-order" className="md-outlined-button">
@@ -166,7 +166,7 @@ export default function SavedTemplatesPage() {
               </div>
               
               <div className="space-y-2 mb-4">
-                <p className="text-sm text-navy/60 dark:text-white/60">
+                <p className="md3-body-small text-navy/60 dark:text-white/60">
                   {template.items.length} items • {
                     template.items.reduce((sum, item) => {
                       const defaultServings = 12;
@@ -177,14 +177,14 @@ export default function SavedTemplatesPage() {
                 </p>
                 
                 {template.times_used > 0 && (
-                  <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                  <div className="flex items-center gap-2 md3-label-small text-green-600 dark:text-green-400">
                     <TrendingUp className="w-3 h-3" />
                     Used {template.times_used} time{template.times_used !== 1 ? 's' : ''}
                   </div>
                 )}
                 
                 {template.last_used_at && (
-                  <div className="flex items-center gap-2 text-xs text-navy/50 dark:text-white/50">
+                  <div className="flex items-center gap-2 md3-label-small text-navy/50 dark:text-white/50">
                     <Clock className="w-3 h-3" />
                     Last used {format(new Date(template.last_used_at), 'MMM d')}
                   </div>
@@ -192,7 +192,7 @@ export default function SavedTemplatesPage() {
               </div>
               
               {/* Show first few items */}
-              <div className="mb-4 p-3 bg-smoke/10 dark:bg-smoke/20 rounded text-xs space-y-1">
+              <div className="mb-4 p-3 bg-smoke/10 dark:bg-smoke/20 rounded md3-label-small space-y-1">
                 {template.items.slice(0, 3).map((item, idx) => (
                   <p key={idx} className="text-navy/70 dark:text-white/70">
                     • Template Item ({item.quantity} {item.panSize})
@@ -208,7 +208,7 @@ export default function SavedTemplatesPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleAddToCart(template)}
-                  className="flex-1 md-filled-button text-sm flex items-center justify-center"
+                  className="flex-1 md-filled-button md3-body-small flex items-center justify-center"
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   Add to Cart

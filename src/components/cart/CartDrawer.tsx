@@ -108,7 +108,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <div className="flex-1">
                           <h4 className="font-medium">{item.name}</h4>
                           {item.type === 'individual' && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="md3-body-small text-gray-600 dark:text-gray-400 mt-1">
                               {item.panSize === 'half' ? 'Half Pan (12 servings)' : 'Full Pan (24 servings)'}
                             </p>
                           )}
@@ -125,7 +125,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       
                       {/* Show included items for templates */}
                       {item.type === 'template' && (
-                        <div className="mt-2 text-xs space-y-1">
+                        <div className="mt-2 md3-label-small space-y-1">
                           {item.includedItems && item.includedItems.length > 0 && (
                             <details className="cursor-pointer">
                               <summary className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium">
@@ -157,7 +157,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       
                       {/* Show substitutions */}
                       {item.substitutions && item.substitutions.length > 0 && (
-                        <div className="mb-3 text-xs">
+                        <div className="mb-3 md3-label-small">
                           <p className="text-[var(--md-saas-color-warning)]">
                             Substitutions: {item.substitutions.map(s => s.replacement).join(', ')}
                           </p>
@@ -188,7 +188,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             ${((item.unitPrice * item.quantity) + ((item.addOns?.reduce((sum, addon) => sum + addon.price * addon.quantity, 0)) || 0)).toFixed(2)}
                           </p>
                           {item.addOns && item.addOns.length > 0 && (
-                            <p className="text-xs text-gray-500">
+                            <p className="md3-label-small text-gray-500">
                               Base: ${(item.unitPrice * item.quantity).toFixed(2)} + Add-ons: ${(item.addOns.reduce((sum, addon) => sum + addon.price * addon.quantity, 0)).toFixed(2)}
                             </p>
                           )}
@@ -252,7 +252,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 
                 {/* Pricing Breakdown */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between md3-body-small">
                     <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
@@ -262,7 +262,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       <span>-${promoDiscount.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between md3-body-small">
                     <span className="text-gray-600 dark:text-gray-400">Tax (8.75%)</span>
                     <span>${tax.toFixed(2)}</span>
                   </div>

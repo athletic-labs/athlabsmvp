@@ -174,7 +174,7 @@ export default function CheckoutPage() {
                   <span className="font-medium">{item.name}</span>
                   <span className="text-gray-600"> x{item.quantity}</span>
                   {item.servings && (
-                    <p className="text-xs text-gray-500">Serves {item.servings} people</p>
+                    <p className="md3-label-small text-gray-500">Serves {item.servings} people</p>
                   )}
                 </div>
                 <span className="font-medium">${formatPrice(item.unitPrice * item.quantity)}</span>
@@ -183,11 +183,11 @@ export default function CheckoutPage() {
           </div>
           
           <div className="space-y-2 pt-3 border-t">
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between md3-body-small">
               <span className="text-gray-600">Subtotal</span>
               <span>${formatPrice(calculateSubtotal())}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between md3-body-small">
               <span className="text-gray-600">Tax (8.75%)</span>
               <span>${formatPrice(calculateTax())}</span>
             </div>
@@ -207,7 +207,7 @@ export default function CheckoutPage() {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block md3-body-small font-medium mb-2">
                 <Calendar className="w-4 h-4 inline mr-1" />
                 Delivery Date *
               </label>
@@ -222,7 +222,7 @@ export default function CheckoutPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block md3-body-small font-medium mb-2">
                 <Clock className="w-4 h-4 inline mr-1" />
                 Meal Context *
               </label>
@@ -243,10 +243,10 @@ export default function CheckoutPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block md3-body-small font-medium mb-2">
                 <Clock className="w-4 h-4 inline mr-1" />
                 Delivery Time
-                <span className="ml-2 text-xs text-gray-500 font-normal">
+                <span className="ml-2 md3-label-small text-gray-500 font-normal">
                   ({Intl.DateTimeFormat().resolvedOptions().timeZone.replace('_', ' ')})
                 </span>
               </label>
@@ -288,13 +288,13 @@ export default function CheckoutPage() {
                 <option value="20:30">8:30 PM</option>
                 <option value="21:00">9:00 PM</option>
               </select>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="md3-label-small text-gray-500 mt-1">
                 All times are in your local timezone ({new Date().toLocaleString('en-US', { timeZoneName: 'short' }).split(', ')[1]})
               </p>
             </div>
             
             <div className="relative">
-              <label className="block text-sm font-medium mb-2">
+              <label className="block md3-body-small font-medium mb-2">
                 <MapPin className="w-4 h-4 inline mr-1" />
                 Delivery Address
               </label>
@@ -348,10 +348,10 @@ export default function CheckoutPage() {
                       <div className="flex items-start gap-2">
                         <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="md3-body-small font-medium text-gray-900">
                             {suggestion.main_text}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="md3-label-small text-gray-500">
                             {suggestion.secondary_text}
                           </div>
                         </div>
@@ -361,13 +361,13 @@ export default function CheckoutPage() {
                 </div>
               )}
               
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="md3-label-small text-gray-500 mt-1">
                 Start typing to search for addresses, stadiums, and venues
               </p>
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block md3-body-small font-medium mb-2">
                 <FileText className="w-4 h-4 inline mr-1" />
                 Special Instructions
               </label>
@@ -402,7 +402,7 @@ export default function CheckoutPage() {
         
         <button
           onClick={() => router.back()}
-          className="w-full mt-3 py-2 text-gray-600 hover:text-gray-800 text-sm font-medium"
+          className="w-full mt-3 py-2 text-gray-600 hover:text-gray-800 md3-body-small font-medium"
         >
           ← Back to Cart
         </button>

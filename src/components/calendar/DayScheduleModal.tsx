@@ -87,7 +87,7 @@ export default function DayScheduleModal({ date, meals, onClose, onSave }: DaySc
             <h2 className="text-xl font-semibold">
               Schedule Meals - {format(date, 'EEEE, MMMM d')}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="md3-body-small text-gray-600">
               Plan meals for practice, meetings, or team events
             </p>
           </div>
@@ -102,7 +102,7 @@ export default function DayScheduleModal({ date, meals, onClose, onSave }: DaySc
             <div className="text-center py-8 text-gray-500">
               <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-300" />
               <p>No meals scheduled for this day</p>
-              <p className="text-sm">Add meal timings below</p>
+              <p className="md3-body-small">Add meal timings below</p>
             </div>
           ) : (
             dayMeals.map((meal) => {
@@ -121,14 +121,14 @@ export default function DayScheduleModal({ date, meals, onClose, onSave }: DaySc
                       <span className="text-2xl mt-1">{timing?.icon}</span>
                       <div>
                         <h3 className="font-medium">{timing?.label}</h3>
-                        <p className="text-sm text-gray-600">{timing?.description}</p>
+                        <p className="md3-body-small text-gray-600">{timing?.description}</p>
                         <div className="mt-2 flex items-center gap-2">
                           <Clock className="w-4 h-4 text-gray-500" />
                           <input
                             type="time"
                             value={meal.scheduledTime}
                             onChange={(e) => updateMealTime(meal.id, e.target.value)}
-                            className="text-sm border rounded px-2 py-1"
+                            className="md3-body-small border rounded px-2 py-1"
                             disabled={isOrdered}
                           />
                         </div>
@@ -137,7 +137,7 @@ export default function DayScheduleModal({ date, meals, onClose, onSave }: DaySc
                     
                     <div className="flex items-center gap-2">
                       {isOrdered ? (
-                        <span className="flex items-center gap-1 text-sm text-green-600">
+                        <span className="flex items-center gap-1 md3-body-small text-green-600">
                           <Check className="w-4 h-4" />
                           Ordered
                         </span>
@@ -145,7 +145,7 @@ export default function DayScheduleModal({ date, meals, onClose, onSave }: DaySc
                         <>
                           <button
                             onClick={() => handleOrderMeal(meal.id)}
-                            className="px-3 py-1.5 bg-electric-blue text-white rounded-lg text-sm hover:bg-electric-blue/90"
+                            className="px-3 py-1.5 bg-electric-blue text-white rounded-lg md3-body-small hover:bg-electric-blue/90"
                           >
                             Order Now
                           </button>
@@ -168,7 +168,7 @@ export default function DayScheduleModal({ date, meals, onClose, onSave }: DaySc
         {/* Add New Meal Timing */}
         {getAvailableTimings().length > 0 && (
           <div className="mb-6">
-            <h3 className="text-sm font-medium mb-3">Add Meal Timing:</h3>
+            <h3 className="md3-body-small font-medium mb-3">Add Meal Timing:</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {getAvailableTimings().map((timing) => (
                 <button
@@ -178,8 +178,8 @@ export default function DayScheduleModal({ date, meals, onClose, onSave }: DaySc
                 >
                   <span className="text-xl">{timing.icon}</span>
                   <div>
-                    <div className="font-medium text-sm">{timing.label}</div>
-                    <div className="text-xs text-gray-600">{timing.description}</div>
+                    <div className="font-medium md3-body-small">{timing.label}</div>
+                    <div className="md3-label-small text-gray-600">{timing.description}</div>
                   </div>
                   <Plus className="w-4 h-4 text-electric-blue ml-auto" />
                 </button>

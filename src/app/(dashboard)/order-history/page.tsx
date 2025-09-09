@@ -106,12 +106,12 @@ function OrderRow({ order }: { order: Order }) {
         </div>
 
         {/* Date */}
-        <div className="text-[var(--md-sys-color-on-surface-variant)] text-sm">
+        <div className="text-[var(--md-sys-color-on-surface-variant)] md3-body-small">
           {format(new Date(order.created_at!), 'MMM dd, yyyy')}
         </div>
 
         {/* Items Count */}
-        <div className="text-[var(--md-sys-color-on-surface-variant)] text-sm">
+        <div className="text-[var(--md-sys-color-on-surface-variant)] md3-body-small">
           {order.items.length} item{order.items.length !== 1 ? 's' : ''}
         </div>
 
@@ -120,7 +120,7 @@ function OrderRow({ order }: { order: Order }) {
           <div className={`p-1 rounded ${status.bg}`}>
             <StatusIcon className={`w-4 h-4 ${status.color}`} />
           </div>
-          <span className={`text-sm font-medium ${status.color}`}>
+          <span className={`md3-label-large font-medium ${status.color}`}>
             {status.label}
           </span>
         </div>
@@ -237,10 +237,10 @@ export default function OrderHistoryPage() {
               <Package className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">
+              <div className="md3-headline-medium text-[var(--md-sys-color-on-surface)]">
                 {stats.total}
               </div>
-              <div className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+              <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                 Total Orders
               </div>
             </div>
@@ -253,10 +253,10 @@ export default function OrderHistoryPage() {
               <CheckCircle className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">
+              <div className="md3-headline-medium text-[var(--md-sys-color-on-surface)]">
                 {stats.delivered}
               </div>
-              <div className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+              <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                 Delivered
               </div>
             </div>
@@ -269,10 +269,10 @@ export default function OrderHistoryPage() {
               <Clock className="w-5 h-5 text-[var(--md-sys-color-on-surface-variant)]" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">
+              <div className="md3-headline-medium text-[var(--md-sys-color-on-surface)]">
                 {stats.pending}
               </div>
-              <div className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+              <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                 Pending
               </div>
             </div>
@@ -285,10 +285,10 @@ export default function OrderHistoryPage() {
               <Package className="w-5 h-5 text-[var(--md-sys-color-on-tertiary-container)]" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[var(--md-sys-color-on-surface)]">
+              <div className="md3-headline-medium text-[var(--md-sys-color-on-surface)]">
                 {formatCurrency(stats.totalSpent)}
               </div>
-              <div className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+              <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                 Total Spent
               </div>
             </div>
@@ -368,7 +368,7 @@ export default function OrderHistoryPage() {
         ) : (
           <div>
             {/* Table Header */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] font-medium text-[var(--md-sys-color-on-surface)] text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] font-medium text-[var(--md-sys-color-on-surface)] md3-body-small">
               <div>Order Number</div>
               <div>Date</div>
               <div>Items</div>

@@ -148,7 +148,7 @@ const TodaysTimeline = memo(function TodaysTimeline({ deliveries }: { deliveries
                   {delivery.items.join(', ')}
                 </p>
               </div>
-              <span className={`px-2 py-1 rounded text-xs font-medium ${
+              <span className={`px-2 py-1 rounded md3-label-small font-medium ${
                 delivery.status === 'confirmed' 
                   ? 'bg-[var(--md-saas-color-success-container)] text-[var(--md-saas-color-on-success-container)]'
                   : 'bg-[var(--md-saas-color-warning-container)] text-[var(--md-saas-color-on-warning-container)]'

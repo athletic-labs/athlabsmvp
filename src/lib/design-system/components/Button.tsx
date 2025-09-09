@@ -79,9 +79,9 @@ const Button = memo(forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizeClasses = {
-      small: ['h-8 px-3 text-sm whitespace-nowrap'],
+      small: ['h-8 px-3 md3-label-large whitespace-nowrap'],
       medium: ['h-10 px-6 whitespace-nowrap'],
-      large: ['h-12 px-8 text-lg whitespace-nowrap']
+      large: ['h-12 px-8 md3-title-medium whitespace-nowrap']
     };
 
     const widthClasses = fullWidth ? ['w-full'] : [];

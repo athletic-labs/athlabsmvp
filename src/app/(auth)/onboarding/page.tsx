@@ -152,7 +152,7 @@ export default function OnboardingPage() {
                           ? 'border-electric-blue bg-electric-blue/10 dark:bg-electric-blue/20'
                           : 'border-smoke dark:border-smoke/30 hover:border-electric-blue/50'}`}>
                       <div className="md3-headline-medium mb-sm text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>{league.name}</div>
-                      <div className="text-sm text-navy/60 dark:text-white/60">{league.sport}</div>
+                      <div className="md3-body-small text-navy/60 dark:text-white/60">{league.sport}</div>
                     </button>
                   ))}
                 </div>
@@ -244,7 +244,7 @@ export default function OnboardingPage() {
                           : 'border-smoke dark:border-smoke/30 hover:border-electric-blue/50'}`}>
                       <div className="md3-body-large text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>{preset.name}</div>
                       {preset.macros && (
-                        <div className="text-xs mt-2">
+                        <div className="md3-label-small mt-2">
                           P: {preset.macros.protein}% | C: {preset.macros.carbs}% | F: {preset.macros.fats}%
                         </div>
                       )}

@@ -60,7 +60,7 @@ export default function TemplateDetailsModal({ template, open, onClose }: Templa
             <div className="flex items-center justify-between p-6 border-b border-smoke dark:border-smoke/30">
               <div>
                 <h2 className="text-2xl font-semibold text-navy dark:text-white">{template.name}</h2>
-                <p className="text-sm text-navy/60 dark:text-white/60 mt-1">
+                <p className="md3-body-small text-navy/60 dark:text-white/60 mt-1">
                   {template.cuisine_type} • ${template.bundle_price.toLocaleString()} per order
                 </p>
               </div>
@@ -84,7 +84,7 @@ export default function TemplateDetailsModal({ template, open, onClose }: Templa
                   {template.items?.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-3 p-3 bg-smoke/10 dark:bg-smoke/20 rounded-lg">
                       <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      <span className="text-sm">
+                      <span className="md3-body-small">
                         {item.name} <span className="text-navy/60 dark:text-white/60">({item.category})</span>
                       </span>
                     </div>
@@ -95,11 +95,11 @@ export default function TemplateDetailsModal({ template, open, onClose }: Templa
               {/* Order Details */}
               <div className="grid grid-cols-2 gap-4 p-4 bg-electric-blue/5 dark:bg-electric-blue/10 rounded-lg">
                 <div>
-                  <p className="text-xs text-navy/60 dark:text-white/60 mb-1">Serves</p>
+                  <p className="md3-label-small text-navy/60 dark:text-white/60 mb-1">Serves</p>
                   <p className="font-semibold">{template.serves_count} people</p>
                 </div>
                 <div>
-                  <p className="text-xs text-navy/60 dark:text-white/60 mb-1">Notice Required</p>
+                  <p className="md3-label-small text-navy/60 dark:text-white/60 mb-1">Notice Required</p>
                   <p className="font-semibold">{template.min_order_hours} hours</p>
                 </div>
               </div>
@@ -109,7 +109,7 @@ export default function TemplateDetailsModal({ template, open, onClose }: Templa
             <div className="p-6 border-t border-smoke dark:border-smoke/30 bg-smoke/5 dark:bg-smoke/10">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-sm text-navy/60 dark:text-white/60">Quantity</p>
+                  <p className="md3-body-small text-navy/60 dark:text-white/60">Quantity</p>
                   <div className="flex items-center gap-2 mt-1">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -127,11 +127,11 @@ export default function TemplateDetailsModal({ template, open, onClose }: Templa
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-navy/60 dark:text-white/60">Total Price</p>
+                  <p className="md3-body-small text-navy/60 dark:text-white/60">Total Price</p>
                   <p className="text-2xl font-bold text-electric-blue">
                     ${(template.bundle_price * quantity).toLocaleString()}
                   </p>
-                  <p className="text-xs text-navy/50 dark:text-white/50">
+                  <p className="md3-label-small text-navy/50 dark:text-white/50">
                     Serves {template.serves_count * quantity} people
                   </p>
                 </div>

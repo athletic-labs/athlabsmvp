@@ -26,8 +26,8 @@ export default function CartSummaryPanel({ onViewCart }: CartSummaryPanelProps) 
           <div className="w-16 h-16 bg-smoke/20 dark:bg-smoke/30 rounded-full flex items-center justify-center mx-auto mb-3">
             <ShoppingCart className="w-8 h-8 text-navy/30 dark:text-white/30" />
           </div>
-          <p className="text-sm text-navy/60 dark:text-white/60">Your cart is empty</p>
-          <p className="text-xs text-navy/50 dark:text-white/50 mt-1">Add templates to get started</p>
+          <p className="md3-body-small text-navy/60 dark:text-white/60">Your cart is empty</p>
+          <p className="md3-label-small text-navy/50 dark:text-white/50 mt-1">Add templates to get started</p>
         </div>
       </div>
     );
@@ -44,7 +44,7 @@ export default function CartSummaryPanel({ onViewCart }: CartSummaryPanelProps) 
           </div>
           <button
             onClick={onViewCart}
-            className="text-sm text-electric-blue hover:underline"
+            className="md3-body-small text-electric-blue hover:underline"
           >
             Edit
           </button>
@@ -64,15 +64,15 @@ export default function CartSummaryPanel({ onViewCart }: CartSummaryPanelProps) 
               className="flex items-start justify-between gap-2"
             >
               <div className="flex-1">
-                <p className="text-sm font-medium text-navy dark:text-white">{item.name}</p>
-                <p className="text-xs text-navy/60 dark:text-white/60">
+                <p className="md3-body-small font-medium text-navy dark:text-white">{item.name}</p>
+                <p className="md3-label-small text-navy/60 dark:text-white/60">
                   Qty: {item.quantity} • ${item.unitPrice.toLocaleString()}
                   {item.addOns && item.addOns.length > 0 && (
                     <span className="text-electric-blue"> (+${(item.addOns.reduce((sum, addon) => sum + addon.price * addon.quantity, 0)).toFixed(2)} add-ons)</span>
                   )}
                 </p>
                 {item.type === 'template' && item.addOns && item.addOns.length > 0 && (
-                  <p className="text-xs text-electric-blue/80 mt-0.5">
+                  <p className="md3-label-small text-electric-blue/80 mt-0.5">
                     Add-ons: {item.addOns.map(a => `${a.name} x${a.quantity}`).join(', ')}
                   </p>
                 )}
@@ -95,10 +95,10 @@ export default function CartSummaryPanel({ onViewCart }: CartSummaryPanelProps) 
             <div className="flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-medium text-orange-900 dark:text-orange-100">
+                <p className="md3-label-small font-medium text-orange-900 dark:text-orange-100">
                   Below minimum order
                 </p>
-                <p className="text-xs text-orange-700 dark:text-orange-300">
+                <p className="md3-label-small text-orange-700 dark:text-orange-300">
                   Add ${remainingForMinimum.toFixed(2)} more
                 </p>
               </div>
@@ -109,11 +109,11 @@ export default function CartSummaryPanel({ onViewCart }: CartSummaryPanelProps) 
 
       {/* Summary */}
       <div className="p-4 border-t border-smoke dark:border-smoke/30 space-y-2">
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between md3-body-small">
           <span className="text-navy/60 dark:text-white/60">Subtotal</span>
           <span>${subtotal.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between md3-body-small">
           <span className="text-navy/60 dark:text-white/60">Tax</span>
           <span>${tax.toFixed(2)}</span>
         </div>
@@ -130,7 +130,7 @@ export default function CartSummaryPanel({ onViewCart }: CartSummaryPanelProps) 
         <button
           onClick={onViewCart}
           disabled={belowMinimum}
-          className="w-full py-2.5 bg-electric-blue text-white rounded-lg text-sm font-medium hover:bg-electric-blue/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full py-2.5 bg-electric-blue text-white rounded-lg md3-body-small font-medium hover:bg-electric-blue/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           Proceed to Checkout
           <ChevronRight className="w-4 h-4 ml-1" />

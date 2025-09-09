@@ -179,7 +179,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div>
                 <h2 className="text-2xl font-bold">Create Your Own Template</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="md3-body-small text-gray-600 dark:text-gray-400 mt-1">
                   Step {step} of 3 - {
                     step === 1 ? 'Select Menu Items' :
                     step === 2 ? 'Configure Portions' : 'Review Template'
@@ -229,7 +229,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                       <h3 className="font-medium mb-2">Selected Items ({selectedItems.length})</h3>
                       <div className="flex flex-wrap gap-2">
                         {selectedItems.map(item => (
-                          <span key={item.uniqueId} className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                          <span key={item.uniqueId} className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full md3-body-small">
                             {item.name} ({item.quantity} {item.panSize})
                           </span>
                         ))}
@@ -244,12 +244,12 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                         <div className="space-y-3">
                           <div>
                             <h3 className="font-medium">{item.name}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
+                            <p className="md3-body-small text-gray-600 dark:text-gray-400">{item.description}</p>
                           </div>
                           
                           <div className="flex flex-wrap gap-1">
                             {item.dietaryTags.map(tag => (
-                              <span key={tag} className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs rounded-full">
+                              <span key={tag} className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 md3-label-small rounded-full">
                                 {tag}
                               </span>
                             ))}
@@ -258,7 +258,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="font-bold text-lg">${item.unitPrice}</p>
-                              <p className="text-xs text-gray-500">per full pan</p>
+                              <p className="md3-label-small text-gray-500">per full pan</p>
                             </div>
                             <button
                               onClick={() => addMenuItem(item)}
@@ -287,12 +287,12 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                                 {item.name}
                                 {/* Show instance number if there are multiple of the same item */}
                                 {selectedItems.filter(si => si.id === item.id).length > 1 && (
-                                  <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                                  <span className="md3-label-small bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
                                     #{selectedItems.filter(si => si.id === item.id && si.uniqueId <= item.uniqueId).length}
                                   </span>
                                 )}
                               </h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
+                              <p className="md3-body-small text-gray-600 dark:text-gray-400">{item.description}</p>
                             </div>
                             <button
                               onClick={() => updateItemQuantity(item.uniqueId, 0)}
@@ -304,7 +304,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                           
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-sm font-medium mb-2">Quantity</label>
+                              <label className="block md3-body-small font-medium mb-2">Quantity</label>
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => updateItemQuantity(item.uniqueId, Math.max(1, item.quantity - 1))}
@@ -323,11 +323,11 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                             </div>
                             
                             <div>
-                              <label className="block text-sm font-medium mb-2">Pan Size</label>
+                              <label className="block md3-body-small font-medium mb-2">Pan Size</label>
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => updatePanSize(item.uniqueId, 'half')}
-                                  className={`px-3 py-2 rounded text-sm ${
+                                  className={`px-3 py-2 rounded md3-body-small ${
                                     item.panSize === 'half'
                                       ? 'bg-blue-600 text-white'
                                       : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -337,7 +337,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                                 </button>
                                 <button
                                   onClick={() => updatePanSize(item.uniqueId, 'full')}
-                                  className={`px-3 py-2 rounded text-sm ${
+                                  className={`px-3 py-2 rounded md3-body-small ${
                                     item.panSize === 'full'
                                       ? 'bg-blue-600 text-white'
                                       : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -359,7 +359,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                 <div className="p-6 space-y-6">
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Template Name *</label>
+                      <label className="block md3-body-small font-medium mb-2">Template Name *</label>
                       <input
                         type="text"
                         value={templateName}
@@ -370,7 +370,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium mb-2">Description (Optional)</label>
+                      <label className="block md3-body-small font-medium mb-2">Description (Optional)</label>
                       <textarea
                         value={templateDescription}
                         onChange={(e) => setTemplateDescription(e.target.value)}
@@ -405,11 +405,11 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                     <h4 className="font-medium mb-2">Included Items:</h4>
                     <div className="space-y-2">
                       {selectedItems.map(item => (
-                        <div key={item.uniqueId} className="flex justify-between text-sm">
+                        <div key={item.uniqueId} className="flex justify-between md3-body-small">
                           <span>
                             {item.name}
                             {selectedItems.filter(si => si.id === item.id).length > 1 && (
-                              <span className="text-xs text-gray-500 ml-1">
+                              <span className="md3-label-small text-gray-500 ml-1">
                                 (#{selectedItems.filter(si => si.id === item.id && si.uniqueId <= item.uniqueId).length})
                               </span>
                             )}
@@ -422,7 +422,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
 
                   {/* Error message */}
                   {saveError && (
-                    <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm text-red-700 dark:text-red-400">
+                    <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg md3-body-small text-red-700 dark:text-red-400">
                       {saveError}
                     </div>
                   )}
@@ -432,7 +432,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg text-sm text-green-700 dark:text-green-400"
+                      className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg md3-body-small text-green-700 dark:text-green-400"
                     >
                       ✓ Template saved successfully!
                     </motion.div>
@@ -457,7 +457,7 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
                 
                 <div className="flex items-center gap-4">
                   {step < 3 && selectedItems.length > 0 && (
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="md3-body-small text-gray-600 dark:text-gray-400">
                       {selectedItems.length} item{selectedItems.length !== 1 ? 's' : ''} selected
                     </span>
                   )}

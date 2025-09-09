@@ -92,7 +92,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
           <div className="text-center py-8 text-[var(--md-sys-color-on-surface-variant)]">
             <ShoppingCart className="w-12 h-12 mx-auto mb-3 text-[var(--md-sys-color-on-surface-variant)]" />
             <p>Your cart is empty</p>
-            <p className="text-sm mt-1">Add templates to get started</p>
+            <p className="md3-body-small mt-1">Add templates to get started</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -100,7 +100,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
               <div key={item.id} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-sm">{item.name}</h4>
+                    <h4 className="font-semibold md3-body-small">{item.name}</h4>
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
@@ -114,7 +114,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
                 {item.includedItems && item.includedItems.length > 0 && (
                   <button
                     onClick={() => toggleExpanded(item.id)}
-                    className="flex items-center gap-1 text-xs text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] mb-2"
+                    className="flex items-center gap-1 md3-label-small text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] mb-2"
                   >
                     {expandedItems.has(item.id) ? (
                       <ChevronUp className="w-3 h-3" />
@@ -127,7 +127,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
                 
                 {/* Expanded Items List */}
                 {expandedItems.has(item.id) && item.includedItems && (
-                  <div className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-2 pl-4 space-y-0.5">
+                  <div className="md3-label-small text-[var(--md-sys-color-on-surface-variant)] mb-2 pl-4 space-y-0.5">
                     {item.includedItems.map((included, idx) => (
                       <div key={idx}>• {included.name} ({included.quantity})</div>
                     ))}
@@ -143,7 +143,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                    <span className="w-8 text-center md3-body-small font-medium">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       className="w-7 h-7 flex items-center justify-center border border-[var(--md-sys-color-outline-variant)] rounded hover:bg-[var(--md-sys-color-surface-container-low)]"
@@ -168,7 +168,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
             <div className="flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5" />
-              <div className="text-xs">
+              <div className="md3-label-small">
                 <p className="font-medium text-amber-900">Below minimum order</p>
                 <p className="text-amber-700">Add ${formatPrice(amountNeeded)} more</p>
               </div>
@@ -177,7 +177,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
         )}
         
         {/* Price Breakdown */}
-        <div className="space-y-2 text-sm">
+        <div className="space-y-2 md3-body-small">
           <div className="flex justify-between">
             <span className="text-[var(--md-sys-color-on-surface-variant)]">Subtotal</span>
             <span>${formatPrice(subtotal)}</span>
@@ -208,7 +208,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
             onClick={clearCart}
             variant="text"
             fullWidth
-            className="py-2 text-[var(--md-sys-color-error)] hover:text-[var(--md-sys-color-error)] text-sm"
+            className="py-2 text-[var(--md-sys-color-error)] hover:text-[var(--md-sys-color-error)] md3-body-small"
           >
             Clear Cart
           </Button>

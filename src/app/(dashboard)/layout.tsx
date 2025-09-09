@@ -141,7 +141,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 fullWidth={navigationPattern === 'expanded'}
                 leftIcon={<ShoppingCart className="w-5 h-5" />}
                 rightIcon={navigationPattern === 'expanded' && itemCount > 0 ? (
-                  <div className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] text-xs rounded-full px-2 py-0.5 font-medium min-w-[20px] text-center">
+                  <div className="bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] md3-label-small rounded-full px-2 py-0.5 font-medium min-w-[20px] text-center">
                     {itemCount}
                   </div>
                 ) : undefined}

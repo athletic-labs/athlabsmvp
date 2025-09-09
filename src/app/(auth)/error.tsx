@@ -38,10 +38,10 @@ export default function AuthError({
             </div>
             
             <details className="mt-6 text-left">
-              <summary className="cursor-pointer text-sm text-[var(--md-sys-color-on-surface-variant)]">
+              <summary className="cursor-pointer md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
                 Technical Details
               </summary>
-              <pre className="mt-2 p-3 bg-[var(--md-sys-color-surface-variant)] rounded text-xs overflow-auto">
+              <pre className="mt-2 p-3 bg-[var(--md-sys-color-surface-variant)] rounded md3-label-small overflow-auto">
                 {error.message}
               </pre>
             </details>

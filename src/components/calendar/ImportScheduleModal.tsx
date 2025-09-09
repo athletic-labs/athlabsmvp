@@ -85,7 +85,7 @@ export default function ImportScheduleModal({ onClose, onImport }: ImportSchedul
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-xl font-semibold">Import Game Schedule</h2>
-            <p className="text-sm text-gray-600">
+            <p className="md3-body-small text-gray-600">
               Import your team's game schedule from text format
             </p>
           </div>
@@ -99,16 +99,16 @@ export default function ImportScheduleModal({ onClose, onImport }: ImportSchedul
           <div className="p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <FileText className="w-4 h-4 text-gray-600" />
-              <span className="text-sm font-medium">Expected Format:</span>
+              <span className="md3-body-small font-medium">Expected Format:</span>
             </div>
-            <pre className="text-xs text-gray-700 whitespace-pre-wrap">
+            <pre className="md3-label-small text-gray-700 whitespace-pre-wrap">
 {sampleFormat}
             </pre>
           </div>
 
           {/* Import Textarea */}
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block md3-body-small font-medium mb-2">
               Paste Schedule Data:
             </label>
             <textarea
@@ -121,7 +121,7 @@ export default function ImportScheduleModal({ onClose, onImport }: ImportSchedul
           </div>
 
           {/* Format Tips */}
-          <div className="text-xs text-gray-600 space-y-1">
+          <div className="md3-label-small text-gray-600 space-y-1">
             <p><strong>Supported formats:</strong></p>
             <p>• MM/DD/YYYY HH:MM AM/PM vs/@ Opponent - Home/Away</p>
             <p>• March DD, YYYY @ HH:MM AM/PM @ Opponent</p>

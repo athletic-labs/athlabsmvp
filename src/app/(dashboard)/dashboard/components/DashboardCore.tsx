@@ -35,7 +35,7 @@ const TopMetricsRow = memo(function TopMetricsRow({ metrics, analytics }: { metr
             </div>
           </div>
           <div className="text-right">
-            <div className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+            <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
               Next: Today 4:30p
             </div>
           </div>
@@ -81,7 +81,7 @@ const TopMetricsRow = memo(function TopMetricsRow({ metrics, analytics }: { metr
             </div>
           </div>
           <div className="text-right">
-            <div className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
+            <div className="md3-body-small text-[var(--md-sys-color-on-surface-variant)]">
               ${perAthleteCost}/athlete
             </div>
           </div>

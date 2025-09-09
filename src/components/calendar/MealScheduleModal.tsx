@@ -89,7 +89,7 @@ export default function MealScheduleModal({ game, meals: initialMeals, onClose, 
             <h2 className="text-xl font-semibold">
               {game.isHome ? 'vs' : '@'} {game.opponent}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="md3-body-small text-gray-600">
               {new Date(game.date).toLocaleDateString()} • {game.time}
             </p>
           </div>
@@ -116,7 +116,7 @@ export default function MealScheduleModal({ game, meals: initialMeals, onClose, 
                     <span className="text-2xl mt-1">{timing.icon}</span>
                     <div>
                       <h3 className="font-medium">{timing.label}</h3>
-                      <p className="text-sm text-gray-600">{timing.description}</p>
+                      <p className="md3-body-small text-gray-600">{timing.description}</p>
                       {meal && (
                         <div className="mt-2 flex items-center gap-2">
                           <Clock className="w-4 h-4 text-gray-500" />
@@ -131,7 +131,7 @@ export default function MealScheduleModal({ game, meals: initialMeals, onClose, 
                               );
                               setMeals(updated);
                             }}
-                            className="text-sm border rounded px-2 py-1"
+                            className="md3-body-small border rounded px-2 py-1"
                           />
                         </div>
                       )}
@@ -140,21 +140,21 @@ export default function MealScheduleModal({ game, meals: initialMeals, onClose, 
                   
                   <div className="flex items-center gap-2">
                     {isOrdered ? (
-                      <span className="flex items-center gap-1 text-sm text-green-600">
+                      <span className="flex items-center gap-1 md3-body-small text-green-600">
                         <Check className="w-4 h-4" />
                         Ordered
                       </span>
                     ) : isScheduled ? (
                       <button
                         onClick={() => handleOrderMeal(timing.id)}
-                        className="px-3 py-1.5 bg-electric-blue text-white rounded-lg text-sm hover:bg-electric-blue/90"
+                        className="px-3 py-1.5 bg-electric-blue text-white rounded-lg md3-body-small hover:bg-electric-blue/90"
                       >
                         Order Now
                       </button>
                     ) : (
                       <button
                         onClick={() => toggleMealTiming(timing.id)}
-                        className="px-3 py-1.5 border border-electric-blue text-electric-blue rounded-lg text-sm hover:bg-electric-blue/10"
+                        className="px-3 py-1.5 border border-electric-blue text-electric-blue rounded-lg md3-body-small hover:bg-electric-blue/10"
                       >
                         <Plus className="w-4 h-4 inline mr-1" />
                         Schedule

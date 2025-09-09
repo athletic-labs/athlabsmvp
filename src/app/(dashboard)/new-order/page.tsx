@@ -102,8 +102,8 @@ export default function NewOrderPage() {
                   <div className="w-12 h-12 bg-[var(--md-sys-color-primary)]/10 rounded-full flex items-center justify-center mb-3">
                     <Plus className="w-6 h-6 text-[var(--md-sys-color-primary)]" />
                   </div>
-                  <h3 className="font-semibold text-sm mb-2">Create Your Own</h3>
-                  <p className="text-xs text-gray-600">Build a custom template from individual items</p>
+                  <h3 className="font-semibold md3-body-small mb-2">Create Your Own</h3>
+                  <p className="md3-label-small text-gray-600">Build a custom template from individual items</p>
                 </button>
               </div>
               

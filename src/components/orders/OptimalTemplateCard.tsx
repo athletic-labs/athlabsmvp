@@ -65,23 +65,23 @@ export default function OptimalTemplateCard({ template }: TemplateCardProps) {
             <h3 className="font-semibold text-base leading-tight flex-1">
               {template.name}
             </h3>
-            <span className="text-lg font-bold text-[var(--md-sys-color-primary)] ml-2 whitespace-nowrap">
+            <span className="md3-title-medium font-bold text-[var(--md-sys-color-primary)] ml-2 whitespace-nowrap">
               {formatPrice(template.bundlePrice)}
             </span>
           </div>
           
           {/* Cuisine Type Badge */}
-          <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getCuisineColor(template.cuisineType)} mb-3 self-start`}>
+          <span className={`inline-flex px-2 py-1 rounded-full md3-label-small font-medium ${getCuisineColor(template.cuisineType)} mb-3 self-start`}>
             {template.cuisineType}
           </span>
           
           {/* Description - flexible height */}
-          <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mb-4 flex-1 line-clamp-2">
+          <p className="md3-body-small text-[var(--md-sys-color-on-surface-variant)] mb-4 flex-1 line-clamp-2">
             {template.description || `${template.cuisineType} cuisine for your team`}
           </p>
           
           {/* Info Row */}
-          <div className="flex items-center gap-4 text-xs text-[var(--md-sys-color-on-surface-variant)] mb-4">
+          <div className="flex items-center gap-4 md3-label-small text-[var(--md-sys-color-on-surface-variant)] mb-4">
             <div className="flex items-center gap-1">
               <Users className="w-3.5 h-3.5" />
               <span>{template.servesCount}</span>
@@ -96,14 +96,14 @@ export default function OptimalTemplateCard({ template }: TemplateCardProps) {
           <div className="flex gap-2">
             <button
               onClick={() => setShowDetails(true)}
-              className="flex-1 px-3 py-2 border border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] rounded-lg text-sm font-medium hover:bg-[var(--md-sys-color-primary)]/5 transition-colors whitespace-nowrap"
+              className="flex-1 px-3 py-2 border border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] rounded-lg md3-label-large font-medium hover:bg-[var(--md-sys-color-primary)]/5 transition-colors whitespace-nowrap"
             >
               View Details
             </button>
             <button
               onClick={handleQuickAdd}
               disabled={isQuickAdding}
-              className="flex-1 px-3 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg text-sm font-medium hover:bg-[var(--md-sys-color-primary)]/90 transition-colors disabled:opacity-70 whitespace-nowrap"
+              className="flex-1 px-3 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg md3-label-large font-medium hover:bg-[var(--md-sys-color-primary)]/90 transition-colors disabled:opacity-70 whitespace-nowrap"
             >
               {isQuickAdding ? 'Adding...' : 'Quick Add'}
             </button>
