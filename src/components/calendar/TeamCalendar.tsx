@@ -202,248 +202,286 @@ export default function TeamCalendar() {
   };
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Team Calendar</h1>
-          <p className="text-gray-600">Schedule and manage meal timing for games</p>
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] rounded-lg hover:bg-[var(--md-sys-color-primary)]/10"
-          >
-            <Upload className="w-4 h-4" />
-            Import Schedule
-          </button>
-          <button
-            onClick={() => {
-              // TODO: Add series creation modal
-              toast.info('Series creation coming soon! For now, edit the code to add custom series.');
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg hover:bg-[var(--md-sys-color-primary)]/90"
-          >
-            <Plus className="w-4 h-4" />
-            Add Series/Trip
-          </button>
-          <button
-            onClick={() => {
-              localStorage.removeItem('team-series');
-              window.location.reload();
-            }}
-            className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-          >
-            Reset Demo Data
-          </button>
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="mb-6 space-y-4">
-        {/* Series Legend */}
-        {series.length > 0 && (
-          <div className="p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm font-medium mb-3">Current Series & Road Trips:</p>
-            <div className="space-y-2">
-              {series.map(s => (
-                <div key={s.id} className="flex items-center gap-3">
-                  <div 
-                    className="w-4 h-3 rounded-sm"
-                    style={{ backgroundColor: s.color }}
-                  />
-                  <span className="text-sm">
-                    <span className="font-medium">{s.title}</span> - {s.location} 
-                    <span className="text-gray-600 ml-1">
-                      ({format(new Date(s.startDate), 'MMM d')} - {format(new Date(s.endDate), 'MMM d')})
-                    </span>
-                  </span>
-                  <span className="text-xs px-2 py-1 rounded-full bg-white/70 capitalize">
-                    {s.type.replace('-', ' ')}
-                  </span>
-                </div>
-              ))}
+    <div className="min-h-screen bg-[var(--md-sys-color-surface)]">
+      {/* Google Calendar Style Header */}
+      <div className="border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface)] px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Left side - Title and view controls */}
+          <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-4">
+              <Calendar className="w-6 h-6 text-[#1a2332]" />
+              <h1 className="text-[22px] font-[400] text-[var(--md-sys-color-on-surface)] leading-[28px]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                Team Calendar
+              </h1>
             </div>
-          </div>
-        )}
-
-        {/* Meal Timing Legend */}
-        <div className="p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm font-medium mb-3">Meal Timing Options:</p>
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-purple-500" />
-              <span className="text-sm">✈️ Arrival</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-orange-500" />
-              <span className="text-sm">🍽️ Pre-Game</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-green-500" />
-              <span className="text-sm">🥤 Post-Game</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-blue-500" />
-              <span className="text-sm">✈️ Flight Out</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-yellow-500" />
-              <span className="text-sm">⏸️ Intermission</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Calendar Navigation */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">
-          {format(currentDate, 'MMMM yyyy')}
-        </h2>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setCurrentDate(new Date())}
-            className="px-4 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg text-sm"
-          >
-            Today
-          </button>
-          <button
-            onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Calendar Grid */}
-      <div className="bg-white rounded-lg shadow-sm border">
-        <div className="grid grid-cols-7 border-b">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-3 text-center text-sm font-medium text-gray-600">
-              {day}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-7">
-          {getDaysInMonth().map((day, idx) => {
-            const dayGames = getGamesForDay(day);
-            const dayMeals = getMealsForDay(day);
-            const daySeries = getSeriesForDay(day);
-            const mealStatus = getMealStatusForDay(day);
-            const isCurrentMonth = isSameMonth(day, currentDate);
-            const isPastDay = isPast(day) && !isToday(day);
             
-            return (
-              <div
-                key={idx}
-                onClick={() => !isPastDay && handleDayClick(day)}
-                className={`min-h-[140px] p-2 border-r border-b transition-colors relative overflow-visible ${
-                  !isCurrentMonth ? 'bg-gray-50' : ''
-                } ${isToday(day) ? 'bg-blue-50' : ''} ${
-                  isPastDay ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'
-                }`}
+            {/* Navigation buttons */}
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[var(--md-sys-color-surface-container)] transition-colors duration-200"
               >
-                <div className="flex justify-between items-start mb-1">
-                  <span className={`text-sm font-medium ${
-                    isToday(day) ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] w-6 h-6 rounded-full flex items-center justify-center' : ''
-                  }`}>
-                    {format(day, 'd')}
-                  </span>
-                  {!isPastDay && mealStatus !== 'none' && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                      mealStatus === 'partial' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
-                      {mealStatus === 'partial' ? 'Partial' : `${dayMeals.length} meals`}
-                    </span>
-                  )}
-                </div>
+                <ChevronLeft className="w-5 h-5 text-[var(--md-sys-color-on-surface)]" />
+              </button>
+              <button
+                onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[var(--md-sys-color-surface-container)] transition-colors duration-200"
+              >
+                <ChevronRight className="w-5 h-5 text-[var(--md-sys-color-on-surface)]" />
+              </button>
+              <button
+                onClick={() => setCurrentDate(new Date())}
+                className="ml-2 px-4 py-2 text-[14px] font-[500] text-[var(--md-sys-color-on-surface)] border border-[var(--md-sys-color-outline)] rounded-[4px] hover:bg-[var(--md-sys-color-surface-container)] transition-colors duration-200"
+                style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}
+              >
+                Today
+              </button>
+            </div>
 
-                {/* Series bars spanning multiple days */}
-                {daySeries.map((seriesItem, seriesIdx) => {
-                  const spanInfo = getSeriesSpanInfo(day, seriesItem);
-                  if (!spanInfo.isInSeries) return null;
-                  
-                  return (
-                    <div
-                      key={`series-${seriesItem.id}-${seriesIdx}`}
-                      className="absolute left-1 right-1 h-3 z-20 opacity-80 hover:opacity-100 transition-opacity"
-                      style={{ 
-                        backgroundColor: seriesItem.color,
-                        top: `${40 + seriesIdx * 12}px`,
-                        borderTopLeftRadius: spanInfo.isStart ? '6px' : '0',
-                        borderBottomLeftRadius: spanInfo.isStart ? '6px' : '0',
-                        borderTopRightRadius: spanInfo.isEnd ? '6px' : '0',
-                        borderBottomRightRadius: spanInfo.isEnd ? '6px' : '0',
-                      }}
-                      title={`${seriesItem.title} - ${seriesItem.location}`}
-                    >
-                      {spanInfo.isStart && (
-                        <div className="absolute left-2 -top-5 text-xs font-medium text-white bg-gray-800/90 px-2 py-0.5 rounded-md whitespace-nowrap z-30">
-                          {seriesItem.title}
-                        </div>
-                      )}
+            {/* Month/Year display */}
+            <h2 className="text-[22px] font-[400] text-[var(--md-sys-color-on-surface)]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+              {format(currentDate, 'MMMM yyyy')}
+            </h2>
+          </div>
+
+          {/* Right side - Action buttons */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="flex items-center space-x-2 px-4 py-2 text-[14px] font-[500] text-[#3b82f6] border border-[#3b82f6] rounded-[4px] hover:bg-[#3b82f6]/10 transition-colors duration-200"
+              style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}
+            >
+              <Upload className="w-4 h-4" />
+              <span>Import</span>
+            </button>
+            <button
+              onClick={() => {
+                // TODO: Add series creation modal
+                toast.info('Series creation coming soon! For now, edit the code to add custom series.');
+              }}
+              className="flex items-center space-x-2 px-4 py-2 text-[14px] font-[500] text-white bg-[#3b82f6] rounded-[4px] hover:bg-[#2563eb] transition-colors duration-200 shadow-sm"
+              style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="px-6 py-6">
+
+        {/* Clean Legend Section */}
+        <div className="mb-6 space-y-3">
+          {/* Series Legend - Google Calendar style */}
+          {series.length > 0 && (
+            <div className="bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-[8px] p-4">
+              <h3 className="text-[16px] font-[500] text-[var(--md-sys-color-on-surface)] mb-3" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                Active Series & Road Trips
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {series.map(s => (
+                  <div key={s.id} className="flex items-center space-x-3 p-2 rounded-[4px] hover:bg-[var(--md-sys-color-surface-container)] transition-colors duration-200">
+                    <div 
+                      className="w-4 h-4 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: s.color }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[14px] font-[500] text-[var(--md-sys-color-on-surface)] truncate" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                        {s.title}
+                      </div>
+                      <div className="text-[12px] text-[var(--md-sys-color-on-surface-variant)] truncate" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                        {s.location} • {format(new Date(s.startDate), 'MMM d')}–{format(new Date(s.endDate), 'MMM d')}
+                      </div>
                     </div>
-                  );
-                })}
-                
-                {/* Games for this day */}
-                {dayGames.map((game, i) => (
-                  <div
-                    key={i}
-                    className="text-xs p-1 bg-navy/10 rounded mb-1"
-                  >
-                    <div className="font-medium truncate">
-                      {game.isHome ? 'vs' : '@'} {game.opponent}
-                    </div>
-                    <div className="text-gray-600">{game.time}</div>
                   </div>
                 ))}
-                
-                {/* Meal indicators */}
-                {dayMeals.length > 0 && (
-                  <div className="flex flex-wrap gap-0.5 mt-1">
-                    {dayMeals.map((meal, idx) => (
-                      <span
-                        key={idx}
-                        className={`w-2 h-2 rounded-full ${
-                          meal.timing === 'arrival' ? 'bg-purple-500' :
-                          meal.timing === 'pre-game' ? 'bg-orange-500' :
-                          meal.timing === 'post-game' ? 'bg-green-500' :
-                          meal.timing === 'flight-out' ? 'bg-blue-500' :
-                          'bg-yellow-500'
-                        }`}
-                        title={meal.timing}
-                      />
+              </div>
+            </div>
+          )}
+
+          {/* Meal Timing Legend - Streamlined */}
+          <div className="bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-[8px] p-4">
+            <h3 className="text-[16px] font-[500] text-[var(--md-sys-color-on-surface)] mb-3" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+              Meal Schedule Types
+            </h3>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-[#9333ea]" />
+                <span className="text-[14px] text-[var(--md-sys-color-on-surface)]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>Arrival</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-[#ea580c]" />
+                <span className="text-[14px] text-[var(--md-sys-color-on-surface)]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>Pre-Game</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-[#059669]" />
+                <span className="text-[14px] text-[var(--md-sys-color-on-surface)]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>Post-Game</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-[#3b82f6]" />
+                <span className="text-[14px] text-[var(--md-sys-color-on-surface)]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>Departure</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-[#eab308]" />
+                <span className="text-[14px] text-[var(--md-sys-color-on-surface)]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>Intermission</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        {/* Google Calendar Style Grid */}
+        <div className="bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)] rounded-[8px] overflow-hidden">
+          {/* Day headers */}
+          <div className="grid grid-cols-7 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-lowest)]">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              <div key={day} className="px-4 py-3 text-center border-r border-[var(--md-sys-color-outline-variant)] last:border-r-0">
+                <span className="text-[11px] font-[500] text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-[0.8px]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                  {day}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar days grid */}
+          <div className="grid grid-cols-7">
+            {getDaysInMonth().map((day, idx) => {
+              const dayGames = getGamesForDay(day);
+              const dayMeals = getMealsForDay(day);
+              const daySeries = getSeriesForDay(day);
+              const mealStatus = getMealStatusForDay(day);
+              const isCurrentMonth = isSameMonth(day, currentDate);
+              const isPastDay = isPast(day) && !isToday(day);
+              const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+              
+              return (
+                <div
+                  key={idx}
+                  onClick={() => !isPastDay && handleDayClick(day)}
+                  className={`min-h-[120px] border-r border-b border-[var(--md-sys-color-outline-variant)] last:border-r-0 transition-colors duration-200 relative overflow-visible group ${
+                    !isCurrentMonth ? 'bg-[var(--md-sys-color-surface-container-lowest)]' : 
+                    isWeekend ? 'bg-[var(--md-sys-color-surface-container-lowest)]/50' : 'bg-[var(--md-sys-color-surface)]'
+                  } ${
+                    isToday(day) ? 'bg-[#e3f2fd]' : ''
+                  } ${
+                    isPastDay ? 'opacity-60' : 'cursor-pointer hover:bg-[var(--md-sys-color-surface-container-lowest)] hover:shadow-sm'
+                  }`}
+                >
+                  {/* Day number and status */}
+                  <div className="flex justify-between items-start p-2 pb-1">
+                    <div className="flex items-center">
+                      {isToday(day) ? (
+                        <div className="w-7 h-7 bg-[#3b82f6] text-white rounded-full flex items-center justify-center">
+                          <span className="text-[13px] font-[500]" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                            {format(day, 'd')}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className={`text-[14px] font-[400] ${
+                          !isCurrentMonth ? 'text-[var(--md-sys-color-on-surface-variant)]' : 'text-[var(--md-sys-color-on-surface)]'
+                        }`} style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                          {format(day, 'd')}
+                        </span>
+                      )}
+                    </div>
+                    {!isPastDay && mealStatus !== 'none' && (
+                      <div className={`text-[10px] px-2 py-0.5 rounded-full font-[500] ${
+                        mealStatus === 'partial' ? 'bg-[#fef3c7] text-[#92400e]' : 'bg-[#dcfce7] text-[#166534]'
+                      }`} style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                        {mealStatus === 'partial' ? 'Partial' : `${dayMeals.length}`}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Google Calendar style series bars */}
+                  <div className="px-2">
+                    {daySeries.map((seriesItem, seriesIdx) => {
+                      const spanInfo = getSeriesSpanInfo(day, seriesItem);
+                      if (!spanInfo.isInSeries) return null;
+                      
+                      return (
+                        <div
+                          key={`series-${seriesItem.id}-${seriesIdx}`}
+                          className="mb-1 relative group"
+                        >
+                          <div
+                            className="h-[16px] text-white text-[11px] font-[500] flex items-center px-1 transition-opacity duration-200 hover:opacity-90 cursor-pointer"
+                            style={{ 
+                              backgroundColor: seriesItem.color,
+                              borderRadius: spanInfo.isStart && spanInfo.isEnd ? '2px' :
+                                          spanInfo.isStart ? '2px 0 0 2px' :
+                                          spanInfo.isEnd ? '0 2px 2px 0' : '0'
+                            }}
+                            title={`${seriesItem.title} - ${seriesItem.location}`}
+                          >
+                            {spanInfo.isStart && (
+                              <span className="truncate" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                                {seriesItem.title}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Games - Google Calendar event style */}
+                  <div className="px-2 space-y-1">
+                    {dayGames.map((game, i) => (
+                      <div
+                        key={i}
+                        className="bg-[#1a2332] text-white text-[11px] font-[500] rounded-[2px] p-1 cursor-pointer hover:shadow-sm transition-shadow duration-200"
+                      >
+                        <div className="truncate" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                          {game.isHome ? 'vs' : '@'} {game.opponent}
+                        </div>
+                        <div className="text-white/80 text-[10px] truncate" style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                          {game.time}
+                        </div>
+                      </div>
                     ))}
                   </div>
-                )}
-                
-                {/* Quick add meal for empty days */}
-                {!isPastDay && dayGames.length === 0 && dayMeals.length === 0 && (
-                  <button 
-                    className="mt-2 text-xs text-electric-blue hover:underline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDayClick(day);
-                    }}
-                  >
-                    + Schedule
-                  </button>
-                )}
-              </div>
-            );
-          })}
+                  {/* Meal indicators - Clean dots */}
+                  {dayMeals.length > 0 && (
+                    <div className="flex flex-wrap gap-1 px-2 mt-1">
+                      {dayMeals.map((meal, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-2 h-2 rounded-full ${
+                            meal.timing === 'arrival' ? 'bg-[#9333ea]' :
+                            meal.timing === 'pre-game' ? 'bg-[#ea580c]' :
+                            meal.timing === 'post-game' ? 'bg-[#059669]' :
+                            meal.timing === 'flight-out' ? 'bg-[#3b82f6]' :
+                            'bg-[#eab308]'
+                          }`}
+                          title={meal.timing}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  {/* Quick add button - Google Calendar style */}
+                  {!isPastDay && dayGames.length === 0 && dayMeals.length === 0 && (
+                    <div className="px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <button 
+                        className="text-[11px] text-[#3b82f6] hover:text-[#2563eb] font-[500] transition-colors duration-200"
+                        style={{ fontFamily: 'Google Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDayClick(day);
+                        }}
+                      >
+                        + Add
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
+    </div>
 
       {/* Modals */}
       {selectedDay && (
