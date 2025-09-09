@@ -481,7 +481,6 @@ export default function TeamCalendar() {
           </div>
         </div>
       </div>
-    </div>
 
       {/* Modals */}
       {selectedDay && (
