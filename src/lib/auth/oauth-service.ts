@@ -86,8 +86,6 @@ export class OAuthService {
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
       const fullRedirectUrl = `${baseUrl}${redirectTo}`;
 
-      console.log('🔐 Initiating OAuth flow:', { provider, redirectTo: fullRedirectUrl });
-
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
@@ -121,8 +119,6 @@ export class OAuthService {
     try {
       const supabase = createSupabaseServerClientOptimized();
 
-      console.log('🔄 Processing OAuth callback:', { provider, hasCode: !!code });
-
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
@@ -133,12 +129,6 @@ export class OAuthService {
       if (!data.session?.user) {
         return { error: 'No session created' };
       }
-
-      console.log('✅ OAuth callback successful:', { 
-        userId: data.user.id, 
-        email: data.user.email,
-        provider: data.user.app_metadata.provider 
-      });
 
       return {
         user: data.user,
@@ -253,8 +243,6 @@ export class OAuthService {
         return { error: 'User must be logged in to link OAuth account' };
       }
 
-      console.log('🔗 Linking OAuth account:', { provider, userId: session.user.id });
-
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
       const fullRedirectUrl = `${baseUrl}${redirectTo || '/auth/callback'}`;
 
@@ -291,8 +279,6 @@ export class OAuthService {
         return { success: false, error: 'User must be logged in to unlink OAuth account' };
       }
 
-      console.log('🔓 Unlinking OAuth account:', { provider, userId: user.id });
-
       // Find the identity to unlink
       const identity = user.identities?.find(identity => identity.provider === provider);
       if (!identity) {
@@ -306,7 +292,6 @@ export class OAuthService {
         return { success: false, error: error.message };
       }
 
-      console.log('✅ OAuth account unlinked successfully');
       return { success: true };
     } catch (error: any) {
       console.error('🚨 OAuth unlinking service error:', error);

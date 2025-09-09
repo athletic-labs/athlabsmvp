@@ -25,8 +25,6 @@ export function createAdaptiveRateLimit(config: AdaptiveRateLimitConfig) {
   const shouldUseDistributed = config.forceDistributed || 
     (!config.forceMemory && (isProduction || hasRedis || isDistributedDeployment));
 
-  console.log(`[Rate Limit] Using ${shouldUseDistributed ? 'distributed' : 'memory'} rate limiting for ${config.endpoint} endpoint`);
-  
   // Select appropriate rate limiter
   if (shouldUseDistributed) {
     return selectProductionRateLimit(config);

@@ -8,7 +8,45 @@ export interface ValidationResult<T> {
   error?: string;
 }
 
+// Legacy interface for backward compatibility with tests
+export interface LegacyValidationResult<T> {
+  isValid: boolean;
+  data?: T;
+  errors: Record<string, string[]>;
+}
+
 export class ValidationService {
+  // Cache for validation results
+  private static cache = new Map<string, any>();
+
+  // Clear cache method for testing
+  static clearCache(): void {
+    this.cache.clear();
+  }
+
+  // Legacy validateData method for backward compatibility
+  static validateData<T>(schema: z.ZodSchema<T>, data: unknown): LegacyValidationResult<T> {
+    const cacheKey = JSON.stringify({ schema: schema._def, data });
+    
+    // Check cache first
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    const result = this.validate(schema, data);
+    
+    // Convert to legacy format
+    const legacyResult: LegacyValidationResult<T> = {
+      isValid: result.success,
+      data: result.data,
+      errors: result.errors || {},
+    };
+
+    // Cache the result
+    this.cache.set(cacheKey, legacyResult);
+    
+    return legacyResult;
+  }
   // Generic validation method
   static validate<T>(schema: z.ZodSchema<T>, data: unknown): ValidationResult<T> {
     try {

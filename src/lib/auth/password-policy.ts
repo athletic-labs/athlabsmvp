@@ -354,8 +354,7 @@ export class PasswordHistoryManager {
       // This would be a database operation to:
       // 1. Add new password hash to history
       // 2. Remove oldest entries if history exceeds limit
-      
-      console.log(`Password history updated for user ${userId}`);
+
     } catch (error) {
       console.error('Failed to update password history:', error);
     }

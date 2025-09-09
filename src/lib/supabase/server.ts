@@ -47,7 +47,7 @@ function initializePool() {
       
       // Log pool stats in development
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[DB Pool] Active connections: ${serverClientPool.size}/${CONNECTION_POOL_CONFIG.max}`);
+
       }
     }, CONNECTION_POOL_CONFIG.reapIntervalMillis);
   }

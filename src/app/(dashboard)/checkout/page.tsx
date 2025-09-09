@@ -6,6 +6,7 @@ import { useCartStore } from '@/lib/store/cart-store';
 import { ShoppingCart, Calendar, Clock, MapPin, FileText } from 'lucide-react';
 import { AddressService, AddressSuggestion } from '@/lib/services/address-service';
 import { OrderService } from '@/lib/services/order-service';
+import { toast } from 'sonner';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -50,12 +51,12 @@ export default function CheckoutPage() {
 
   const handleSubmitOrder = async () => {
     if (!deliveryDate) {
-      alert('Please select delivery date');
+      toast.error('Please select delivery date');
       return;
     }
     
     if (!deliveryTiming) {
-      alert('Please select meal context');
+      toast.error('Please select meal context');
       return;
     }
 
@@ -122,7 +123,7 @@ export default function CheckoutPage() {
       }, 100);
     } catch (error) {
       console.error('Order submission failed:', error);
-      alert('Failed to submit order. Please try again.');
+      toast.error('Failed to submit order. Please try again.');
     } finally {
       setSubmitting(false);
     }

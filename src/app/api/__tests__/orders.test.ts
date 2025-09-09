@@ -8,13 +8,13 @@ jest.mock('@/lib/supabase/server', () => ({
     auth: {
       getUser: jest.fn(),
     },
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        eq: jest.fn(() => ({
           single: jest.fn(),
         })),
       })),
-      insert: vi.fn(() => ({
+      insert: jest.fn(() => ({
         select: jest.fn(),
       })),
     })),
@@ -77,15 +77,15 @@ describe('/api/v1/orders', () => {
       });
 
       jest.mocked(mockSupabase.from).mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
             single: jest.fn().mockResolvedValue({
               data: { id: 'user-123', team_id: 'team-123', role: 'team_staff' },
               error: null,
             }),
           })),
         })),
-        insert: vi.fn(() => ({
+        insert: jest.fn(() => ({
           select: jest.fn().mockResolvedValue({
             data: [{ id: 'order-123', ...orderData }],
             error: null,
@@ -156,14 +156,14 @@ describe('/api/v1/orders', () => {
       });
 
       jest.mocked(mockSupabase.from).mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
             single: jest.fn().mockResolvedValue({
               data: { id: 'user-123', team_id: 'team-123', role: 'team_staff' },
               error: null,
             }),
           })),
-          order: vi.fn(() => ({
+          order: jest.fn(() => ({
             range: jest.fn().mockResolvedValue({
               data: mockOrders,
               error: null,

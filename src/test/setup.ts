@@ -114,6 +114,90 @@ global.ResizeObserver = jest.fn(() => ({
   unobserve: jest.fn(),
 })) as any;
 
+// Mock Next.js server API components for API route testing
+global.Request = class MockRequest {
+  constructor(input: string | Request, init?: RequestInit) {
+    this.url = typeof input === 'string' ? input : input.url;
+    this.method = init?.method || 'GET';
+    this.headers = new Headers(init?.headers);
+    this.body = init?.body || null;
+  }
+  url: string;
+  method: string;
+  headers: Headers;
+  body: any;
+
+  async json() {
+    return this.body ? JSON.parse(this.body) : {};
+  }
+
+  async text() {
+    return this.body || '';
+  }
+
+  clone() {
+    return new MockRequest(this.url, {
+      method: this.method,
+      headers: this.headers,
+      body: this.body,
+    });
+  }
+} as any;
+
+global.Response = class MockResponse {
+  body: any;
+  status: number;
+  statusText: string;
+  headers: Headers;
+  ok: boolean;
+
+  constructor(body?: any, init?: ResponseInit) {
+    this.body = body;
+    this.status = init?.status || 200;
+    this.statusText = init?.statusText || 'OK';
+    this.headers = new Headers(init?.headers);
+    this.ok = this.status >= 200 && this.status < 300;
+  }
+
+  static json(object: any, init?: ResponseInit) {
+    return new MockResponse(JSON.stringify(object), {
+      ...init,
+      headers: {
+        'content-type': 'application/json',
+        ...init?.headers,
+      },
+    });
+  }
+
+  async json() {
+    return JSON.parse(this.body);
+  }
+
+  async text() {
+    return this.body;
+  }
+} as any;
+
+global.Headers = Headers;
+
+// Mock Next.js server context
+jest.mock('next/server', () => ({
+  NextRequest: global.Request,
+  NextResponse: {
+    json: (data: any, init?: ResponseInit) => {
+      return new global.Response(JSON.stringify(data), {
+        ...init,
+        headers: {
+          'content-type': 'application/json',
+          ...init?.headers,
+        },
+      });
+    },
+    next: () => new global.Response(null, { status: 200 }),
+    redirect: (url: string) => new global.Response(null, { status: 302, headers: { Location: url } }),
+  },
+}));
+
 // Mock Supabase auth helpers
 jest.mock('@supabase/auth-helpers-nextjs', () => ({
   createClientComponentClient: jest.fn(() => ({

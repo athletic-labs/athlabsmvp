@@ -45,8 +45,6 @@ export function OAuthButton({
       setLoading(true);
       setError(null);
 
-      console.log('🔐 Starting OAuth flow:', { provider, redirectTo });
-
       const result = await OAuthService.signInWithOAuth(provider, { redirectTo });
 
       if (result.error) {
@@ -57,7 +55,7 @@ export function OAuthButton({
       }
 
       if (result.url) {
-        console.log('🚀 Redirecting to OAuth provider...');
+
         window.location.href = result.url;
         onSuccess?.();
       }

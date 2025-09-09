@@ -28,7 +28,7 @@ class RedisRateLimitStore implements RateLimitStore {
   constructor(redisUrl?: string) {
     // In a real implementation, you would initialize Redis client here
     // For now, this is a mock that falls back to memory store
-    console.log(`[Rate Limit] Redis store initialized with URL: ${redisUrl || 'default'}`);
+
     this.mockRedisConnection();
   }
 
@@ -134,7 +134,7 @@ class OptimizedMemoryRateLimitStore implements RateLimitStore {
     }
 
     if (cleaned > 0) {
-      console.log(`[Rate Limit] Cleaned ${cleaned} expired entries, ${this.store.size} remaining`);
+
     }
   }
 

@@ -6,6 +6,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isTod
 import MealScheduleModal from './MealScheduleModal';
 import DayScheduleModal from './DayScheduleModal';
 import ImportScheduleModal from './ImportScheduleModal';
+import { toast } from 'sonner';
 
 // Specific meal timing types for sports teams
 type MealTiming = 'arrival' | 'pre-game' | 'post-game' | 'flight-out' | 'intermission';
@@ -177,7 +178,7 @@ export default function TeamCalendar() {
     
     // Debug logging
     if (matchingSeries.length > 0) {
-      console.log(`Date ${dateStr} has series:`, matchingSeries.map(s => s.title));
+
     }
     
     return matchingSeries;
@@ -219,7 +220,7 @@ export default function TeamCalendar() {
           <button
             onClick={() => {
               // TODO: Add series creation modal
-              alert('Series creation coming soon! For now, edit the code to add custom series.');
+              toast.info('Series creation coming soon! For now, edit the code to add custom series.');
             }}
             className="flex items-center gap-2 px-4 py-2 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] rounded-lg hover:bg-[var(--md-sys-color-primary)]/90"
           >

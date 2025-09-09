@@ -188,7 +188,7 @@ export function withSecureCors(
 
     // Optional request logging
     if (logRequests) {
-      console.log(`[CORS] ${request.method} ${request.nextUrl.pathname} from ${origin || 'same-origin'}`);
+
     }
 
     // Rate limiting based on origin (simple implementation)

@@ -49,8 +49,7 @@ export class TemplateService {
    * Get all saved templates for the team
    */
   static async getTemplates(): Promise<SavedTemplate[]> {
-    console.log('Fetching templates from API...');
-    
+
     const response = await fetch('/api/templates', {
       cache: 'no-store',
       credentials: 'include',
@@ -65,7 +64,7 @@ export class TemplateService {
     
     const data = await response.json();
     const templates = data.templates || [];
-    console.log('Retrieved templates:', templates.length, 'templates');
+
     return templates;
   }
   
@@ -73,8 +72,7 @@ export class TemplateService {
    * Delete a template - optimized to use RESTful endpoint
    */
   static async deleteTemplate(templateId: string): Promise<void> {
-    console.log('Deleting template:', templateId);
-    
+
     const response = await fetch(`/api/templates/${templateId}`, {
       method: 'DELETE',
       credentials: 'include',
@@ -82,9 +80,7 @@ export class TemplateService {
         'Content-Type': 'application/json',
       },
     });
-    
-    console.log('Delete response status:', response.status);
-    
+
     if (!response.ok) {
       const error = await response.json();
       console.error('Delete failed:', error);
@@ -92,7 +88,7 @@ export class TemplateService {
     }
     
     const result = await response.json();
-    console.log('Delete successful:', result);
+
   }
   
   /**

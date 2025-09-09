@@ -15,8 +15,6 @@ export async function GET(request: NextRequest) {
   const error = requestUrl.searchParams.get('error');
   const provider = requestUrl.searchParams.get('provider') || 'unknown';
 
-  console.log('🔐 OAuth callback:', { code: !!code, state, error, provider });
-
   // Handle OAuth errors
   if (error) {
     console.error('❌ OAuth error:', error);
@@ -38,7 +36,7 @@ export async function GET(request: NextRequest) {
     const supabase = createSupabaseServerClientOptimized();
 
     // Exchange code for session
-    console.log('🔄 Exchanging code for session...');
+
     const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
     if (exchangeError) {
@@ -52,14 +50,13 @@ export async function GET(request: NextRequest) {
     }
 
     const { user, session } = data;
-    console.log('✅ OAuth session established:', { userId: user.id, email: user.email, provider: user.app_metadata.provider });
 
     // Check if user profile exists
     let userProfile = await getUserProfile(supabase, user.id);
 
     // Create profile if it doesn't exist (first OAuth login)
     if (!userProfile) {
-      console.log('👤 Creating new user profile...');
+
       userProfile = await createUserProfile(supabase, user, provider);
       
       if (!userProfile) {
@@ -82,7 +79,6 @@ export async function GET(request: NextRequest) {
 
     // Determine redirect destination
     const redirectTo = getRedirectDestination(requestUrl, userProfile);
-    console.log('🚀 Redirecting to:', redirectTo);
 
     return NextResponse.redirect(new URL(redirectTo, requestUrl.origin));
 
@@ -161,7 +157,6 @@ async function createUserProfile(supabase: any, user: any, provider: string) {
       throw error;
     }
 
-    console.log('✅ Created user profile:', { id: data.id, email: data.email, provider });
     return data;
   } catch (error) {
     console.error('Error creating user profile:', error);
@@ -190,7 +185,6 @@ async function updateProfileWithOAuthData(supabase: any, userId: string, user: a
       .update(updates)
       .eq('id', userId);
 
-    console.log('✅ Updated profile with OAuth data');
   } catch (error) {
     console.error('Error updating profile with OAuth data:', error);
   }

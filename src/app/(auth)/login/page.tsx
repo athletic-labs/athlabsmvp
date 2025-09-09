@@ -33,7 +33,7 @@ export default function LoginPage() {
   
   // Debug form state
   React.useEffect(() => {
-    console.log('📋 Form state:', { errors, isValid, errorKeys: Object.keys(errors) });
+
   }, [errors, isValid]);
 
   // Handle OAuth errors from URL params
@@ -50,33 +50,29 @@ export default function LoginPage() {
   }, []);
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log('🚀 Form submitted!', { email: data.email, password: data.password?.length + ' chars' });
+
     try {
       setLoading(true);
       setError(null);
       setOauthError(null);
-      
-      console.log('📞 Calling AuthService.signIn...');
+
       const result = await AuthService.signIn(data.email, data.password);
-      
-      console.log('🔄 Auth result:', result);
-      
+
       if (result.error) {
-        console.log('❌ Auth error:', result.error);
+
         setError(result.error);
         return;
       }
 
       if (result.user) {
-        console.log('👤 User authenticated:', result.user);
+
         // Check if user needs onboarding
         if (!result.user.onboarding_completed) {
-          console.log('🚀 Redirecting to onboarding...');
+
           await new Promise(resolve => setTimeout(resolve, 200));
           window.location.replace('/onboarding');
         } else {
-          console.log('🚀 Redirecting to dashboard...');
-          
+
           // Add a small delay to ensure session cookies are fully set
           await new Promise(resolve => setTimeout(resolve, 200));
           
@@ -85,7 +81,7 @@ export default function LoginPage() {
           window.location.replace('/dashboard');
         }
       } else {
-        console.log('❌ No user in result');
+
         setError('Login failed. Please try again.');
       }
     } catch (err: any) {
@@ -115,7 +111,6 @@ export default function LoginPage() {
           <p className="md3-body-large text-center text-[var(--md-sys-color-on-surface-variant)] mb-8">
             Sign in to your Athletic Labs account
           </p>
-
 
           {/* OAuth Error Display */}
           {oauthError && (
@@ -171,7 +166,7 @@ export default function LoginPage() {
               fullWidth
               leftIcon={loading ? <Loader2 className="animate-spin h-4 w-4" /> : undefined}
               onClick={(e) => {
-                console.log('🖱️ Button clicked!', { disabled: loading, errors: Object.keys(errors) });
+
                 // Don't prevent default - let form submit handle it
               }}
             >

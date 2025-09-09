@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { X, Minus, Plus, ChevronDown, ChevronUp, Trash2, ShoppingCart, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useCartStore } from '@/lib/store/cart-store';
+import { toast } from 'sonner';
 
 interface CartSidePanelProps {
   onClose: () => void;
@@ -47,7 +48,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
   const handleCheckout = () => {
     // Check minimum order requirement
     if (subtotal < minimumOrder) {
-      alert(`Please add $${formatPrice(amountNeeded)} more to meet the minimum order requirement.`);
+      toast.warning(`Please add $${formatPrice(amountNeeded)} more to meet the minimum order requirement.`);
       return;
     }
 

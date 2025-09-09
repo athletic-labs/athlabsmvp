@@ -46,23 +46,19 @@ export default function SavedTemplatesPage() {
   };
   
   const handleDelete = async (templateId: string) => {
-    if (!confirm('Are you sure you want to delete this template?')) return;
-    
-    try {
-      console.log('Starting delete for template:', templateId);
-      console.log('Current templates count:', templates.length);
-      
-      await TemplateService.deleteTemplate(templateId);
-      
-      const newTemplates = templates.filter(t => t.id !== templateId);
-      console.log('New templates count after filter:', newTemplates.length);
-      
-      setTemplates(newTemplates);
-      toast.success(`Template deleted - ${newTemplates.length} remaining`);
-    } catch (error) {
-      console.error('Delete error:', error);
-      toast.error('Failed to delete template');
-    }
+    // Use toast promise for better UX
+    toast.promise(
+      TemplateService.deleteTemplate(templateId),
+      {
+        loading: 'Deleting template...',
+        success: () => {
+          const newTemplates = templates.filter(t => t.id !== templateId);
+          setTemplates(newTemplates);
+          return `Template deleted - ${newTemplates.length} remaining`;
+        },
+        error: 'Failed to delete template'
+      }
+    );
   };
   
   const handleAddToCart = async (template: SavedTemplate) => {

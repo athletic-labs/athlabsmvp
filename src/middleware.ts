@@ -195,11 +195,9 @@ export async function middleware(request: NextRequest) {
 
     // Check if user is authenticated
     if (!session?.user) {
-      console.log(`No session for ${pathname}, redirecting to login`);
+
       return redirectToLogin(request);
     }
-
-    console.log(`Middleware: authenticated user ${session.user.id} accessing ${pathname}`);
 
     // Get cached user data (single optimized query)
     const userData = await getCachedUserData(session.user.id, supabase);

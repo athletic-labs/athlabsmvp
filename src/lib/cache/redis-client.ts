@@ -38,7 +38,7 @@ class RedisCache {
       });
 
       this.client.on('connect', () => {
-        console.log('[Redis] Connected successfully');
+
         this.isConnected = true;
       });
 
@@ -327,11 +327,11 @@ if (redisConfig.enabled) {
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  console.log('[Redis] Gracefully shutting down...');
+
   await redisCache.disconnect();
 });
 
 process.on('SIGTERM', async () => {
-  console.log('[Redis] Gracefully shutting down...');
+
   await redisCache.disconnect();
 });

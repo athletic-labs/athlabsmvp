@@ -132,7 +132,7 @@ class MiddlewareCacheManager {
       
       if (cleanedCount > 0) {
         this.updateStats();
-        console.log(`[Middleware Cache] Cleaned ${cleanedCount} expired entries`);
+
       }
     }, this.CLEANUP_INTERVAL);
   }

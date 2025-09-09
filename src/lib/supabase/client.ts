@@ -36,7 +36,7 @@ function initializeClientPool() {
       
       // Development logging
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[Client Pool] Active connections: ${clientPool.size}/${CLIENT_POOL_CONFIG.max}`);
+
       }
     }, 30000); // Check every 30 seconds
   }

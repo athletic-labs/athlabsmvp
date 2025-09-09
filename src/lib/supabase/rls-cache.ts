@@ -323,7 +323,7 @@ export class RLSPolicyCache {
     keysToDelete.forEach(key => this.cache.delete(key));
 
     if (this.config.enableMonitoring && keysToDelete.length > 0) {
-      console.log(`RLS Cache: Cleaned up ${keysToDelete.length} expired entries`);
+
     }
   }
 

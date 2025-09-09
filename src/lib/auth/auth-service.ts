@@ -27,16 +27,13 @@ export class AuthService {
 
   static async signIn(email: string, password: string): Promise<SignInResponse> {
     try {
-      console.log('🔐 Starting authentication for:', email);
-      
+
       // Simplified authentication - just do the core auth first
       const supabase = this.getSupabaseClient();
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
-      console.log('🔑 Auth response:', { user: !!data.user, session: !!data.session, error: error?.message });
 
       if (error) {
         console.error('❌ Supabase auth error:', error);
@@ -46,8 +43,7 @@ export class AuthService {
       }
 
       if (data.user) {
-        console.log('👤 User authenticated, getting profile...');
-        
+
         // Do background tasks asynchronously to avoid blocking the login
         Promise.all([
           this.resetFailedAttempts(data.user.id).catch(e => console.warn('Reset failed attempts error:', e)),
@@ -57,7 +53,15 @@ export class AuthService {
 
         // Get user profile with permissions (this is essential)
         const profile = await this.getCurrentUser();
-        console.log('📋 Profile loaded:', { id: profile?.id, role: profile?.role, team_id: profile?.team_id });
+
+        // If we can't get the user profile, treat it as a failed login
+        if (!profile) {
+          return {
+            user: null,
+            session: null,
+            error: 'Unable to load user profile'
+          };
+        }
         
         return {
           user: profile,
@@ -105,16 +109,15 @@ export class AuthService {
 
   static async getCurrentUser(): Promise<UserProfile | null> {
     try {
-      console.log('👤 Getting current user...');
+
       const supabase = this.getSupabaseClient();
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError || !user) {
-        console.log('❌ No authenticated user found');
+
         return null;
       }
 
-      console.log('📋 Fetching user profile...');
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -129,7 +132,7 @@ export class AuthService {
       // Get team name separately to avoid complex joins that might timeout
       let teamName: string | undefined;
       if (profile.team_id) {
-        console.log('🏈 Fetching team info...');
+
         const { data: team } = await supabase
           .from('teams')
           .select('name')
@@ -140,8 +143,7 @@ export class AuthService {
 
       // Skip complex permissions for now to avoid timeout issues
       // We can load permissions lazily when needed
-      console.log('✅ User profile loaded successfully');
-      
+
       return {
         id: profile.id,
         email: profile.email,

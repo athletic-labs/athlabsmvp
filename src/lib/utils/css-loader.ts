@@ -122,7 +122,7 @@ export function loadNonCriticalCSS(): void {
       loadCSS({
         href: '/styles/non-critical.css',
         onLoad: () => {
-          console.log('Non-critical CSS loaded successfully');
+
           // Mark as loaded for analytics
           if (typeof window !== 'undefined' && 'performance' in window) {
             performance.mark('non-critical-css-loaded');
@@ -137,7 +137,7 @@ export function loadNonCriticalCSS(): void {
       loadCSS({
         href: '/styles/design-system.css',
         onLoad: () => {
-          console.log('Design system CSS loaded');
+
         },
         onError: (error) => {
           console.warn('Design system CSS failed to load:', error);
@@ -175,12 +175,12 @@ export function measureCSSLoadingPerformance(): void {
       const nonCriticalMark = performance.getEntriesByName('non-critical-css-loaded')[0];
       
       if (criticalMark) {
-        console.log(`Critical CSS ready in ${criticalMark.startTime}ms`);
+
       }
       
       if (nonCriticalMark && criticalMark) {
         const totalTime = nonCriticalMark.startTime - criticalMark.startTime;
-        console.log(`Non-critical CSS loaded ${totalTime}ms after critical CSS`);
+
       }
     } catch (error) {
       console.warn('CSS performance measurement failed:', error);
@@ -265,7 +265,7 @@ export function loadThemeCSS(theme: 'light' | 'dark' | 'auto' = 'auto'): void {
   const link = loadCSS({
     href: `/styles/themes/${theme}.css`,
     onLoad: () => {
-      console.log(`${theme} theme CSS loaded`);
+
     }
   });
   

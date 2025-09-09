@@ -34,12 +34,18 @@ jest.mock('@/lib/supabase/client', () => ({
 // Mock RBACService
 jest.mock('../rbac', () => ({
   RBACService: {
-    logAuditEvent: jest.fn(),
-    getUserPermissions: jest.fn(),
+    logAuditEvent: jest.fn().mockResolvedValue(undefined),
+    getUserPermissions: jest.fn().mockResolvedValue([]),
   },
 }));
 
 describe('AuthService', () => {
+  // Mock private AuthService methods to avoid database calls
+  beforeAll(() => {
+    (AuthService as any).resetFailedAttempts = jest.fn().mockResolvedValue(undefined);
+    (AuthService as any).updateLastLogin = jest.fn().mockResolvedValue(undefined);
+    (AuthService as any).handleFailedLogin = jest.fn().mockResolvedValue(undefined);
+  });
   beforeEach(() => {
     jest.clearAllMocks();
     // Reset all mocks to default state
@@ -71,17 +77,8 @@ describe('AuthService', () => {
         error: null,
       });
 
-      // Mock profile fetch for getCurrentUser
-      const mockSelect = jest.fn(() => ({
-        eq: jest.fn(() => ({
-          single: jest.fn(),
-        })),
-      }));
-      
-      const mockSingle = mockSelect().eq().single;
-      
-      // First call: profiles table
-      mockSingle
+      // Create a proper mock chain for profiles table
+      const mockSingle = jest.fn()
         .mockResolvedValueOnce({
           data: {
             id: 'user-123',
@@ -95,15 +92,15 @@ describe('AuthService', () => {
           },
           error: null,
         })
-        // Second call: teams table
         .mockResolvedValueOnce({
           data: { name: 'Test Team' },
           error: null,
         });
+
+      const mockEq = jest.fn(() => ({ single: mockSingle }));
+      const mockSelect = jest.fn(() => ({ eq: mockEq }));
       
-      mockFrom.mockReturnValue({
-        select: mockSelect,
-      });
+      mockFrom.mockReturnValue({ select: mockSelect });
 
       const result = await AuthService.signIn('test@example.com', 'password123');
 
@@ -137,22 +134,21 @@ describe('AuthService', () => {
         error: null,
       });
 
-      mockFrom.mockReturnValue({
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn().mockResolvedValue({
-              data: null,
-              error: { message: 'Connection failed' },
-            }),
-          })),
-        })),
+      // Mock database error in profile fetch
+      const mockSingle = jest.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'Connection failed' },
       });
+
+      const mockEq = jest.fn(() => ({ single: mockSingle }));
+      const mockSelect = jest.fn(() => ({ eq: mockEq }));
+      mockFrom.mockReturnValue({ select: mockSelect });
 
       const result = await AuthService.signIn('test@example.com', 'password123');
       
       expect(result.user).toBeNull();
       expect(result.session).toBeNull();
-      expect(result.error).toBe('Connection failed');
+      expect(result.error).toBe('Unable to load user profile');
     });
   });
 
@@ -169,26 +165,29 @@ describe('AuthService', () => {
         error: null,
       });
 
-      // Mock profile fetch
-      mockFrom.mockReturnValue({
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn().mockResolvedValue({
-              data: {
-                id: 'user-123',
-                email: 'test@example.com',
-                first_name: 'Test',
-                last_name: 'User',
-                role: 'team_staff',
-                team_id: 'team-123',
-                is_active: true,
-                teams: { name: 'Test Team' },
-              },
-              error: null,
-            }),
-          })),
-        })),
-      });
+      // Mock profile fetch - first call for profile, second for team
+      const mockSingle = jest.fn()
+        .mockResolvedValueOnce({
+          data: {
+            id: 'user-123',
+            email: 'test@example.com',
+            first_name: 'Test',
+            last_name: 'User',
+            role: 'team_staff',
+            team_id: 'team-123',
+            is_active: true,
+            onboarding_completed: true,
+          },
+          error: null,
+        })
+        .mockResolvedValueOnce({
+          data: { name: 'Test Team' },
+          error: null,
+        });
+
+      const mockEq = jest.fn(() => ({ single: mockSingle }));
+      const mockSelect = jest.fn(() => ({ eq: mockEq }));
+      mockFrom.mockReturnValue({ select: mockSelect });
 
       const result = await AuthService.getCurrentUser();
 
