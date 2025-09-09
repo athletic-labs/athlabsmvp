@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSupabase } from '@/lib/supabase/client';
-import { subDays } from 'date-fns';
+import { subDays, addDays } from 'date-fns';
 
 // Split data by update frequency and criticality
 export interface CriticalMetrics {
@@ -63,10 +63,12 @@ export interface GameInfo {
 export interface UpcomingDelivery {
   id: string;
   date: Date;
+  scheduledTime: string;
   items: string[];
   location: string;
   status: 'confirmed' | 'preparing' | 'in-transit' | 'delivered';
   estimatedTime?: string;
+  recipients: number;
 }
 
 // Critical data hook - updates every 30 seconds for real-time awareness
@@ -216,7 +218,7 @@ export function useStaticData() {
       {
         id: 'game_1',
         opponent: 'State University',
-        date: subDays(new Date(), -3),
+        date: addDays(new Date(), 3),
         location: 'Home Stadium',
         type: 'Conference',
         isHome: true
@@ -263,18 +265,22 @@ export function useUpcomingDeliveries() {
           {
             id: '1',
             date: new Date(),
+            scheduledTime: new Date().toISOString(),
             items: ['Team Breakfast Package', 'Recovery Smoothies'],
             location: 'Athletic Training Center',
             status: 'confirmed',
-            estimatedTime: '8:00 AM'
+            estimatedTime: '8:00 AM',
+            recipients: 28
           },
           {
             id: '2',
-            date: subDays(new Date(), -2),
+            date: addDays(new Date(), 2),
+            scheduledTime: addDays(new Date(), 2).toISOString(),
             items: ['Pre-Game Fuel Package'],
             location: 'Stadium East',
             status: 'preparing',
-            estimatedTime: '2:00 PM'
+            estimatedTime: '2:00 PM',
+            recipients: 28
           }
         ];
         
@@ -293,7 +299,7 @@ export function useUpcomingDeliveries() {
   const relevantDeliveries = useMemo(() => 
     deliveries.filter(delivery => {
       const now = new Date();
-      const sevenDaysFromNow = subDays(new Date(), -7);
+      const sevenDaysFromNow = addDays(new Date(), 7);
       return delivery.date >= now && delivery.date <= sevenDaysFromNow;
     }),
     [deliveries]

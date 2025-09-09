@@ -87,7 +87,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ) : null;
 
   return (
-    <div className="min-h-screen bg-[var(--md-sys-color-surface)]">
+    <div className="dashboard-layout">
       {/* Skip Links */}
       <ScreenReaderOnly as="a" href="#main-content" className="focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:p-2 focus:bg-[var(--md-sys-color-surface)] focus:border focus:rounded">
         Skip to main content
@@ -96,8 +96,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         Skip to navigation
       </ScreenReaderOnly>
       
-      {/* Responsive Navigation */}
-      <div id="navigation">
+      {/* Main Content Area - Grid positioned */}
+      <main 
+        id="main-content"
+        className="main-content-area"
+        role="main"
+        aria-label="Main content area"
+      >
+        {/* Mobile header when needed */}
+        <CompactHeader />
+        
+        {/* Content with proper padding */}
+        <div className={`${shouldShowBottomNav ? 'p-4' : 'p-6'} max-w-7xl mx-auto`}>
+          {children}
+        </div>
+      </main>
+      
+      {/* Navigation Area - Grid positioned */}
+      <div id="navigation" className="navigation-area">
         <NavigationResponsive
           items={navigationItems}
           activeKey={getActiveNavigationKey(NAVIGATION_ITEMS)}
@@ -161,24 +177,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           }
         />
       </div>
-
-      {/* Main Layout */}
-      <div className={`flex flex-col min-h-screen ${getContentSpacing()}`}>
-        <CompactHeader />
-        
-        <main 
-          id="main-content"
-          className="flex-1 bg-[var(--md-sys-color-surface-container-lowest)]"
-          role="main"
-          aria-label="Main content area"
-        >
-          <div className={`${shouldShowBottomNav ? 'p-4' : 'p-6'} ${shouldShowBottomNav ? 'pb-20' : ''}`}>
-            {children}
-          </div>
-        </main>
-      </div>
       
-      {/* Cart Drawer */}
+      {/* Cart Drawer - Remains fixed positioned for overlay */}
       <CartDrawer open={cartOpen} onClose={closeCart} />
     </div>
   );

@@ -178,7 +178,7 @@ const MediumNavigation = memo(function MediumNavigation({
 }: NavigationConfig) {
   return (
     <nav 
-      className="flex flex-col w-20 bg-[var(--md-sys-color-surface)] border-r border-[var(--md-sys-color-outline-variant)] min-h-screen"
+      className="flex flex-col h-full bg-[var(--md-sys-color-surface)]"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -243,7 +243,7 @@ const ExpandedNavigation = memo(function ExpandedNavigation({
 }: NavigationConfig) {
   return (
     <nav 
-      className="flex flex-col w-80 bg-[var(--md-sys-color-surface-container)] border-r border-[var(--md-sys-color-outline-variant)] min-h-screen"
+      className="flex flex-col h-full bg-[var(--md-sys-color-surface-container)]"
       role="navigation"
       aria-label="Main navigation"
     >

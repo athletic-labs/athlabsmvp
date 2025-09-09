@@ -20,6 +20,75 @@
     letter-spacing: var(--md-sys-typescale-body-large-tracking);
   }
   
+  /* Modern CSS Grid Layout System */
+  .dashboard-layout {
+    display: grid;
+    min-height: 100vh;
+    position: relative;
+  }
+  
+  /* Mobile-first responsive grid */
+  @media (max-width: 599px) {
+    .dashboard-layout {
+      grid-template-areas: 
+        "main"
+        "navigation";
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr auto;
+    }
+  }
+  
+  /* Tablet navigation rail */
+  @media (min-width: 600px) and (max-width: 839px) {
+    .dashboard-layout {
+      grid-template-areas: 
+        "navigation main";
+      grid-template-columns: 80px 1fr;
+      grid-template-rows: 1fr;
+    }
+  }
+  
+  /* Desktop expanded navigation */
+  @media (min-width: 840px) {
+    .dashboard-layout {
+      grid-template-areas: 
+        "navigation main";
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 1fr;
+    }
+  }
+  
+  .navigation-area {
+    grid-area: navigation;
+    overflow-y: auto;
+  }
+  
+  .main-content-area {
+    grid-area: main;
+    overflow: auto;
+    background-color: var(--md-sys-color-surface-container-lowest);
+  }
+  
+  /* Mobile bottom navigation styling */
+  @media (max-width: 599px) {
+    .navigation-area {
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      background-color: var(--md-sys-color-surface);
+    }
+    
+    .main-content-area {
+      padding-bottom: 0; /* No need for bottom padding with grid */
+    }
+  }
+  
+  /* Desktop navigation styling */
+  @media (min-width: 600px) {
+    .navigation-area {
+      border-right: 1px solid var(--md-sys-color-outline-variant);
+      background-color: var(--md-sys-color-surface-container);
+    }
+  }
+  
   /* Remove default focus outlines - we'll use our own */
   *:focus {
     outline: none;

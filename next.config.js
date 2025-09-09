@@ -123,8 +123,8 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              // Scripts: Allow self and specific external services (NO unsafe-eval)
-              "script-src 'self' https://www.googletagmanager.com https://js.sentry-io https://browser.sentry-cdn.com https://www.google-analytics.com",
+              // Scripts: Allow self, specific external services, and Next.js inline scripts
+              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://js.sentry-io https://browser.sentry-cdn.com https://www.google-analytics.com",
               // Styles: Allow self, Google Fonts, and inline styles (React style prop)
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
