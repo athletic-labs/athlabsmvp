@@ -7,6 +7,8 @@ const PUBLIC_ROUTES = [
   '/',
   '/login',
   '/signup',
+  '/debug',
+  '/login-simple',
   '/api/client-ip',
   '/api/health',
 ];
