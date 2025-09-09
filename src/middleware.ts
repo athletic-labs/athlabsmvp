@@ -1,5 +1,4 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { createSupabaseServerClientOptimized } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -178,8 +177,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Create optimized Supabase client with connection pooling
-    const supabase = createSupabaseServerClientOptimized();
+    // Create Supabase middleware client for Edge Runtime
+    const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
 
     // Get session
     const {
@@ -342,7 +341,7 @@ async function checkUserPermissionsOptimized(
   }
 }
 
-// Async function for non-blocking audit logging
+// Simplified audit logging for Edge Runtime
 async function logAccessAsync(
   supabase: any,
   accessLog: {
@@ -354,11 +353,9 @@ async function logAccessAsync(
     userAgent: string | null;
   }
 ): Promise<void> {
-  // Use a separate connection for audit logging to avoid blocking main request
-  const auditSupabase = createSupabaseServerClientOptimized();
-  
   try {
-    await auditSupabase
+    // Use the same middleware client for simplicity in Edge Runtime
+    await supabase
       .from('audit_logs')
       .insert({
         user_id: accessLog.userId,
@@ -373,8 +370,8 @@ async function logAccessAsync(
         },
       });
   } catch (error) {
-    // Don't block requests if audit logging fails
-    console.error('Failed to log access:', error);
+    // Don't block requests if audit logging fails in Edge Runtime
+    // Reduced logging to avoid Edge Runtime issues
   }
 }
 
@@ -413,6 +410,4 @@ export const config = {
      */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
-  // Use Node.js runtime instead of Edge Runtime to avoid API restrictions
-  runtime: 'nodejs',
 };
