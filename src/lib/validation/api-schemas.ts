@@ -109,12 +109,23 @@ export const createTeamSchema = z.object({
   taxRate: z.number().min(0).max(1).default(0.0875),
 });
 
+// Template item schema (more flexible than order item)
+export const templateItemSchema = z.object({
+  id: z.string().min(1, 'Item ID is required'), // Allow non-UUID IDs like 'p1', 'p2'
+  name: z.string().min(1, 'Item name is required').max(255),
+  quantity: positiveIntSchema,
+  unitPrice: nonNegativeNumberSchema,
+  servings: z.number().int().min(1).optional(),
+  category: z.string().optional(),
+  panSize: z.enum(['half', 'full']).optional(),
+  notes: z.string().max(500).optional(),
+});
+
 // Template schemas
 export const createTemplateSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
-  items: z.array(orderItemSchema).min(1),
-  teamId: uuidSchema,
+  items: z.array(templateItemSchema).min(1),
 });
 
 export const updateTemplateSchema = createTemplateSchema.partial().extend({

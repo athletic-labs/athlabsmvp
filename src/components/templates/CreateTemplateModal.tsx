@@ -109,7 +109,25 @@ export default function CreateTemplateModal({ open, onClose }: CreateTemplateMod
     setSaveError(null);
     
     try {
-      await TemplateService.saveTemplate(templateName, selectedItems);
+      // Transform selectedItems to match API schema
+      const templateItems = selectedItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: item.panSize === 'full' ? item.priceFull : item.priceHalf,
+        servings: item.panSize === 'full' ? item.servingsFull : item.servingsHalf,
+        category: item.category,
+        panSize: item.panSize,
+        notes: `${item.description}${item.dietaryTags.length > 0 ? ` | ${item.dietaryTags.join(', ')}` : ''}`
+      }));
+      
+      const templateData = {
+        name: templateName,
+        description: templateDescription,
+        items: templateItems
+      };
+      
+      await TemplateService.saveTemplate(templateData.name, templateData.items, templateData.description);
       
       setShowSaveConfirm(true);
       toast.success('Template saved successfully!');

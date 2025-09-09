@@ -86,7 +86,7 @@ export default function SavedTemplatesPage() {
       unitPrice: total,
       servings: servings,
       includedItems: template.items.map(item => ({
-        name: `Template Item ${item.templateId || item.menuItemId || 'Unknown'}`,
+        name: item.name || 'Unknown Item',
         quantity: `${item.quantity} ${item.panSize === 'half' ? 'Half' : 'Full'} Pan${item.quantity > 1 ? 's' : ''}`
       }))
     });
@@ -195,7 +195,7 @@ export default function SavedTemplatesPage() {
               <div className="mb-4 p-3 bg-smoke/10 dark:bg-smoke/20 rounded md3-label-small space-y-1">
                 {template.items.slice(0, 3).map((item, idx) => (
                   <p key={idx} className="text-navy/70 dark:text-white/70">
-                    • Template Item ({item.quantity} {item.panSize})
+                    • {item.name || 'Unknown Item'} ({item.quantity} {item.panSize || 'full'} pan{item.quantity > 1 ? 's' : ''})
                   </p>
                 ))}
                 {template.items.length > 3 && (
