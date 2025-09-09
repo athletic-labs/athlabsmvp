@@ -42,9 +42,9 @@ const TeamNutritionPanel = memo(function TeamNutritionPanel({
   }
 
   const macroData = [
-    { name: 'Protein', value: nutrition.protein, color: 'var(--md-sys-color-error)', target: 30 },
-    { name: 'Carbs', value: nutrition.carbs, color: 'var(--md-saas-color-success)', target: 40 },
-    { name: 'Fats', value: nutrition.fats, color: 'var(--md-saas-color-warning)', target: 30 }
+    { name: 'Protein', value: nutrition.protein, color: 'var(--md-sys-color-primary)', target: 30 },
+    { name: 'Carbs', value: nutrition.carbs, color: '#1a2332', target: 40 }, // Navy for brand emphasis
+    { name: 'Fats', value: nutrition.fats, color: 'var(--md-sys-color-secondary)', target: 30 }
   ];
 
   return (

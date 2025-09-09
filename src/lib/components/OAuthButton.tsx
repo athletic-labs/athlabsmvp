@@ -103,7 +103,7 @@ export function OAuthButton({
       </Button>
 
       {error && (
-        <div className="p-2 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm flex items-center space-x-2">
+        <div className="p-2 bg-[var(--md-sys-color-error-container)] border border-[var(--md-sys-color-error)] rounded-md text-[var(--md-sys-color-on-error-container)] text-sm flex items-center space-x-2">
           <AlertCircle className="h-4 w-4 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -139,10 +139,10 @@ export function OAuthProviderList({
     <div className={`space-y-3 ${className || ''}`}>
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300" />
+          <div className="w-full border-t border-[var(--md-sys-color-outline-variant)]" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          <span className="px-2 bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface-variant)]">Or continue with</span>
         </div>
       </div>
 
@@ -245,7 +245,7 @@ export function OAuthAccountManager({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">Connected Accounts</h3>
+      <h3 className="text-lg font-medium text-[var(--md-sys-color-on-surface)] md3-title-large">Connected Accounts</h3>
       <div className="space-y-3">
         {allProviders.map((provider) => {
           const providerName = provider.name as OAuthProvider;
@@ -255,13 +255,13 @@ export function OAuthAccountManager({
           return (
             <div
               key={provider.name}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+              className="flex items-center justify-between p-4 border border-[var(--md-sys-color-outline-variant)] rounded-lg"
             >
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">{provider.name === 'google' ? '🔍' : provider.name === 'github' ? '🐙' : '🔐'}</span>
                 <div>
-                  <div className="font-medium text-gray-900">{provider.displayName}</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="font-medium text-[var(--md-sys-color-on-surface)]">{provider.displayName}</div>
+                  <div className="text-sm text-[var(--md-sys-color-on-surface-variant)]">
                     {isLinked ? 'Connected' : 'Not connected'}
                   </div>
                 </div>

@@ -5,6 +5,7 @@ import { X, Minus, Plus, ChevronDown, ChevronUp, Trash2, ShoppingCart, AlertCirc
 import { useState } from 'react';
 import { useCartStore } from '@/lib/store/cart-store';
 import { toast } from 'sonner';
+import { Button } from '@/lib/design-system/components/Button';
 
 interface CartSidePanelProps {
   onClose: () => void;
@@ -74,12 +75,12 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
-          <ShoppingCart className="w-5 h-5 text-electric-blue" />
+          <ShoppingCart className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
           <h2 className="text-lg font-semibold">Cart ({items.length})</h2>
         </div>
         <button
           onClick={onClose}
-          className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-1 hover:bg-[var(--md-sys-color-surface-container-low)] rounded-lg transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -88,8 +89,8 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
       {/* Cart Items */}
       <div className="flex-1 overflow-y-auto p-4">
         {items.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <ShoppingCart className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <div className="text-center py-8 text-[var(--md-sys-color-on-surface-variant)]">
+            <ShoppingCart className="w-12 h-12 mx-auto mb-3 text-[var(--md-sys-color-on-surface-variant)]" />
             <p>Your cart is empty</p>
             <p className="text-sm mt-1">Add templates to get started</p>
           </div>
@@ -103,7 +104,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-[var(--md-sys-color-error)] hover:text-[var(--md-sys-color-error)]"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -113,7 +114,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
                 {item.includedItems && item.includedItems.length > 0 && (
                   <button
                     onClick={() => toggleExpanded(item.id)}
-                    className="flex items-center gap-1 text-xs text-gray-600 hover:text-gray-800 mb-2"
+                    className="flex items-center gap-1 text-xs text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] mb-2"
                   >
                     {expandedItems.has(item.id) ? (
                       <ChevronUp className="w-3 h-3" />
@@ -126,7 +127,7 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
                 
                 {/* Expanded Items List */}
                 {expandedItems.has(item.id) && item.includedItems && (
-                  <div className="text-xs text-gray-500 mb-2 pl-4 space-y-0.5">
+                  <div className="text-xs text-[var(--md-sys-color-on-surface-variant)] mb-2 pl-4 space-y-0.5">
                     {item.includedItems.map((included, idx) => (
                       <div key={idx}>• {included.name} ({included.quantity})</div>
                     ))}
@@ -138,14 +139,14 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                      className="w-7 h-7 flex items-center justify-center border rounded hover:bg-gray-100"
+                      className="w-7 h-7 flex items-center justify-center border border-[var(--md-sys-color-outline-variant)] rounded hover:bg-[var(--md-sys-color-surface-container-low)]"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
                     <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-7 h-7 flex items-center justify-center border rounded hover:bg-gray-100"
+                      className="w-7 h-7 flex items-center justify-center border border-[var(--md-sys-color-outline-variant)] rounded hover:bg-[var(--md-sys-color-surface-container-low)]"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
@@ -178,35 +179,39 @@ export default function CartSidePanel({ onClose }: CartSidePanelProps) {
         {/* Price Breakdown */}
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-600">Subtotal</span>
+            <span className="text-[var(--md-sys-color-on-surface-variant)]">Subtotal</span>
             <span>${formatPrice(subtotal)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Tax (8.75%)</span>
+            <span className="text-[var(--md-sys-color-on-surface-variant)]">Tax (8.75%)</span>
             <span>${formatPrice(tax)}</span>
           </div>
           <div className="flex justify-between font-semibold text-base pt-2 border-t">
             <span>Total</span>
-            <span className="text-electric-blue">${formatPrice(total)}</span>
+            <span className="text-[var(--md-sys-color-primary)]">${formatPrice(total)}</span>
           </div>
         </div>
         
         {/* Action Buttons */}
-        <button
+        <Button
           onClick={handleCheckout}
           disabled={belowMinimum || items.length === 0}
-          className="w-full py-3 bg-electric-blue text-white rounded-lg font-medium hover:bg-electric-blue/90 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          variant="filled"
+          fullWidth
+          className="py-3"
         >
           Proceed to Checkout
-        </button>
+        </Button>
         
         {items.length > 0 && (
-          <button
+          <Button
             onClick={clearCart}
-            className="w-full py-2 text-red-500 hover:text-red-700 text-sm font-medium"
+            variant="text"
+            fullWidth
+            className="py-2 text-[var(--md-sys-color-error)] hover:text-[var(--md-sys-color-error)] text-sm"
           >
             Clear Cart
-          </button>
+          </Button>
         )}
       </div>
     </div>

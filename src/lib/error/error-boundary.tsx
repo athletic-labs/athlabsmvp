@@ -55,7 +55,7 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
           
           <button
             onClick={handleGoHome}
-            className="group relative w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="group relative w-full flex justify-center py-3 px-4 border border-[var(--md-sys-color-outline)] md3-label-large font-medium rounded-[var(--md-sys-shape-corner-full)] text-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-surface)] hover:bg-[var(--md-sys-color-surface-container-low)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--md-sys-color-primary)]"
           >
             <Home className="w-4 h-4 mr-2" />
             Go to Dashboard

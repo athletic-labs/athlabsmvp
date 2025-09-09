@@ -45,8 +45,7 @@ export function OptimizedImage({
       {showSkeleton && isLoading && (
         <div
           className={cn(
-            'absolute inset-0 animate-pulse bg-gray-200 rounded',
-            'dark:bg-gray-700',
+            'absolute inset-0 animate-pulse bg-[var(--md-sys-color-surface-container)] rounded',
             skeletonClassName
           )}
         />

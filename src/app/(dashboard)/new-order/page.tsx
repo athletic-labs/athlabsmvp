@@ -16,9 +16,9 @@ export default function NewOrderPage() {
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--md-sys-color-surface-container-lowest)]">
       {/* Header */}
-      <div className="bg-white border-b p-lg sticky top-0 z-20">
+      <div className="bg-[var(--md-sys-color-surface)] border-b border-[var(--md-sys-color-outline-variant)] p-lg sticky top-0 z-20">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="md3-headline-large text-[var(--md-sys-color-on-surface)]" style={{ fontWeight: 500 }}>New Order</h1>
@@ -31,7 +31,7 @@ export default function NewOrderPage() {
             className={`relative p-md rounded-lg transition-standard ${
               itemCount > 0 
                 ? 'text-white hover:opacity-90' 
-                : 'hover:bg-gray-100'
+                : 'hover:bg-[var(--md-sys-color-surface-container-low)]'
             }`}
             style={{
               backgroundColor: itemCount > 0 ? 'var(--md-sys-color-primary)' : 'transparent'
@@ -72,9 +72,9 @@ export default function NewOrderPage() {
               <input
                 type="search"
                 placeholder="Search templates..."
-                className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:border-electric-blue"
+                className="flex-1 px-4 py-2 border border-[var(--md-sys-color-outline)] rounded-lg focus:outline-none focus:border-[var(--md-sys-color-primary)]"
               />
-              <select className="px-4 py-2 border rounded-lg focus:outline-none focus:border-electric-blue">
+              <select className="px-4 py-2 border border-[var(--md-sys-color-outline)] rounded-lg focus:outline-none focus:border-[var(--md-sys-color-primary)]">
                 <option>All Cuisines</option>
                 <option>Mediterranean</option>
                 <option>Mexican</option>
@@ -94,13 +94,13 @@ export default function NewOrderPage() {
                 : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
             }`}>
               {/* Create Your Own Card */}
-              <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border-2 border-dashed border-electric-blue/30 min-h-[220px] max-h-[240px] cursor-pointer">
+              <div className="bg-[var(--md-sys-color-surface)] rounded-lg shadow-sm hover:shadow-md transition-shadow border-2 border-dashed border-[var(--md-sys-color-primary)]/30 min-h-[220px] max-h-[240px] cursor-pointer">
                 <button
                   onClick={() => setShowCreateTemplate(true)}
                   className="w-full p-4 h-full flex flex-col items-center justify-center text-center"
                 >
-                  <div className="w-12 h-12 bg-electric-blue/10 rounded-full flex items-center justify-center mb-3">
-                    <Plus className="w-6 h-6 text-electric-blue" />
+                  <div className="w-12 h-12 bg-[var(--md-sys-color-primary)]/10 rounded-full flex items-center justify-center mb-3">
+                    <Plus className="w-6 h-6 text-[var(--md-sys-color-primary)]" />
                   </div>
                   <h3 className="font-semibold text-sm mb-2">Create Your Own</h3>
                   <p className="text-xs text-gray-600">Build a custom template from individual items</p>

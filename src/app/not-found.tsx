@@ -3,14 +3,14 @@ import { FileQuestion, Home } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--md-sys-color-surface-container-lowest)] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 text-center">
         <div>
-          <FileQuestion className="mx-auto h-16 w-16 text-gray-400" />
-          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+          <FileQuestion className="mx-auto h-16 w-16 text-[var(--md-sys-color-on-surface-variant)]" />
+          <h2 className="mt-6 text-3xl font-bold text-[var(--md-sys-color-on-surface)] md3-headline-large">
             Page Not Found
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-[var(--md-sys-color-on-surface-variant)] md3-body-medium">
             The page you're looking for doesn't exist or has been moved.
           </p>
         </div>
@@ -26,7 +26,7 @@ export default function NotFound() {
           
           <Link
             href="/"
-            className="group relative w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="group relative w-full flex justify-center py-3 px-4 border border-[var(--md-sys-color-outline)] text-sm font-medium rounded-md text-[var(--md-sys-color-on-surface)] bg-[var(--md-sys-color-surface)] hover:bg-[var(--md-sys-color-surface-container-low)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--md-sys-color-primary)] md3-button-outlined"
           >
             Go to Home
           </Link>
