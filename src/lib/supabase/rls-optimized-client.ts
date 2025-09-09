@@ -346,7 +346,7 @@ export function createSupabaseServerClientOptimized(userId?: string) {
 export const getUserAuthContext = cache(async (userId: string) => {
   if (!userId) return null;
 
-  const supabase = createSupabaseServerClientOptimized(userId);
+  const supabase = createRLSOptimizedSupabaseClient({ userId }) as any;
   
   try {
     const { data, error } = await supabase
@@ -373,7 +373,7 @@ export const getUserAuthContext = cache(async (userId: string) => {
 export const checkTeamAccess = cache(async (userId: string, teamId: string) => {
   if (!userId || !teamId) return false;
 
-  const supabase = createSupabaseServerClientOptimized(userId);
+  const supabase = createRLSOptimizedSupabaseClient({ userId }) as any;
   
   try {
     const canAccess = await supabase.canAccessTeam(teamId);
@@ -388,7 +388,7 @@ export const checkTeamAccess = cache(async (userId: string, teamId: string) => {
  * Optimized permission check
  */
 export const checkPermission = cache(async (permission: string) => {
-  const supabase = createSupabaseServerClientOptimized();
+  const supabase = createRLSOptimizedSupabaseClient({}) as any;
   
   try {
     const hasPermission = await supabase.hasTeamPermission(permission);

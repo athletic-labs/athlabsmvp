@@ -3,6 +3,9 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { generalApiRateLimit, withRateLimit } from '@/lib/middleware/rate-limit';
 import { createSuccessResponse, createErrorResponse } from '@/lib/validation/api-middleware';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 export const GET = withRateLimit(generalApiRateLimit)(async (request: NextRequest) => {
   try {
     const startTime = Date.now();
