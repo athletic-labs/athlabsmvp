@@ -122,21 +122,13 @@ export const monitoringConfig = {
   gaTrackingId: env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
 } as const;
 
-// Runtime configuration validation - call this in middleware or app startup
+// Runtime configuration validation - simplified for Edge Runtime compatibility
 export function validateEnvironment(): void {
   try {
     parseEnv();
-    if (typeof console !== 'undefined') {
-      console.log('✅ Environment validation passed'); // eslint-disable-line no-console
-    }
+    // Environment validation passed
   } catch (error) {
-    if (typeof console !== 'undefined') {
-      console.error('❌ Environment validation failed:', error); // eslint-disable-line no-console
-    }
-    if (appConfig.isProduction && typeof process !== 'undefined' && process.exit) {
-      process.exit(1); // Exit in production to prevent misconfigured deployments
-    } else if (appConfig.isProduction) {
-      throw new Error('Critical environment configuration error - deployment cannot continue');
-    }
+    // Just throw the error - let the runtime handle it
+    throw error;
   }
 }

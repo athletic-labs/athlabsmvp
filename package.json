@@ -63,6 +63,7 @@
     "@types/react-dom": "18.2.18",
     "@types/swagger-jsdoc": "^6.0.4",
     "autoprefixer": "10.4.16",
+    "critters": "^0.0.23",
     "eslint": "8.56.0",
     "eslint-config-next": "14.0.4",
     "jest": "^30.1.3",
