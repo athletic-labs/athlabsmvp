@@ -155,6 +155,8 @@ export const getTemplatesQuerySchema = z.object({
   teamId: uuidSchema.optional(),
   featured: z.coerce.boolean().optional(),
   category: z.string().optional(),
+  archived: z.coerce.boolean().optional(),
+  includeArchived: z.coerce.boolean().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });

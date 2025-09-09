@@ -170,7 +170,7 @@ export const GET = withAdaptiveRateLimit(adaptivePresets.api)(
             throw new ValidationError('User must be associated with a team', { reason: 'missing_team_id' });
           }
           
-          // Build query with pagination
+          // Build query with pagination and archive filtering
           let templatesQuery = supabase
             .from('saved_templates')
             .select(`
@@ -181,6 +181,8 @@ export const GET = withAdaptiveRateLimit(adaptivePresets.api)(
               times_used,
               last_used_at,
               is_favorite,
+              archived_at,
+              archived_by,
               created_at,
               updated_at,
               profiles:created_by (
@@ -188,8 +190,19 @@ export const GET = withAdaptiveRateLimit(adaptivePresets.api)(
                 last_name
               )
             `, { count: 'exact' })
-            .eq('team_id', profile.team_id)
-            .order('created_at', { ascending: false });
+            .eq('team_id', profile.team_id);
+
+          // Apply archive filtering
+          if (query.archived === true) {
+            // Only archived templates
+            templatesQuery = templatesQuery.not('archived_at', 'is', null);
+          } else if (query.includeArchived !== true) {
+            // Default: only active templates (not archived)
+            templatesQuery = templatesQuery.is('archived_at', null);
+          }
+          // If includeArchived is true, show both active and archived
+
+          templatesQuery = templatesQuery.order('created_at', { ascending: false });
 
           // Apply pagination
           const page = query.page || 1;

@@ -16,10 +16,15 @@ export interface SavedTemplate {
   team_id: string;
   created_by: string;
   name: string;
+  description?: string;
   items: SavedTemplateItem[];
   times_used: number;
   last_used_at?: string;
+  is_favorite?: boolean;
+  archived_at?: string;
+  archived_by?: string;
   created_at: string;
+  updated_at?: string;
 }
 
 export class TemplateService {
@@ -48,11 +53,11 @@ export class TemplateService {
   }
   
   /**
-   * Get all saved templates for the team
+   * Get all saved templates for the team (active only by default)
    */
-  static async getTemplates(): Promise<SavedTemplate[]> {
+  static async getTemplates(includeArchived = false): Promise<SavedTemplate[]> {
 
-    const response = await fetch('/api/templates', {
+    const response = await fetch(`/api/templates?includeArchived=${includeArchived}`, {
       cache: 'no-store',
       credentials: 'include',
       headers: {
@@ -69,9 +74,67 @@ export class TemplateService {
 
     return templates;
   }
+
+  /**
+   * Get only archived templates
+   */
+  static async getArchivedTemplates(): Promise<SavedTemplate[]> {
+    const response = await fetch('/api/templates?archived=true', {
+      cache: 'no-store',
+      credentials: 'include',
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch archived templates');
+    }
+    
+    const data = await response.json();
+    const templates = data.templates || [];
+
+    return templates;
+  }
   
   /**
-   * Delete a template - optimized to use RESTful endpoint
+   * Archive a template (soft delete)
+   */
+  static async archiveTemplate(templateId: string): Promise<void> {
+    const response = await fetch(`/api/templates/${templateId}/archive`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to archive template');
+    }
+  }
+
+  /**
+   * Restore an archived template
+   */
+  static async restoreTemplate(templateId: string): Promise<void> {
+    const response = await fetch(`/api/templates/${templateId}/restore`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to restore template');
+    }
+  }
+
+  /**
+   * Permanently delete a template (hard delete - admin only)
    */
   static async deleteTemplate(templateId: string): Promise<void> {
 
